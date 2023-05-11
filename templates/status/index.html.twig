@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <main role="main" class="col-md-12 order-md-2 pt-3 px-4">
+                <h1 class="text-center mt-5 mb-3">Status Database </h1>
+                <table class="table border" id="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Created At</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for status in statuses %}
+                            <tr>
+                                <td>{{ status.id}}</td>
+                                <td>
+                                    {% if status.name == 'Available' %}
+                                        <div class="status-circle bg-success"></div>
+                                        <span class="status-text">{{ status.name}}</span>
+                                    {% elseif status.name == 'In progress' %}
+                                        <div class="status-circle bg-warning"></div>
+                                        <span class="status-text">{{ status.name}}</span>
+                                    {% elseif status.name == 'Update' %}
+                                        <div class="status-circle bg-warning"></div>
+                                        <span class="status-text">{{ status.name}}</span>
+                                    {% elseif status.name == 'Down' %}
+                                        <div class="status-circle bg-danger"></div>
+                                        <span class="status-text">{{ status.name}}</span>
+                                    {% endif %}
+                                </td>
+
+                                <td>{{ status.createdAt|date('Y-m-d H:i:s') }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </main>
+        </div>
+    </div>
+{% endblock %}

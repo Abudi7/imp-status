@@ -1,0 +1,85 @@
+
+<!-- Calendar script -->
+{# <div class="d-flex justify-content-end">
+   <div id="calendar" class="table-responsive">
+   </div>
+</div>
+<style>
+   .today {
+   background-color: #007bff;
+   color: #fff;
+   font-weight: bold;
+   }
+</style>
+<script>
+   // Get the current date
+   let currentDate = new Date();
+   
+   // Set the month and year for the calendar
+   let currentMonth = currentDate.getMonth();
+   let currentYear = currentDate.getFullYear();
+   
+   // Get the number of days in the current month
+   let daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+   
+   // Get the day of the week the first day of the month falls on
+   let firstDayOfWeek = new Date(currentYear, currentMonth, 1).getDay();
+   
+   // Define an array with the names of the days of the week
+   let daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+   
+   // Create a table element for the calendar
+   let calendarTable = document.createElement("table");
+   calendarTable.classList.add("table", "table-bordered", "table-striped");
+   
+   // Add a header row with the days of the week
+   let headerRow = document.createElement("tr");
+   for (let i = 0; i < 7; i++) {
+   	let headerCell = document.createElement("th");
+   	headerCell.textContent = daysOfWeek[i];
+   	headerRow.appendChild(headerCell);
+   }
+   calendarTable.appendChild(headerRow);
+   
+   // Add the days of the month to the calendar
+   let date = 1;
+   for (let i = 0; i < 6; i++) {
+   	let row = document.createElement("tr");
+   	for (let j = 0; j < 7; j++) {
+   		let cell = document.createElement("td");
+   		if (i === 0 && j < firstDayOfWeek) {
+   			// Add an empty cell before the first day of the month
+   			let cellText = document.createTextNode("");
+   			cell.appendChild(cellText);
+   		} else if (date > daysInMonth) {
+   			// Add an empty cell after the last day of the month
+   			let cellText = document.createTextNode("");
+   			cell.appendChild(cellText);
+   		} else {
+   			// Add a cell with the date
+   			let cellText = document.createTextNode(date);
+   			cell.appendChild(cellText);
+   			if (date === currentDate.getDate() && currentMonth === currentDate.getMonth() && currentYear === currentDate.getFullYear()) {
+   				// Highlight the cell with the current date
+   				cell.classList.add("today");
+   			}
+   			date++;
+   		}
+   		row.appendChild(cell);
+   	}
+   	calendarTable.appendChild(row);
+   }
+   
+   // Add the calendar to the HTML page
+   let calendarDiv = document.getElementById("calendar");
+   calendarDiv.appendChild(calendarTable);
+</script> #}
+</main>
+</div>
+</div>
+<!-- Include calendar library scripts -->
+<link href="{{asset('https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.min.css')}}" rel="stylesheet"/>
+<script src="{{asset('https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js')}}"></script>
+<script src="{{asset('https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.min.js')}}"></script>
+</body>
+</html>

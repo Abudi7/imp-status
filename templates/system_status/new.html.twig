@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Add New System Status{% endblock %}
+
+{% block body %}
+    <h1>Add New Initial System Status</h1>
+
+    {{ form_start(form) }}
+        {{ form_row(form.system) }}
+        {{ form_row(form.status) }}
+        {#{{ form_row(form.createdAt) }}
+        {{ form_row(form.updatedAt) }}
+        {{ form_row(form.author) }}#}
+    {{ form_end(form) }}
+{% endblock %}

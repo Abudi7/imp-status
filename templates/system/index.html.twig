@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+<div class="container">
+   <div class="row">
+      <main role="main" class="col-md-12 order-md-1 pt-1 px-2">
+         <h1 class="text-center mt-5 mb-3">System In Database </h1>
+         <table class="table border"id="table">
+            <thead>
+               <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Created At</th>
+               </tr>
+            </thead>
+            <tbody>
+               {% for system in systems %}
+               <tr>
+                  <td>{{ system.id}}</td>
+                  <td>{{ system.name}}</td>
+                  <td>{{ system.createdAt|date('Y-m-d H:i:s') }}</td>
+               </tr>
+               {% endfor %}
+            </tbody>
+         </table>
+      </main>
+   </div>
+</div>
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Add New Status{% endblock %}
+
+{% block body %}
+    <h1>Add New Status</h1>
+
+    {{ form_start(form) }}
+        {{ form_row(form.name) }}
+        {{ form_row(form.createdAt) }}
+    {{ form_end(form) }}
+{% endblock %}

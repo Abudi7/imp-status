@@ -1,0 +1,53 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+   <div class="container-fluid">
+         <h6 class="display-6 text-center btn-outline-primary">{{ status.system }}</h6>
+   </div>
+   <div class="card mb-3">
+    <div class="card-body">
+        <table class="table table-striped">
+            <tbody>
+                {# <tr>
+                    <th>System:</th>
+                    <td>{{ status.system }}</td>
+                </tr> #}
+                <tr>
+                    <th>Status:</th>
+                    <td>
+                        {% if status.status == 'Available' %}
+                            <div class="status-circle bg-success"></div>
+                            <span class="status-text">Available <span class="sr-only">(available)</span></span>
+                        {% elseif status.status == 'In progress' %}
+                            <div class="status-circle bg-warning"></div>
+                            <span class="status-text">In Progress <span class="sr-only">(in progress)</span></span>
+                        {% elseif status.status == 'Update' %}
+                            <div class="status-circle bg-warning"></div>
+                            <span class="status-text">Update<span class="sr-only">(update)</span></span>
+                        {% elseif status.status == 'Down' %}
+                            <div class="status-circle bg-danger"></div>
+                            <span class="status-text">Down <span class="sr-only">(down)</span></span>
+                        {% endif %}
+                    </td>
+                </tr>
+                
+                <tr>
+                    <th>Responsible Person:</th>
+                    <td>{{ status.responsible_Person }}</td>
+                </tr>
+                <tr>
+                    <th>Created:</th>
+                    <td>{{ status.createdAt|date('m/d/Y H:i') }}</td>
+                </tr>
+                <tr>
+                    <th>Updated:</th>
+                    <td>{{ status.updatedAt|date('m/d/Y H:i') }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<a href="{{ path('app_system_status') }}" class="btn btn-secondary">Back to List</a>
+
+{% endblock %}

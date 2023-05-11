@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Add Template</h1>
+
+    {{ form_start(form) }}
+
+    {{ form_row(form.maintenance) }}
+    {{ form_row(form.incident) }}
+
+    {{ form_widget(form.save) }}
+
+    {{ form_end(form) }}
+{% endblock %}
