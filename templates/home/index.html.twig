@@ -1,89 +1,9 @@
 {% extends 'base.html.twig' %}
+
 {% block body %}
-<div class="container">
-   <div class="row">
-      <div class="col-12">
-         {# 
-         <h1 class="text-center mt-5 mb-3">System Status</h1>
-         #}
-      </div>
-   </div>
-   <div class="row">
-      <div class="col-12">
-         <div class="table-responsive">
-            <table class="table border" id="table">
-               <thead>
-                  <tr>
-                     <th>System</th>
-                     <th>Status</th>
-                     <th>Last Updated</th>
-                     <th>Subscription</th>
-                  </tr>
-               </thead>
-               <tbody>
-                  {% set availableSystems = [] %}
-                  {% set inProgressSystems = [] %}
-                  {% set updateSystems = [] %}
-                  {% set downSystems = [] %}
-                  {% for status in statuses %}
-                  {% if status.status == 'Available' %}
-                  {% set availableSystems = availableSystems|merge([status]) %}
-                  {% elseif status.status == 'In progress' %}
-                  {% set inProgressSystems = inProgressSystems|merge([status]) %}
-                  {% elseif status.status == 'Update' %}
-                  {% set updateSystems = updateSystems|merge([status]) %}
-                  {% elseif status.status == 'Down' %}
-                  {% set downSystems = downSystems|merge([status]) %}
-                  {% endif %}
-                  {% endfor %}
-                  {% set sortedSystems = availableSystems|merge(inProgressSystems)|merge(updateSystems)|merge(downSystems) %}
-                  {% for status in sortedSystems %}
-                  <tr>
-                     <td>{{ status.system }}</td>
-                     <td>
-                        {% if status.status == 'Available' %}
-                        <div class="status-circle bg-success"></div>
-                        <span class="status-text">Available <span class="sr-only">(available)</span></span>
-                        {% elseif status.status == 'In progress' %}
-                        <div class="status-circle bg-warning"></div>
-                        <span class="status-text">In Progress <span class="sr-only">(in progress)</span></span>
-                        {% elseif status.status == 'Update' %}
-                        <div class="status-circle bg-warning"></div>
-                        <span class="status-text">Update<span class="sr-only">(update)</span></span>
-                        {% elseif status.status == 'Down' %}
-                        <div class="status-circle bg-danger"></div>
-                        <span class="status-text">Down <span class="sr-only">(down)</span></span>
-                        {% endif %}
-                     </td>
-                     <td>{{ status.updatedAt|date('Y-m-d H:i:s') }}</td>
-                     <td>
-                        <!--Subscribe switch toggel in Twig-->
-                        <form action="{{ path('app_home_subscribe', {'id': status.id}) }}" method="post">
-                           <div class="form-check form-switch">
-                              {% set isSubscribed = false %}
-                              {% for subscription in status.subscriptions %}
-                              {% if subscription.user == app.user and subscription.isSubscribed %}
-                              {% set isSubscribed = true %}
-                              {% endif %}
-                              {% endfor %}
-                              <input class="form-check-input" type="checkbox" name="subscribe" id="subscribe{{ status.id }}" {% if isSubscribed %}checked{% endif %} onchange="this.form.submit()">
-                              <label class="form-check-label" for="subscribe{{ status.id }}">
-                              {% if status.subscription is defined and status.subscription.isSubscribed %}
-                              Unsubscribe
-                              {% else %}
-                              Subscribe
-                              {% endif %}
-                              </label>
-                           </div>
-                        </form>
-                     </td>
-                  </tr>
-                  {% endfor %}
-               </tbody>
-            </table>
-         </div>
-      </div>
-   </div>
-</div>
-</div>
+    {% if  is_granted('ROLE_USER')  %}
+        {% include 'allSubscription.html.twig' %}
+    {% else %}
+        {% include 'welcome.html.twig' %}
+    {% endif %}
 {% endblock %}

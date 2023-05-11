@@ -36,24 +36,29 @@
 				<ul class="navbar-nav ml-auto">
 					<!-- Comment Dropdown menu -->
 					{# 
-					               <li class="nav-item dropdown">
-					                  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
-					                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-					                  Systems Status
-					                  </a>
-					                  <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-					                     <a class="dropdown-item" href="{{ path('app_system_status') }}">System Status</a>
-					                     <a class="dropdown-item" href="{{ path('app_system_status_new') }}">New App Status</a>
-					                     <a class="dropdown-item" href="{{ path('app_system_new') }}">Add new System</a>
-					                     <a class="dropdown-item" href="{{ path('app_status_new') }}">Add new Status</a>
-					                  </div>
-					               </li>
-					               #}
+										               <li class="nav-item dropdown">
+										                  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
+										                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+										                  Systems Status
+										                  </a>
+										                  <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+										                     <a class="dropdown-item" href="{{ path('app_system_status') }}">System Status</a>
+										                     <a class="dropdown-item" href="{{ path('app_system_status_new') }}">New App Status</a>
+										                     <a class="dropdown-item" href="{{ path('app_system_new') }}">Add new System</a>
+										                     <a class="dropdown-item" href="{{ path('app_status_new') }}">Add new Status</a>
+										                  </div>
+										               </li>
+										               #}
+													   {% if app.user %}
+														
+													   
 						<li class="nav-item"> <a class="nav-link" href="{{ path('app_subscription') }}">Home</a>
 					</li>
 					<li class="nav-item">
-						<a class="nav-link" href="{{ path('app_home') }}">Subscription</a>
+					<!--Here Get All Systemes-->
+						<a class="nav-link" href="{{ path('app_allSubscription') }}">Subscription</a>
 					</li>
+					{% endif %}
 					<li class="nav-item">
 						<a class="nav-link" href="#">Contact</a>
 					</li>
@@ -77,13 +82,13 @@
 						<span class="navbar-text ml-3">
 							<script>
 								const options = {
-                                       weekday: 'long',
-                                       year: 'numeric',
-                                       month: 'long',
-                                       day: 'numeric'
-                                       };
-                                       const today = new Date().toLocaleDateString('en-US', options);
-                                       document.write(today);
+weekday: 'long',
+year: 'numeric',
+month: 'long',
+day: 'numeric'
+};
+const today = new Date().toLocaleDateString('en-US', options);
+document.write(today);
 							</script>
 						</span>
 					</li>
@@ -94,38 +99,43 @@
 			<div class="row">
 				<!-- User Dashboard Dropdown Links For View From Database -->
 				{# <nav class="col-12 col-md-2 d-none d-md-block bg-light sidebar">
-				         <div class="sidebar-sticky">
-				            <p class="h3 text-dark pt-4">User Dashboard</p>
-				               {% if app.user %}
-				                  <p class="h5 text-dark">Welcome, {{ app.user.username }}</p>
-				               {% endif %} 
-				            <ul class="nav flex-column pt-5">
-				               <li class="nav-item">
-				                  <a class="nav-link active" href="{{ path('app_system_status') }}">System Status</a>
-				               </li>
-				               <li class="nav-item">
-				                  <a class="nav-link" href="{{ path('app_status') }}">View All Status</a>
-				               </li>
-				               <li class="nav-item">
-				                  <a class="nav-link" href="{{ path('app_system') }}">View All Systems</a>
-				               </li>
-				               <li class="nav-item"></li>
-				            </ul>
-				         </div>
-				      </nav> #}
-					<main role="main" class="col-md-12 ml-sm-auto col-lg-12 px-4"> <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-						<h1 class="h2">System Status</h1>
-						{# {% if app.user %}
-						         <p class="h5 text-dark">Welcome, {{ app.user.username }}</p>
-						         {% endif %} #}
-						<div class="btn-toolbar mb-2 mb-md-0">
-							<div class="btn-group mr-2">
-								<button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
-								<button type="button" class="btn btn-sm btn-outline-secondary" id="exportBtn">Export</button>
-							</div>
-							<button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
-								<span data-feather="calendar"></span>
-								This week
-							</button>
+								         <div class="sidebar-sticky">
+								            <p class="h3 text-dark pt-4">User Dashboard</p>
+								               {% if app.user %}
+								                  <p class="h5 text-dark">Welcome, {{ app.user.username }}</p>
+								               {% endif %} 
+								            <ul class="nav flex-column pt-5">
+								               <li class="nav-item">
+								                  <a class="nav-link active" href="{{ path('app_system_status') }}">System Status</a>
+								               </li>
+								               <li class="nav-item">
+								                  <a class="nav-link" href="{{ path('app_status') }}">View All Status</a>
+								               </li>
+								               <li class="nav-item">
+								                  <a class="nav-link" href="{{ path('app_system') }}">View All Systems</a>
+								               </li>
+								               <li class="nav-item"></li>
+								            </ul>
+								         </div>
+								      </nav> #}
+					{% if app.user %}
+
+
+						<main role="main" class="col-md-12 ml-sm-auto col-lg-12 px-4"> <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+							<h1 class="h2">System Status</h1>
+							{# {% if app.user %}
+													         <p class="h5 text-dark">Welcome, {{ app.user.username }}</p>
+													         {% endif %} #}
+							<div class="btn-toolbar mb-2 mb-md-0">
+								<div class="btn-group mr-2">
+									<button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
+									<button type="button" class="btn btn-sm btn-outline-secondary" id="exportBtn">Export</button>
+								</div>
+								<button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
+									<span data-feather="calendar"></span>
+									This week
+								</button>
+							{% endif %}
 						</div>
+
 					</div>

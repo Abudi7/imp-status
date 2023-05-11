@@ -14,6 +14,13 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class HomeController extends AbstractController
 {
+    #[Route('/' ,name: 'app_home')]
+    public function index()
+    {
+        return $this->render('home/welcome.html.twig', [
+            
+        ]);
+    }
     #[Route('/home/{id}/subscribe', name: 'app_home_subscribe')]
     public function subscribe($id, Request $request, ManagerRegistry $registry)
     {
@@ -46,7 +53,7 @@ class HomeController extends AbstractController
                 // Add a flash message to indicate that the subscription was cancelled
                 $this->addFlash('success', 'You have cancelled your subscription to ' . $status->getSystem());
 
-                return $this->redirectToRoute('app_home');
+                return $this->redirectToRoute('app_allSubscription');
             }
 
             // If the subscription checkbox was checked, create a new subscription or update the existing one
@@ -71,7 +78,7 @@ class HomeController extends AbstractController
         //     'message' => $message,
 
         // ]);
-        return $this->render('home/index.html.twig', [
+        return $this->render('home/allSubscription.html.twig', [
             'statuses' => $em->getRepository(SystemStatus::class)->findAll(),
         ]);
     }
@@ -99,8 +106,8 @@ class HomeController extends AbstractController
     //     return $this->redirectToRoute('app_subscription');
     // }
 
-    #[Route('/', name: 'app_home')]
-    public function index(ManagerRegistry $managerRegistry): Response
+    #[Route('/allSubscription', name: 'app_allSubscription')]
+    public function allSubscription(ManagerRegistry $managerRegistry): Response
     {
         // get the currently authenticated user
         $user = $this->getUser();
@@ -111,9 +118,10 @@ class HomeController extends AbstractController
         // get the list of SystemStatus entities that the user has subscribed to
         //$statuses = $em->getRepository(SystemStatus::class)->findSubscribedByUser($user);
 
-        // render the template with the list of SystemStatus entities
-        return $this->render('home/index.html.twig', [
+        // render the template with the list of SystemStatus entities in allSubscription.html.twig
+        return $this->render('home/allSubscription.html.twig', [
             'statuses' => $em->getRepository(SystemStatus::class)->findAll(),
         ]);
     }
+
 }
