@@ -13,9 +13,28 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Psr\Log\LoggerInterface;
 
 class SubscriptionController extends AbstractController
 {
+    private $logger;
+
+    public function __construct(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+    }
+/*
+* It defines the route for the subscription page.
+* It injects three services via the method signature: Request, ManagerRegistry, and TokenStorageInterface.
+* It retrieves the currently logged-in user from the token storage interface.
+* It fetches all subscriptions for the current user from the database using the ManagerRegistry service.
+* It creates a subscription form using Symfony's form builder and sets up the form fields.
+* It handles form submissions and checks if the form is submitted and valid.
+* If the form is submitted and valid, it creates a new Subscription object, sets its properties, and saves it to the database.
+* It redirects the user to the subscription page and displays a success message.
+* It fetches all system statuses from the database using the ManagerRegistry service.
+* It renders the subscription page and passes in system statuses, subscriptions, and the subscription form.
+*/
     #[Route('/subscription', name: 'app_subscription')]
 public function index(Request $request, ManagerRegistry $managerRegistry, TokenStorageInterface $tokenStorageInterface): Response
 {
@@ -65,6 +84,7 @@ public function index(Request $request, ManagerRegistry $managerRegistry, TokenS
     ]);
 }
 
+/* The unsubscribe method is responsible for removing a subscription from the database. */
 #[Route('/subscription/{id}/unsbuscribe', name: 'app_subscription_unsbuscribe')]
 public function unsubscribe($id , ManagerRegistry $entityManger, SubscriptionRepository $subscriptionRepository)
 {

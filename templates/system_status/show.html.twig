@@ -35,6 +35,10 @@
                     <th>Responsible Person:</th>
                     <td>{{ status.responsible_Person }}</td>
                 </tr>
+                 <tr>
+                    <th>Information:</th>
+                    <td>{{ status.info }}</td>
+                </tr>
                 <tr>
                     <th>Created:</th>
                     <td>{{ status.createdAt|date('m/d/Y H:i') }}</td>
@@ -47,7 +51,9 @@
         </table>
     </div>
 </div>
-
-<a href="{{ path('app_system_status') }}" class="btn btn-secondary">Back to List</a>
+{% if is_granted('ROLE_ADMIN') %}
+    <a href="{{ path('app_system_status') }}" class="btn btn-secondary">Back to List</a>
+{% endif %}
+<a href="{{ path('app_subscription') }}" class="btn btn-secondary">Back to List</a>
 
 {% endblock %}

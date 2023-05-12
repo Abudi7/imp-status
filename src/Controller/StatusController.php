@@ -15,23 +15,21 @@ class StatusController extends AbstractController
 {
     /**
      * =====================================================
-     * The first action is index(), 
-     * which is responsible for displaying a 
+     * The first action is index(),
+     * which is responsible for displaying a
      * list of all Status entities in the system.
-     * It retrieves all the statuses from the database using 
-     * the StatusRepository object and passes them to 
+     * It retrieves all the statuses from the database using
+     * the StatusRepository object and passes them to
      * a Twig template for rendering.
      * ======================================================
      */
-    #[Route('/status', name: 'app_status')]
+    #[Route("/status", name: "app_status")]
     public function index(StatusRepository $statusRepository): Response
-    {   
-    
-        return $this->render('status/index.html.twig', [
-            'statuses' => $statusRepository->findAll(),
+    {
+        return $this->render("status/index.html.twig", [
+            "statuses" => $statusRepository->findAll(),
         ]);
     }
-
 
     /**
      * =====================================================================================
@@ -45,8 +43,7 @@ class StatusController extends AbstractController
      * ======================================================================================
      */
 
-
-    #[Route('/status/new', name:'app_status_new')]
+    #[Route("/status/new", name: "app_status_new")]
     public function new(Request $request, ManagerRegistry $managerRegistry)
     {
         $status = new Status();
@@ -60,11 +57,11 @@ class StatusController extends AbstractController
             $managerRegistry = $managerRegistry->getManager();
             $managerRegistry->persist($status);
             $managerRegistry->flush();
-            return $this->redirectToRoute('app_system_status');
+            return $this->redirectToRoute("app_system_status");
         }
 
-        return $this->render('status/new.html.twig',[
-            'form' => $form->createView(),
+        return $this->render("status/new.html.twig", [
+            "form" => $form->createView(),
         ]);
     }
 }

@@ -1,77 +1,76 @@
 {% extends 'base.html.twig' %}
 {% block body %}
-	<div class="container-fluid">
-		<div class="row">
-			<div class="col-12 col-md-12">
-				<div class="table-responsive">
-					<table class="table border" id="table">
-						<thead>
-							<tr>
-								<th>System</th>
-								<th>Status</th>
-								<th>Last Updated</th>
-								{% if is_granted('ROLE_ADMIN') %}
-									<th>Responsible Person</th>
-									<th>
-										<i class="fa-regular fa-gear"></i>Settings</th>
-								{% endif %}
-							</tr>
-						</thead>
-						<tbody>
-							<!--Sort List Twig langauge -->
-							{% set statuses_sorted = statuses|sort((a, b) => (a.status == 'Available') ? -1 : ((b.status == 'Available') ? 1 : (a.status == 'In progress') ? -1 : ((b.status == 'In progress') ? 1 : (a.status == 'Update') ? -1 : ((b.status == 'Update') ? 1 : (a.status == 'Down') ? -1 : ((b.status == 'Down') ? 1 : 0))))) %}
-							{% for status in statuses_sorted %}
-								<tr>
-									<td>
-										<a href="{{ path('app_system_status_show', {'id': status.id}) }}">{{ status.system }}</a>
-									</td>
-									<td>
-										{% if status.status == 'Available' %}
-											<div class="status-circle bg-success"></div>
-											<span class="status-text">Available
-												<span class="sr-only">(available)</span>
-											</span>
-										{% elseif status.status == 'In progress' %}
-											<div class="status-circle bg-warning"></div>
-											<span class="status-text">In Progress
-												<span class="sr-only">(in progress)</span>
-											</span>
-										{% elseif status.status == 'Update' %}
-											<div class="status-circle bg-warning"></div>
-											<span class="status-text">Update<span class="sr-only">(update)</span>
-											</span>
-										{% elseif status.status == 'Down' %}
-											<div class="status-circle bg-danger"></div>
-											<span class="status-text">Down
-												<span class="sr-only">(down)</span>
-											</span>
-										{% endif %}
-									</td>
-									<td>{{ status.updatedAt|date('Y-m-d H:i:s') }}</td>
-									{% if is_granted('ROLE_ADMIN') %}
-										<td>{{ status.responsible_person }}</td>
-										<td>
-											<div class="dropdown">
-												<button class="btn btn-secondary dropdown-toggle btn-sm" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-													<i class="fas fa-ellipsis-v"></i>Settings
-												</button>
-												<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-													<a class="dropdown-item" href="{{ path('app_system_status_edit', {id: status.id}) }}">Edit</a>
-													<a class="dropdown-item" href="{{ path('app_system_status_delete', {'id': status.id}) }}">Delete</a>
-													<a class="dropdown-item" href="{{ path('app_system_status_show', {'id': status.id}) }}">Show</a>
-													<a class="dropdown-item" href="{{ path('app_system_status_delete', {'id': status.id}) }}">Maintenance</a>
-													<a class="dropdown-item" href="{{ path('app_system_status_show', {'id': status.id}) }}">Incidents</a>
-												</div>
-											</div>
-										</td>
-										<td></td>
-									{% endif %}
-								</tr>
-							{% endfor %}
-						</tbody>
-					</table>
-				</div>
-			</div>
-		</div>
-	</div>
+<div class="container-fluid">
+   <div class="row">
+      <div class="col-12 col-md-12">
+         <div class="table-responsive">
+            <table class="table border" id="table" style="font-size: 12px">
+               <thead>
+                  <tr>
+                     <th>System</th>
+                     <th>Status</th>
+                     <th>Info</th>
+                     <th>Updated</th>
+                     {% if is_granted('ROLE_ADMIN') %}
+                     <th>Responsible Person</th>
+                     <th>Settings</th>
+                     {% endif %}
+                  </tr>
+               </thead>
+               <tbody>
+                  <!--Sort List Twig langauge -->
+                  {% set statuses_sorted = statuses|sort((a, b) => (a.status == 'Available') ? -1 : ((b.status == 'Available') ? 1 : (a.status == 'In progress') ? -1 : ((b.status == 'In progress') ? 1 : (a.status == 'Update') ? -1 : ((b.status == 'Update') ? 1 : (a.status == 'Down') ? -1 : ((b.status == 'Down') ? 1 : 0))))) %}
+                  {% for status in statuses_sorted %}
+                  <tr>
+                     <td><a href="{{ path('app_system_status_show', {'id': status.id}) }}">{{ status.system }}</a></td>
+                     <td>
+                        {% if status.status == 'Available' %}
+                        <div class="status-circle bg-success"></div>
+                        <span class="status-text">Available
+                        <span class="sr-only">(available)</span>
+                        </span>
+                        {% elseif status.status == 'In progress' %}
+                        <div class="status-circle bg-warning"></div>
+                        <span class="status-text">In Progress
+                        <span class="sr-only">(in progress)</span>
+                        </span>
+                        {% elseif status.status == 'Update' %}
+                        <div class="status-circle bg-warning"></div>
+                        <span class="status-text">Update<span class="sr-only">(update)</span>
+                        </span>
+                        {% elseif status.status == 'Down' %}
+                        <div class="status-circle bg-danger"></div>
+                        <span class="status-text">Down
+                        <span class="sr-only">(down)</span>
+                        </span>
+                        {% endif %}
+                     </td>
+                     <td>{{status.info}}</td>
+                     <td>{{ status.updatedAt|date('Y-m-d H:i:s') }}</td>
+                     {% if is_granted('ROLE_ADMIN') %}
+                     <td>{{ status.responsible_person }}</td>
+                     <td>
+                        <div class="dropdown">
+                           <button class="btn btn-secondary dropdown-toggle btn-sm" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                           <i class="fa fa-cogs"></i>
+                           </button>
+                           <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                              <a class="dropdown-item" href="{{ path('app_system_status_edit', {id: status.id}) }}">Edit</a>
+                              <a class="dropdown-item" href="{{ path('app_system_status_delete', {'id': status.id}) }}">Delete</a>
+                              <a class="dropdown-item" href="{{ path('app_system_status_show', {'id': status.id}) }}">Show</a>
+                              <a class="dropdown-item" href="{{ path('app_system_status_delete', {'id': status.id}) }}">Maintenance</a>
+                              <a class="dropdown-item" href="{{ path('app_system_status_show', {'id': status.id}) }}">Incidents</a>
+                           </div>
+                        </div>
+                     </td>
+                     <td></td>
+                     {% endif %}
+                  </tr>
+                  {% endfor %}
+               </tbody>
+            </table>
+         </div>
+      </div>
+   </div>
+</div>
 {% endblock %}

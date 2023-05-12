@@ -38,6 +38,9 @@ class SystemStatus
     #[ORM\OneToMany(mappedBy: 'systemStatus', targetEntity: Subscription::class)]
     private Collection $subscriptions;
 
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $info = null;
+
     public function __construct()
     {
         $this->createdAt = new \DateTime();
@@ -140,6 +143,18 @@ class SystemStatus
                 $subscription->setSystemStatus(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getInfo(): ?string
+    {
+        return $this->info;
+    }
+
+    public function setInfo(?string $info): self
+    {
+        $this->info = $info;
 
         return $this;
     }

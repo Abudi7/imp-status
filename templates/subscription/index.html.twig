@@ -1,97 +1,55 @@
 {% extends 'base.html.twig' %}
-
-{% block title %}Subscribe
-{% endblock %}
-
+{% block title %}Subscribe{% endblock %}
 {% block body %}
-	{# <h1>Subscribe to a System</h1> #}
-
-	{% if systemStatuses is empty %}
-		<div class="alert alert-warning">There are no systems to subscribe to.</div>
-	{% else %}
-		{# <div class="row">
-            <div class="col-md-6">
-                {{ form_start(form) }}
-                    {{ form_row(form.systemStatus) }}
-                    {{ form_row(form.subscribe) }}
-                {{ form_end(form) }}
-            </div>
-        </div> #}
-
-		<h2>My Subscriptions</h2>
-
-		{% if subscriptions is empty %}
-			<div class="alert alert-warning">You are not subscribed to any systems.</div>
-		{% else %}
-
-			<div class="container-fluid">
-				<div class="row">
-					<div class="col-12 col-md-12">
-						<div class="table-responsive">
-							<table class="table border" id="table">
-								<thead>
-									<tr>
-										<th>System</th>
-										<th>Status</th>
-										<th>Last Updated</th>
-										{% if is_granted('ROLE_ADMIN') %}
-											<th>Responsible Person</th>
-										{% endif %}
-										<th>
-											Unsubscribe
-										</th>
-									</tr>
-								</thead>
-								<tbody>
-									{# Sort twig table by Status usinf sort() #}
-									{% for subscription in subscriptions|sort((a, b) => (a.systemStatus.status == 'Available') ? -1 : ((b.systemStatus.status == 'Available') ? 1 : (a.systemStatus.status == 'In progress') ? -1 : ((b.systemStatus.status == 'In progress') ? 1 : (a.systemStatus.status == 'Update') ? -1 : ((b.systemStatus.status == 'Update') ? 1 : (a.systemStatus.status == 'Down') ? -1 : ((b.systemStatus.status == 'Down') ? 1 : 0))))) %}
-										<tr>
-											<td>
-												<a href="#">{{ subscription.systemStatus.system }}</a>
-											</td>
-											<td>
-												{% if subscription.systemStatus.status == 'Available' %}
-													<div class="status-circle bg-success"></div>
-													<span class="status-text">Available
-														<span class="sr-only">(available)</span>
-													</span>
-												{% elseif subscription.systemStatus.status == 'In progress' %}
-													<div class="status-circle bg-warning"></div>
-													<span class="status-text">In Progress
-														<span class="sr-only">(in progress)</span>
-													</span>
-												{% elseif subscription.systemStatus.status == 'Update' %}
-													<div class="status-circle bg-warning"></div>
-													<span class="status-text">Update<span class="sr-only">(update)</span>
-													</span>
-												{% elseif subscription.systemStatus.status == 'Down' %}
-													<div class="status-circle bg-danger"></div>
-													<span class="status-text">Down
-														<span class="sr-only">(down)</span>
-													</span>
-												{% endif %}
-											</td>
-											<td>{{ subscription.systemStatus.updatedAt|date('Y-m-d H:i:s') }}</td>
-											{% if is_granted('ROLE_ADMIN') %}
-												<td>{{ subscription.systemStatus.responsible_person }}</td>
-												{# <td><a href="{{ path('app_subscription_edit', {'id': subscription.id}) }}">Edit</a></td> #}
-											{% endif %}
-											<td>
-												{% if subscription.isSubscribed %}
-													<form action="{{ path('app_subscription_unsbuscribe', {'id': subscription.id}) }}" method="POST">
-														<input type="hidden" name="_method" value="DELETE">
-														<button type="submit" class="btn btn-link text-danger">Unsubscribe</button>
-													</form>
-												{% endif %}
-											</td>
-										</tr>
-									{% endfor %}
-								</tbody>
-							</table>
-						</div>
-					</div>
-				</div>
-			</div>
-		{% endif %}
-	{% endif %}
+<div class="container mt-4">
+   {% if systemStatuses is empty %}
+   <div class="alert alert-warning">There are no systems to subscribe to.</div>
+   {% else %}
+   {% if subscriptions is empty %}
+   <div class="alert alert-warning">You are not subscribed to any systems.</div>
+   {% else %}
+   <h2 class="mb-3">My Subscriptions</h2>
+   <div class="table-responsive">
+      <table class="table border" id="table">
+         <thead class="bg-light">
+            <tr>
+               <th scope="col">System</th>
+               <th scope="col">Status</th>
+               <th scope="col">Last Updated</th>
+               {% if is_granted('ROLE_ADMIN') %}
+               <th scope="col">Responsible Person</th>
+               {% endif %}
+               <th scope="col">Info</th>
+            </tr>
+         </thead>
+         <tbody>
+            {% for subscription in subscriptions|sort((a, b) => (a.systemStatus.status == 'Available') ? -1 : ((b.systemStatus.status == 'Available') ? 1 : (a.systemStatus.status == 'In progress') ? -1 : ((b.systemStatus.status == 'In progress') ? 1 : (a.systemStatus.status == 'Update') ? -1 : ((b.systemStatus.status == 'Update') ? 1 : (a.systemStatus.status == 'Down') ? -1 : ((b.systemStatus.status == 'Down') ? 1 : 0))))) %}
+            <tr>
+               <td>
+                  <a href="{{ path('app_system_status_show', {'id': subscription.systemStatus.id}) }}">{{ subscription.systemStatus.system }}</a>
+               </td>
+               <td>
+                  {% if subscription.systemStatus.status == 'Available' %}
+                  <span class="badge bg-success text-white">Available</span>
+                  {% elseif subscription.systemStatus.status == 'In progress' %}
+                  <span class="badge bg-warning text-dark">In Progress</span>
+                  {% elseif subscription.systemStatus.status == 'Update' %}
+                  <span class="badge bg-warning text-dark">Update</span>
+                  {% elseif subscription.systemStatus.status == 'Down' %}
+                  <span class="badge bg-danger text-white">Down</span>
+                  {% endif %}
+               </td>
+               <td>{{ subscription.systemStatus.updatedAt|date('Y-m-d H:i:s') }}</td>
+               {% if is_granted('ROLE_ADMIN') %}
+               <td>{{ subscription.systemStatus.responsible_person }}</td>
+               {% endif %}
+               <td>{{ subscription.systemStatus.info }}</td>
+            </tr>
+            {% endfor %}
+         </tbody>
+      </table>
+   </div>
+   {% endif %}
+   {% endif %}
+</div>
 {% endblock %}

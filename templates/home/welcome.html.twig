@@ -3,25 +3,31 @@
 {% block title %}Welcome to System Status App{% endblock %}
 
 {% block body %}
-  <div class="container">
+<div class="container">
   <div class="text-center mt-5 mb-4">
-     <h1 class="display-1">Anton Paar</h1>
-      <h2 class="h3 mb-3 fw-normal">System Status App</h2>
+    <h1 class="display-1" style="color: #cc0000;">Anton Paar</h1>
+    <h2 class="h3 mt-3 mb-3 fw-normal">System Status App</h2>
     {% if app.user %}
-      {% include 'allSubscription.html.twig' %}
+    {% include 'allSubscription.html.twig' %}
     {% else %}
-      <p class="lead text-center">Please 
-        <a href="{{ path('app_login') }}" class="btn btn-primary" role="button">Log in</a> or 
-        <a href="{{ path('app_register') }}" class="btn btn-outline-primary" role="button">Register</a> to continue.
-      </p>
+    <p class="lead text-center">Please
+      <a href="{{ path('app_login') }}" class="btn btn-danger" role="button"> <i class="fa fa-user fa-fw"></i> Log in</a> or
+      <a href="{{ path('app_register') }}" class="btn btn-outline-danger" role="button">Register</a> to continue.
+    </p>
     {% endif %}
     <div class="text-center mt-3">
-      <p class="text-muted mb-0">System Status App is a web application for monitoring the status of different systems.</p>
-      <p class="text-muted mb-0">It allows users to subscribe to system updates and receive notifications when a system status changes.</p>
+      <p class="text-muted mb-0">System Status App is a web application for monitoring the status of different systems.
+      </p>
+      <p class="text-muted mb-0">It allows users to subscribe to system updates and receive notifications when a system
+        status changes.</p>
       <hr>
-      <p class="text-center">For any questions or issues, please contact the developer at <a href="mailto:abdulrhman.al@anton-paar.com">abdulrhman.al@anton-paar.com</a>.</p>
+      <p class="text-center">For any questions or issues, please contact the developer at <a
+          href="mailto:abdulrhman.al@anton-paar.com" style="color: #cc0000;"><i class="fa fa-envelope-open-o"></i> abdulrhman.al@anton-paar.com</a>.</p>
       <div class="text-center">
-        <a href="https://symfony.com/" class="btn btn-primary" target="_blank" rel="noopener noreferrer">Built with Symfony version 6.2</a>
+        <a href="https://symfony.com/" class="btn btn-danger" target="_blank" rel="noopener noreferrer">Built with
+          Symfony version 6.2</a>
+      </div>
     </div>
   </div>
+</div>
 {% endblock %}

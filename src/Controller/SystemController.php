@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-
 use App\Entity\System;
 use App\Form\SystemType;
 use App\Repository\SystemRepository;
@@ -14,14 +13,14 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class SystemController extends AbstractController
 {
-    #[Route('/system', name: 'app_system')]
+    #[Route("/system", name: "app_system")]
     public function index(SystemRepository $systemRepository): Response
     {
-        return $this->render('system/index.html.twig', [
-            'systems' => $systemRepository->findAll()
+        return $this->render("system/index.html.twig", [
+            "systems" => $systemRepository->findAll(),
         ]);
     }
-    #[Route('/system/new', name:'app_system_new')]
+    #[Route("/system/new", name: "app_system_new")]
     public function new(Request $request, ManagerRegistry $managerRegistry)
     {
         $system = new System();
@@ -35,11 +34,11 @@ class SystemController extends AbstractController
             $managerRegistry = $managerRegistry->getManager();
             $managerRegistry->persist($system);
             $managerRegistry->flush();
-            return $this->redirectToRoute('app_system_status');
+            return $this->redirectToRoute("app_system_status");
         }
 
-        return $this->render('system/new.html.twig',[
-            'form' => $form->createView(),
+        return $this->render("system/new.html.twig", [
+            "form" => $form->createView(),
         ]);
     }
 }

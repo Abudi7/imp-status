@@ -78,13 +78,44 @@ application.
 * system_status/new.html.twig: This template displays the form to create a new system status.
 * system_status/edit.html.twig: This template displays the form to edit an existing system status.
 
-## Routes
-* /: This route displays the homepage and the list of system statuses.
-* /system-status/new: This route displays the form to create a new system status.
-* /system-status/{id}/edit: This route displays the form to edit an existing system status.
-* /system-status/{id}/delete: This route deletes an existing system status.
-* /subscribe/{id}: This route subscribes the current user to a system status.
-* /unsubscribe/{id}: This route unsubscribes the current user from a system status.
+## Available Routes
+1. app_home: This route is used to display the homepage of the application.
+
+2. app_home_subscribe: This route is used to subscribe to a system for which you want to receive status updates. The route requires an id parameter that represents the system to subscribe to.
+
+3. app_allSubscription: This route is used to display all the subscriptions of the logged-in user.
+
+4. app_register: This route is used to display the registration form.
+
+5. app_login: This route is used to display the login form.
+
+6. app_logout: This route is used to log out the user.
+
+7. app_status: This route is used to display the status of all the systems that the user is subscribed to.
+
+8. app_status_new: This route is used to add a new status update for a system.
+
+9. app_subscription: This route is used to display all the subscriptions of the logged-in user.
+
+10. app_subscription_unsubscribe: This route is used to unsubscribe from a system. The route requires an id parameter that represents the subscription to be deleted.
+
+11. app_system: This route is used to display all the systems in the application.
+
+12. app_system_new: This route is used to add a new system.
+
+13. app_system_status: This route is used to display all the status updates for a particular system. The route requires an id parameter that represents the system to be displayed.
+
+14. app_system_status_new: This route is used to add a new status update for a system.
+
+15. app_system_status_show: This route is used to display a particular status update. The route requires an id parameter that represents the status update to be displayed.
+
+16. app_system_status_edit: This route is used to edit a particular status update. The route requires an id parameter that represents the status update to be edited.
+
+17. app_system_status_delete: This route is used to delete a particular status update. The route requires an id parameter that represents the status update to be deleted.
+
+18. app_template: This route is used to display all the templates in the application.
+
+19. app_template_new: This route is used to add a new template.
 
 ## Twig Extensions
 * AppExtension: This extension contains custom Twig filters and functions used in the templates.

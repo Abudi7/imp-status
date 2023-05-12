@@ -12,9 +12,12 @@
       <link rel="preconnect" href="https://fonts.googleapis.com">
       <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
       <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
-
+      <link
+         href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=PT+Sans:wght@400;700&display=swap" rel="stylesheet">
       <!-- Font Awesome -->
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-fIeD1rJK02uCrShFyXkhtEebozwSn+YQwMsh6xjPeVUZv6UZ7Vf+hhDflnX9ROyv+8y7VwUk+FEJ2bNRuZvfw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.2/css/bootstrap.min.css">
+      <link
+         rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
       <!--Bootstrap-->
       <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css">
@@ -47,7 +50,9 @@
                   </div>
                </li>
                #}
-               <li class="nav-item"> <a class="nav-link" href="{{ path('app_system_status') }}">System Status</a>
+               <li class="nav-item"> <a class="nav-link" href="{{ path('app_system_status') }}">
+                  <i class="fa fa-pencil"></i>
+                  System Status</a>
                </li>
                <li class="nav-item">
                   <a class="nav-link" href="{{ path('app_subscription') }}">Subscription</a>
@@ -58,7 +63,7 @@
                <!--checks if there is a user currently logged in-->
                {% if app.user %}
                <li class="nav-item">
-                  <a class="nav-link" href="{{ path('app_logout') }}">Logout</a>
+                  <a class="nav-link" href="{{ path('app_logout') }}"><i class="fa fa-sign-out">sign out</i></a>
                </li>
                <li class="nav-item">
                   <span class="navbar-text text-warning">{{ app.user.username }}</span>
@@ -70,7 +75,9 @@
                #}
                {% else %}
                <li class="nav-item">
-                  <a class="nav-link" href="{{ path('app_login') }}">Login</a>
+                  <a class="nav-link" href="{{ path('app_login') }}">
+                  <i class="fa fa-sign-in">Sign in</i>
+                  </a>
                </li>
                {% endif %}
                <!-- Local Date-->
@@ -78,13 +85,13 @@
                   <span class="navbar-text ml-3">
                      <script>
                         const options = {
-                        					weekday: 'long',
-                        					year: 'numeric',
-                        					month: 'long',
-                        					day: 'numeric'
-                        				};
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                        };
                         const today = new Date().toLocaleDateString('en-US', options);
-                           document.write(today);
+                        document.write(today);
                      </script>
                   </span>
                </li>
@@ -92,7 +99,8 @@
          </div>
       </nav>
       <div class="container-fluid">
-      <div class="row">
+      <div
+         class="row">
       <!-- Admin Dashboard Dropdown Links For View From Database -->
       <nav class="col-12 col-md-2 navbar-expand-md bg-light sidebar">
          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavSideBar" aria-controls="navbarNavSideBar" aria-expanded="false" aria-label="Toggle navigation">
@@ -100,12 +108,29 @@
          </button>
          <div class="collapse navbar-collapse" id="navbarNavSideBar">
             <ul class="navbar-nav flex-column">
-               <li class="nav-item"><a class="h3 text-dark pt-4 navbar-brand"><i class="fas fa-chart-line"></i> Admin Dashboard</a></li>
-               <li class="nav-item"><p class="h5 text-dark"><i class="fas fa-user"></i> {{ app.user.email }}</p></li>
-               <li class="nav-item"><a class="nav-link active" href="{{ path('app_system_status') }}">System Status</a></li>
-               <li class="nav-item"><a class="nav-link" href="{{ path('app_status') }}">View All Status</a></li>
-               <li class="nav-item"><a class="nav-link" href="{{ path('app_system') }}">View All Systems</a></li>
-               <li class="nav-item"><a class="nav-link" href="{{ path('app_template') }}">View All Template</a></li>
+               <li class="nav-item">
+                  <a class="h2 text-dark pt-4 navbar-brand">
+                  <i class="fa fa-dashboard"></i>
+                  Dashboard</a>
+               </li>
+               <li class="nav-item">
+                  <p class="text-dark pt-2">
+                     <i class="fa fa-user-o fa-fw"></i>
+                     {{ app.user.email }}
+                  </p>
+               </li>
+               <li class="nav-item">
+                  <a class="nav-link active" href="{{ path('app_system_status') }}"><i class="fa fa-server"></i> System Status</a>
+               </li>
+               <li class="nav-item">
+                  <a class="nav-link" href="{{ path('app_status') }}"><i class="fa fa-database"></i> Status</a>
+               </li>
+               <li class="nav-item">
+                  <a class="nav-link" href="{{ path('app_system') }}"><i class="fa fa-database"></i> Systems</a>
+               </li>
+               <li class="nav-item">
+                  <a class="nav-link" href="{{ path('app_template') }}"><i class="fa fa-database"></i> Template</a>
+               </li>
             </ul>
          </div>
       </nav>
@@ -115,11 +140,12 @@
          {# {% if app.user %}
          <p class="h5 text-dark">Welcome, {{ app.user.username }}</p>
          {% endif %} #}
-         <div class="btn-toolbar mb-2 mb-md-0">
+         <div
+            class="btn-toolbar mb-2 mb-md-0">
             <!-- Dropdown Button For Create Actions -->
             <div class="btn-group mr-2">
                <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-               New
+               <i class="fa fa-edit"></i> New 
                </button>
                <ul class="dropdown-menu">
                   <li>
@@ -142,5 +168,5 @@
             <span data-feather="calendar"></span>
             This week
             </button>
-         </div> 
+         </div>
       </div>

@@ -10,50 +10,56 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-
-
 class HomeController extends AbstractController
 {
-    #[Route('/' ,name: 'app_home')]
+    #[Route("/", name: "app_home")]
     public function index()
     {
-        return $this->render('home/welcome.html.twig', [
-            
-        ]);
+        return $this->render("home/welcome.html.twig", []);
     }
-    #[Route('/home/{id}/subscribe', name: 'app_home_subscribe')]
+    #[Route("/home/{id}/subscribe", name: "app_home_subscribe")]
     public function subscribe($id, Request $request, ManagerRegistry $registry)
     {
         // Retrieve the SystemStatus entity from the database
         $status = $registry->getRepository(SystemStatus::class)->find($id);
         if (!$status) {
-            throw $this->createNotFoundException('The system status does not exist');
+            throw $this->createNotFoundException(
+                "The system status does not exist"
+            );
         }
 
         // Get the currently authenticated user
         $user = $this->getUser();
         if (!$user) {
-            throw $this->createAccessDeniedException('You must be logged in to subscribe');
+            throw $this->createAccessDeniedException(
+                "You must be logged in to subscribe"
+            );
         }
 
         // Check if the user is already subscribed to the system
-        $subscription = $registry->getRepository(Subscription::class)->findOneBy([
-            'systemStatus' => $status,
-            'user' => $user,
-        ]);
+        $subscription = $registry
+            ->getRepository(Subscription::class)
+            ->findOneBy([
+                "systemStatus" => $status,
+                "user" => $user,
+            ]);
 
-        if ($request->getMethod() === 'POST') {
+        if ($request->getMethod() === "POST") {
             // If the subscription checkbox was unchecked, delete the subscription record
-            if (!$request->request->get('subscribe')) {
+            if (!$request->request->get("subscribe")) {
                 if ($subscription) {
                     $em = $registry->getManager();
                     $em->remove($subscription);
                     $em->flush();
                 }
                 // Add a flash message to indicate that the subscription was cancelled
-                $this->addFlash('success', 'You have cancelled your subscription to ' . $status->getSystem());
+                $this->addFlash(
+                    "success",
+                    "You have cancelled your subscription to " .
+                        $status->getSystem()
+                );
 
-                return $this->redirectToRoute('app_allSubscription');
+                return $this->redirectToRoute("app_allSubscription");
             }
 
             // If the subscription checkbox was checked, create a new subscription or update the existing one
@@ -69,17 +75,23 @@ class HomeController extends AbstractController
             $em->flush();
 
             // Add a flash message to indicate that the subscription was successful
-            $this->addFlash('success', 'You have subscribed to ' . $status->getSystem());
+            $this->addFlash(
+                "success",
+                "You have subscribed to " . $status->getSystem()
+            );
         }
-        $message = 'You have subscribed to ' . $status->getSystem() . 'to Your subscription System site';
+        $message =
+            "You have subscribed to " .
+            $status->getSystem() .
+            "to Your subscription System site";
         // Render the subscription switch in the template
         // return $this->render('home/index.html.twig', [
         //     'statuses' => $status,
         //     'message' => $message,
 
         // ]);
-        return $this->render('home/allSubscription.html.twig', [
-            'statuses' => $em->getRepository(SystemStatus::class)->findAll(),
+        return $this->render("home/allSubscription.html.twig", [
+            "statuses" => $em->getRepository(SystemStatus::class)->findAll(),
         ]);
     }
 
@@ -106,7 +118,7 @@ class HomeController extends AbstractController
     //     return $this->redirectToRoute('app_subscription');
     // }
 
-    #[Route('/allSubscription', name: 'app_allSubscription')]
+    #[Route("/allSubscription", name: "app_allSubscription")]
     public function allSubscription(ManagerRegistry $managerRegistry): Response
     {
         // get the currently authenticated user
@@ -119,9 +131,8 @@ class HomeController extends AbstractController
         //$statuses = $em->getRepository(SystemStatus::class)->findSubscribedByUser($user);
 
         // render the template with the list of SystemStatus entities in allSubscription.html.twig
-        return $this->render('home/allSubscription.html.twig', [
-            'statuses' => $em->getRepository(SystemStatus::class)->findAll(),
+        return $this->render("home/allSubscription.html.twig", [
+            "statuses" => $em->getRepository(SystemStatus::class)->findAll(),
         ]);
     }
-
 }

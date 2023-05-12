@@ -16,7 +16,8 @@
                   <tr>
                      <th>System</th>
                      <th>Status</th>
-                     <th>Last Updated</th>
+                     <th>Updated</th>
+                     <th>Info</th>
                      <th>Subscription</th>
                   </tr>
                </thead>
@@ -55,7 +56,9 @@
                         <span class="status-text">Down <span class="sr-only">(down)</span></span>
                         {% endif %}
                      </td>
-                     <td>{{ status.updatedAt|date('Y-m-d H:i:s') }}</td>
+                     <td>{{ status.updatedAt|date('Y-m-d') }}</td>
+                     <td>{{ status.info }}</td>
+
                      <td>
                         <!--Subscribe switch toggel in Twig-->
                         <form action="{{ path('app_home_subscribe', {'id': status.id}) }}" method="post">

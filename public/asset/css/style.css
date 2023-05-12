@@ -1,8 +1,9 @@
 /* body styles */
 body {
-    font-family: 'Montserrat', sans-serif !important;
-   
+ /* font-family: 'Montserrat', sans-serif !important;*/
+ font-family: 'PT Sans', sans-serif !important;
 }
+
 
   /* navbar styles */
   .navbar {
