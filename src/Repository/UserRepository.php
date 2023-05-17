@@ -56,6 +56,16 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->save($user, true);
     }
 
+    //Send notification email to subscribed users
+    public function findSubscribedUsers(): array
+    {
+        return $this->createQueryBuilder('u')
+            ->join('u.subscriptions', 's')
+            ->where('s.isSubscribed = true')
+            ->getQuery()
+            ->getResult();
+    }
+
 //    /**
 //     * @return User[] Returns an array of User objects
 //     */

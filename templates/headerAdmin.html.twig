@@ -15,9 +15,7 @@
       <link
          href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=PT+Sans:wght@400;700&display=swap" rel="stylesheet">
       <!-- Font Awesome -->
-      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.2/css/bootstrap.min.css">
-      <link
-         rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
       <!--Bootstrap-->
       <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css">
@@ -63,7 +61,9 @@
                <!--checks if there is a user currently logged in-->
                {% if app.user %}
                <li class="nav-item">
-                  <a class="nav-link" href="{{ path('app_logout') }}"><i class="fa fa-sign-out">sign out</i></a>
+                  <a class="nav-link" href="{{ path('app_logout') }}">
+                  <i class="fa fa-sign-out">sign out</i>
+                  </a>
                </li>
                <li class="nav-item">
                   <span class="navbar-text text-warning">{{ app.user.username }}</span>
@@ -99,8 +99,7 @@
          </div>
       </nav>
       <div class="container-fluid">
-      <div
-         class="row">
+      <div class="row">
       <!-- Admin Dashboard Dropdown Links For View From Database -->
       <nav class="col-12 col-md-2 navbar-expand-md bg-light sidebar">
          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavSideBar" aria-controls="navbarNavSideBar" aria-expanded="false" aria-label="Toggle navigation">
@@ -111,7 +110,8 @@
                <li class="nav-item">
                   <a class="h2 text-dark pt-4 navbar-brand">
                   <i class="fa fa-dashboard"></i>
-                  Dashboard</a>
+                  Dashboard
+                  </a>
                </li>
                <li class="nav-item">
                   <p class="text-dark pt-2">
@@ -120,16 +120,70 @@
                   </p>
                </li>
                <li class="nav-item">
-                  <a class="nav-link active" href="{{ path('app_system_status') }}"><i class="fa fa-server"></i> System Status</a>
+                  <a class="nav-link active" href="{{ path('app_system_status') }}">
+                  <i class="fa fa-server"></i>
+                  System Status
+                  </a>
                </li>
                <li class="nav-item">
-                  <a class="nav-link" href="{{ path('app_status') }}"><i class="fa fa-database"></i> Status</a>
+                  <a class="nav-link" href="{{ path('app_status') }}">
+                  <i class="fa fa-database"></i>
+                  Status
+                  </a>
                </li>
                <li class="nav-item">
-                  <a class="nav-link" href="{{ path('app_system') }}"><i class="fa fa-database"></i> Systems</a>
+                  <a class="nav-link" href="{{ path('app_system') }}">
+                  <i class="fa fa-database"></i>
+                  Systems
+                  </a>
                </li>
                <li class="nav-item">
-                  <a class="nav-link" href="{{ path('app_template') }}"><i class="fa fa-database"></i> Template</a>
+                  <a class="nav-link" href="{{ path('app_template') }}">
+                  <i class="fa fa-database"></i>
+                  Template
+                  </a>
+               </li>
+            </ul>
+         </div>
+         <!-- Burger Menu -->
+         <div class="d-md-none">
+            <hr class="mt-2 mb-3">
+            <ul class="navbar-nav flex-column">
+             <li class="nav-item">
+                  <a class="h2 text-dark pt-4 navbar-brand">
+                  <i class="fa fa-dashboard"></i>
+                  Dashboard
+                  </a>
+               </li>
+               <li class="nav-item">
+                  <p class="text-dark pt-2">
+                     <i class="fa fa-user-o fa-fw"></i>
+                     {{ app.user.email }}
+                  </p>
+               </li>
+               <li class="nav-item">
+                  <a class="nav-link active" href="{{ path('app_system_status') }}">
+                  <i class="fa fa-server"></i>
+                  System Status
+                  </a>
+               </li>
+               <li class="nav-item">
+                  <a class="nav-link" href="{{ path('app_status') }}">
+                  <i class="fa fa-database"></i>
+                  Status
+                  </a>
+               </li>
+               <li class="nav-item">
+                  <a class="nav-link" href="{{ path('app_system') }}">
+                  <i class="fa fa-database"></i>
+                  Systems
+                  </a>
+               </li>
+               <li class="nav-item">
+                  <a class="nav-link" href="{{ path('app_template') }}">
+                  <i class="fa fa-database"></i>
+                  Template
+                  </a>
                </li>
             </ul>
          </div>
@@ -145,7 +199,8 @@
             <!-- Dropdown Button For Create Actions -->
             <div class="btn-group mr-2">
                <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-               <i class="fa fa-edit"></i> New 
+               <i class="fa fa-edit"></i>
+               New
                </button>
                <ul class="dropdown-menu">
                   <li>
@@ -160,6 +215,7 @@
                   </li>
                </ul>
             </div>
+            {# 
             <div class="btn-group mr-2">
                <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
                <button type="button" class="btn btn-sm btn-outline-secondary" id="exportBtn">Export</button>
@@ -167,6 +223,6 @@
             <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
             <span data-feather="calendar"></span>
             This week
-            </button>
+            </button> #}
          </div>
       </div>

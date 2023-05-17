@@ -79,6 +79,7 @@ class ComposerStaticInit282d7f5406549670da6e072b3ac4f6ee
             'Symfony\\Component\\Messenger\\Bridge\\Doctrine\\' => 44,
             'Symfony\\Component\\Messenger\\' => 28,
             'Symfony\\Component\\Mailer\\Bridge\\Mailgun\\' => 40,
+            'Symfony\\Component\\Mailer\\Bridge\\Google\\' => 39,
             'Symfony\\Component\\Mailer\\' => 25,
             'Symfony\\Component\\Intl\\' => 23,
             'Symfony\\Component\\HttpKernel\\' => 29,
@@ -347,6 +348,10 @@ class ComposerStaticInit282d7f5406549670da6e072b3ac4f6ee
         'Symfony\\Component\\Mailer\\Bridge\\Mailgun\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/mailgun-mailer',
+        ),
+        'Symfony\\Component\\Mailer\\Bridge\\Google\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/google-mailer',
         ),
         'Symfony\\Component\\Mailer\\' => 
         array (

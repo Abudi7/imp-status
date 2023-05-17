@@ -1,0 +1,9 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Maintenance Notification</h1>
+    
+    <form action="{{ path('app_mailer') }}" method="POST">
+        <button type="submit">Send Notification</button>
+    </form>
+{% endblock %}

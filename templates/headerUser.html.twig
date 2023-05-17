@@ -29,7 +29,11 @@
    </head>
    <body>
       <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      {% if is_granted('ROLE_USER') %}
+         <a class="navbar-brand" href="{{ path('app_subscription') }}"><img src="{{asset('../img/logo.png')}}" alt="Anton Paar" width="150px"></a>
+       {% else %}
          <a class="navbar-brand" href="{{ path('app_home') }}"><img src="{{asset('../img/logo.png')}}" alt="Anton Paar" width="150px"></a>
+         {% endif %}
          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
          <span class="navbar-toggler-icon"></span>
          </button>
@@ -130,14 +134,14 @@
          <p class="h5 text-dark">Welcome, {{ app.user.username }}</p>
          {% endif %} #}
          <div class="btn-toolbar mb-2 mb-md-0">
-            <div class="btn-group mr-2">
+            {# <div class="btn-group mr-2">
                <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
                <button type="button" class="btn btn-sm btn-outline-secondary" id="exportBtn">Export</button>
             </div>
             <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
             <span data-feather="calendar"></span>
             This week
-            </button>
+            </button> #}
             {% endif %}
          </div>
       </div>

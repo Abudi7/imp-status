@@ -123,5 +123,10 @@ application.
 ## Conclusion
 This project demonstrates the use of Symfony, MySQL, Twig, and Bootstrap to create a web application that manages system statuses. The application provides basic functionality such as user authentication and authorization, creating, editing, and deleting system statuses, and subscribing and unsubscribing to system statuses.
 
+## Updates (17/05/2023)
+* 17/05/2023: Added maintenance functionality to notify subscribed users about system maintenance.
+* 17/05/2023: Implemented incident notification feature to inform users about system incidents.
+* 17/05/2023: Refactored code for improved readability and performance.
+
 ## Credits
 This project was created by [ Abdulrhman Alshalal ](https://www.linkedin.com/in/abdulrhman-alshalal-556642196/?originalSubdomain=at) and is licensed under the [Anton Paar](https://www.anton-paar.com/at-de/)

@@ -21,7 +21,7 @@ body {
   
   /* sidebar styles */
   .sidebar {
-    height: 100vh;
+     height: 100vh; 
     font-size: 12px !important;
     position: fixed;
     top: 0;

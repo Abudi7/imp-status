@@ -52,6 +52,22 @@ class SystemStatusRepository extends ServiceEntityRepository
         }
     }
 
+    public function findSubscribedUsersForSystem(string $system): array
+{
+    return $this->createQueryBuilder('ss')
+        ->select('u')
+        ->join('ss.user', 'u')
+        ->join('ss.subscriptions', 'sub')
+        ->where('ss.system = :system')
+        ->andWhere('sub.isSubscribed = true')
+        ->setParameter('system', $system)
+        ->getQuery()
+        ->getResult();
+}
+
+    
+
+
 //    /**
 //     * @return SystemStatus[] Returns an array of SystemStatus objects
 //     */

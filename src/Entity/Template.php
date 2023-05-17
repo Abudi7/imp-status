@@ -20,7 +20,7 @@ class Template
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $incident = null;
 
-    
+
 
     public function getId(): ?int
     {
@@ -50,5 +50,5 @@ class Template
 
         return $this;
     }
-   
+
 }

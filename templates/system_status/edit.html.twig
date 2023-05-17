@@ -6,7 +6,7 @@ The form_start and form_end functions are used to generate the opening and closi
 while the form_widget function is used to render the individual form fields.
 =================================================
 #}
-{% extends 'base.html.twig' %}
+ {% extends 'base.html.twig' %}
 
 {% block title %}Edit System Status{% endblock %}
 
@@ -20,6 +20,6 @@ while the form_widget function is used to render the individual form fields.
         {# {{ form_row(form.updatedAt) }} #}
         {#{{ form_row(form.responsible_person) }}#}
         {#{{ form_widget(form) }}
-        <button type="submit" class="btn btn-primary">Save</button>#}
+        <button type="submit" class="btn btn-primary">Save</button>#} 
     {{ form_end(form) }}
 {% endblock %}

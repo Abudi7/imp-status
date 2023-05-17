@@ -38,6 +38,26 @@ class SubscriptionRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
+    /**
+    * Retrieve the users subscribed to the system using Doctrine SQL query.
+    * @param int $id The ID of the system status.
+    * @return array The array of subscribed users.
+    */
+    public function findSubscribedUsers(int $id): array
+    {
+        return $this->createQueryBuilder('sub')
+            ->select('sub')
+            ->join('sub.systemStatus', 's')
+            ->join('sub.user', 'u')
+            ->where('sub.isSubscribed = true')
+            ->andWhere('s.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getResult();
+    }
+
+
+
 
 //    /**
 //     * @return Subscription[] Returns an array of Subscription objects
