@@ -1,5 +1,5 @@
 # System Status Project
-    In this project, we created a web application to manage system statuses. We used the Symfony framework and MySQL database.
+In this project, we created a web application to manage system statuses. We used the Symfony framework and MySQL database.
 
 ## Features
 The application has the following features:
