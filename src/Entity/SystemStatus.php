@@ -41,6 +41,12 @@ class SystemStatus
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $info = null;
 
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $maintenanceStart = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $maintenanceEnd = null;
+
     public function __construct()
     {
         $this->createdAt = new \DateTime();
@@ -155,6 +161,30 @@ class SystemStatus
     public function setInfo(?string $info): self
     {
         $this->info = $info;
+
+        return $this;
+    }
+
+    public function getMaintenanceStart(): ?\DateTimeInterface
+    {
+        return $this->maintenanceStart;
+    }
+
+    public function setMaintenanceStart(?\DateTimeInterface $maintenanceStart): self
+    {
+        $this->maintenanceStart = $maintenanceStart;
+
+        return $this;
+    }
+
+    public function getMaintenanceEnd(): ?\DateTimeInterface
+    {
+        return $this->maintenanceEnd;
+    }
+
+    public function setMaintenanceEnd(?\DateTimeInterface $maintenanceEnd): self
+    {
+        $this->maintenanceEnd = $maintenanceEnd;
 
         return $this;
     }

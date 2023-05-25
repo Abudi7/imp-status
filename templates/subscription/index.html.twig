@@ -1,6 +1,18 @@
 {% extends 'base.html.twig' %}
 {% block title %}Subscribe{% endblock %}
 {% block body %}
+<div class="row">
+      <div class="col-12 col-md-12 mb-4">
+         <form id="searchForm">
+               <div class="input-group">
+                  <input type="text" id="searchInput" class="form-control" placeholder="Search...">
+                  <div class="input-group-append">
+                     <button type="submit" class="btn btn-primary">Search</button>
+                  </div>
+               </div>
+         </form>
+      </div>
+   </div>
 <div class="container mt-4">
    {% if systemStatuses is empty %}
    <div class="alert alert-warning">There are no systems to subscribe to.</div>
@@ -31,10 +43,8 @@
                <td>
                   {% if subscription.systemStatus.status == 'Available' %}
                   <span class="badge bg-success text-white">Available</span>
-                  {% elseif subscription.systemStatus.status == 'In progress' %}
-                  <span class="badge bg-warning text-dark">In Progress</span>
-                  {% elseif subscription.systemStatus.status == 'Update' %}
-                  <span class="badge bg-warning text-dark">Update</span>
+                  {% elseif subscription.systemStatus.status == 'Maintenance' %}
+                  <span class="badge bg-warning text-dark">Maintenance</span>
                   {% elseif subscription.systemStatus.status == 'Down' %}
                   <span class="badge bg-danger text-white">Down</span>
                   {% endif %}
@@ -52,4 +62,28 @@
    {% endif %}
    {% endif %}
 </div>
+{# JavaScript Search file: /public/asset/js/search.js #}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // Prevent form submission
+        $('#searchForm').submit(function(event) {
+            event.preventDefault();
+        });
+
+        // Filter table rows based on search query
+        $('#searchInput').keyup(function() {
+            var searchQuery = $(this).val().toLowerCase();
+            $('#table tbody tr').each(function() {
+                var system = $(this).find('td:first-child a').text().toLowerCase();
+                var info = $(this).find('td:nth-child(3)').text().toLowerCase();
+                if (system.includes(searchQuery) || info.includes(searchQuery)) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            });
+        });
+    });
+</script>
 {% endblock %}

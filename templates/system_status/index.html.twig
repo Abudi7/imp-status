@@ -2,6 +2,26 @@
 {% block body %}
 <div class="container-fluid">
    <div class="row">
+      <div class="col-12 col-md-12 mb-4">
+         <form id="searchForm">
+               <div class="input-group">
+                  <input type="text" id="searchInput" class="form-control" placeholder="Search...">
+                  <div class="input-group-append">
+                     <button type="submit" class="btn btn-primary"><i class="fa fa-spinner fa-spin" style="font-size:16px"></i></button>
+                  </div>
+               </div>
+         </form>
+      </div>
+   </div>
+   {# Show a message if no system is found in search #}
+   <div class="row">
+      <div class="col-12 mb-3">
+         <div id="notFoundMessage" class="alert alert-danger" style="display: none;">
+         </div>
+      </div>
+   </div>
+
+   <div class="row">
       <div class="col-12 col-md-12">
          <div class="table-responsive mx-auto w-100">
             <table class="table border table-sm table-striped" id="table" style="font-size: 12px">
@@ -29,14 +49,10 @@
                         <span class="status-text">Available
                         <span class="sr-only">(available)</span>
                         </span>
-                        {% elseif status.status == 'In progress' %}
+                        {% elseif status.status == 'Maintenance' %}
                         <div class="status-circle bg-warning"></div>
-                        <span class="status-text">In Progress
-                        <span class="sr-only">(in progress)</span>
-                        </span>
-                        {% elseif status.status == 'Update' %}
-                        <div class="status-circle bg-warning"></div>
-                        <span class="status-text">Update<span class="sr-only">(update)</span>
+                        <span class="status-text">Maintenance
+                        <span class="sr-only">(Maintenance)</span>
                         </span>
                         {% elseif status.status == 'Down' %}
                         <div class="status-circle bg-danger"></div>
@@ -73,4 +89,39 @@
       </div>
    </div>
 </div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+   $(document).ready(function() {
+      // Prevent form submission
+      $('#searchForm').submit(function(event) {
+         event.preventDefault();
+      });
+
+      // Filter table rows based on search query
+      $('#searchInput').keyup(function() {
+         var searchQuery = $(this).val().toLowerCase();
+         var found = false; // Flag to track if system is found
+
+         $('#table tbody tr').each(function() {
+            var system = $(this).find('td:first-child').text().toLowerCase();
+            var info = $(this).find('td:nth-child(4)').text().toLowerCase();
+
+            if (system.includes(searchQuery) || info.includes(searchQuery)) {
+               $(this).show();
+               found = true;
+            } else {
+               $(this).hide();
+            }
+         });
+
+         // Show message if system is not found
+         if (!found) {
+            $('#notFoundMessage').text('Sorry, the system you are searching for was not found.').show();
+         } else {
+            $('#notFoundMessage').hide();
+         }
+      });
+   });
+</script>
+
 {% endblock %}

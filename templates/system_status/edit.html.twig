@@ -6,20 +6,96 @@ The form_start and form_end functions are used to generate the opening and closi
 while the form_widget function is used to render the individual form fields.
 =================================================
 #}
- {% extends 'base.html.twig' %}
-
-{% block title %}Edit System Status{% endblock %}
+{# {% extends 'base.html.twig' %}
 
 {% block body %}
     <h1>Edit System Status</h1>
 
     {{ form_start(form) }}
-        {{ form_start(form) }}
-        {{ form_row(form.system) }}
-        {{ form_row(form.status) }}
-        {# {{ form_row(form.updatedAt) }} #}
-        {#{{ form_row(form.responsible_person) }}#}
-        {#{{ form_widget(form) }}
-        <button type="submit" class="btn btn-primary">Save</button>#} 
+    {{ form_row(form.system) }}
+    {{ form_row(form.status) }}
+    {{ form_row(form.info) }}
+    <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+        <label class="form-check-label" for="flexSwitchCheckDefault">Maintenance</label>
+    
+    </div>
+    <hr>
+    <div id="maintenanceFields" style="display: none;">
+        {{ form_row(form.maintenanceStart) }}
+        {{ form_row(form.maintenanceEnd) }}
+    </div>
+<script>
+    var switchButton = document.getElementById('flexSwitchCheckDefault');
+    var maintenanceFields = document.getElementById('maintenanceFields');
+
+    // Add event listener to show or hide the maintenance fields when the switch button is clicked
+    switchButton.addEventListener('change', toggleMaintenanceFields);
+
+    function toggleMaintenanceFields() {
+        if (switchButton.checked) {
+            maintenanceFields.style.display = 'block';
+        } else {
+            maintenanceFields.style.display = 'none';
+        }
+    }
+</script>
+    <div class="d-flex justify-content-between">
+            {{ form_row(form.send, {'attr': {'class': 'btn btn-primary'}}) }}
+            <a href="{{ path('app_system_status') }}" class="btn btn-primary">Back</a>
+    </div>
     {{ form_end(form) }}
+
+{% endblock %} #}
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container">
+        <h1 class="mt-4 mb-4">Edit System Status</h1>
+        <div class="row">
+            <div class="col-md-6">
+                {# system_status/edit.html.twig #}
+                <form method="post" action="{{ path('app_system_status_edit', {'id': systemStatus.id}) }}">
+                    {{ form_start(form) }}
+                    
+                    <div class="mb-3">
+                        {{ form_label(form.system, 'System') }}
+                        {{ form_widget(form.system, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                    {% set Maintenance = "Maintenance" %}
+                    
+                    <div class="mb-3">
+                        {{ form_label(form.status, 'Status') }}
+                        {{ form_widget(form.status, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                    
+                    {% if showMaintenanceFields %}
+                        <div class="mb-3">
+                            {{ form_label(form.maintenanceStart, 'Maintenance Start') }}
+                            {{ form_widget(form.maintenanceStart, {'attr': {'class': 'form-control'}}) }}
+                        </div>
+                        <div class="mb-3">
+                            {{ form_label(form.maintenanceEnd, 'Maintenance End') }}
+                            {{ form_widget(form.maintenanceEnd, {'attr': {'class': 'form-control'}}) }}
+                        </div>
+                    {% endif %}
+                    
+                    <div class="mb-3">
+                        {{ form_label(form.info, 'Additional Info') }}
+                        {{ form_widget(form.info, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form_widget(form.send, {'attr': {'class': 'btn btn-primary'}}) }}
+                        <a href="{{ path('app_system_status') }}" class="btn btn-primary">Back</a>
+                    </div>
+                    
+                    {{ form_end(form) }}
+                </form>
+            </div>
+        </div>
+    </div>
 {% endblock %}
+
+
+

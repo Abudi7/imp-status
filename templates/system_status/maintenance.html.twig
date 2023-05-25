@@ -1,1 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container">
+        <h1>Maintenance</h1>
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">{{ systemStatus.system }}</h5>
+                <p class="card-text">Maintenance Details:</p>
+                <ul>
+                    <li>Start Time: {{ systemStatus.maintenanceStart|date('M d, Y H:i') }}</li>
+                    <li>End Time: {{ systemStatus.maintenanceEnd|date('M d, Y H:i') }}</li>
+                </ul>
+            </div>
+        </div>
+
+        {% if systemStatus.status == 'Maintenance' %}
+            <div class="alert alert-success" role="alert">
+                Maintenance notifications sent successfully.
+            </div>
+        {% else %}
+            <div class="alert alert-info" role="alert">
+                No maintenance notification is required.
+            </div>
+        {% endif %}
+
+        <a href="{{ path('app_system_status') }}" class="btn btn-primary">Back</a>
+    </div>
+{% endblock %}
 

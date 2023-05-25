@@ -21,9 +21,9 @@
                         {% elseif status.status == 'In progress' %}
                             <div class="status-circle bg-warning"></div>
                             <span class="status-text">In Progress <span class="sr-only">(in progress)</span></span>
-                        {% elseif status.status == 'Update' %}
+                        {% elseif status.status == 'Maintenance' %}
                             <div class="status-circle bg-warning"></div>
-                            <span class="status-text">Update<span class="sr-only">(update)</span></span>
+                            <span class="status-text">Maintenance<span class="sr-only">(Maintenance)</span></span>
                         {% elseif status.status == 'Down' %}
                             <div class="status-circle bg-danger"></div>
                             <span class="status-text">Down <span class="sr-only">(down)</span></span>
@@ -47,6 +47,18 @@
                     <th>Updated:</th>
                     <td>{{ status.updatedAt|date('m/d/Y H:i') }}</td>
                 </tr>
+                {% if is_granted('ROLE_ADMIN') %}
+                    {% if status.status == 'Maintenance' %}
+                    <tr>
+                        <th>Maintenance Start:</th>
+                        <td>{{ status.maintenanceStart|date('m/d/Y H:i') }}</td>
+                    </tr>
+                    <tr>
+                        <th>Maintenance End:</th>
+                        <td>{{ status.maintenanceEnd|date('m/d/Y H:i') }}</td>
+                    </tr>
+                    {% endif %}
+                {% endif %}
             </tbody>
         </table>
     </div>
