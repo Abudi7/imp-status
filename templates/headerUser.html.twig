@@ -14,20 +14,27 @@
       <link rel="preconnect" href="https://fonts.googleapis.com">
       <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
       <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
-      <link
-         href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=PT+Sans:wght@400;700&display=swap" rel="stylesheet">
+      <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=PT+Sans:wght@400;700&display=swap" rel="stylesheet">
       <!--Font Awesome-->
       <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.2/css/bootstrap.min.css">
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-      <link
-         rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-OR+3HrZMS3zvA9gFp9XxHxCGyxlRzv0JhN/8Bb25NtMj+18GJn7GMW8Xgx/2xkeuA1vYJF+ymPGLJ/M2fqfz1Q==" crossorigin="anonymous" referrerpolicy="no-referrer"/>
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-OR+3HrZMS3zvA9gFp9XxHxCGyxlRzv0JhN/8Bb25NtMj+18GJn7GMW8Xgx/2xkeuA1vYJF+ymPGLJ/M2fqfz1Q==" crossorigin="anonymous" referrerpolicy="no-referrer"/>
       <!--Bootstrap-->
       <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css">
       <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.min.js"></script>
+      
       <!--Css-->
       <link rel="stylesheet" href="{{asset('../public/asset/css/style.css')}}">
+
+      <!-- Include FullCalendar CSS -->
+      <link rel="stylesheet" href="{{ asset('../public/asset/css/fullcalendar.min.css')}}">
+
+      <!-- Include public/asset/js/calendar Maintenance/ JavaScript -->
+      <script src="{{ asset('../public/asset/js/calendar Maintenance/moment.min.js') }}"></script>
+      <script src="{{ asset('../public/asset/js/calendar Maintenance/fullcalendar.min.js') }}"></script>
+      <script src="{{ asset('../public/asset/js/calendar Maintenance/calender.index.global.min.js')}}"></script>
    </head>
    <body>
       <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -64,6 +71,9 @@
                   class="nav-item">
                   <!--Here Get All Systemes-->
                   <a class="nav-link" href="{{ path('app_allSubscription') }}">Subscription</a>
+               </li>
+               <li class="nav-item">
+                  <a class="nav-link" href="{{ path('app_scheduled_maintenance')}}">Maintens Plan</a>
                </li>
                {% endif %}
                <li class="nav-item">

@@ -137,8 +137,10 @@
          // Show message if system is not found
          if (!found) {
             $('#notFoundMessage').text(' Sorry, the system you are searching for was not found.').show();
+            $('#table').hide();
          } else {
             $('#notFoundMessage').hide();
+            $('#table').show();
          }
       });
    });

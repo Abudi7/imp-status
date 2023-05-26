@@ -6,19 +6,16 @@ use App\Entity\Status;
 use App\Entity\SystemStatus;
 use App\Entity\User;
 use App\Form\SystemStatusType;
-use App\Repository\StatusRepository;
 use App\Repository\SubscriptionRepository;
 use App\Repository\SystemStatusRepository;
-use App\Repository\UserRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\MailerInterface;
-use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+
 
 //use Symfony\Component\HttpFoundation\Response;
 class SystemStatusController extends AbstractController
@@ -103,6 +100,7 @@ class SystemStatusController extends AbstractController
      * store it again, and display it to the user in the main interface.
      * ========================================================================
      */
+    
     #[Route("/system_status/{id}/edit", name: "app_system_status_edit")]
     public function edit(Request $request, SystemStatus $status, ManagerRegistry $entityManager, MailerInterface $mailer, $id)
     {
@@ -167,6 +165,7 @@ class SystemStatusController extends AbstractController
      * Maintenance Notification by Email
      * ========================================================================
      */
+
     #[Route("/system_status/{id}/maintenance", name: "app_system_status_maintenance")]
     public function maintenance(
         $id,
@@ -228,11 +227,13 @@ class SystemStatusController extends AbstractController
         return $this->redirectToRoute('app_system_status');
     }
     
+
    /**
      * ========================================================================
      * Incident Notification by Email
      * ========================================================================
      */
+
     #[Route("/system_status/{id}/incident", name: "app_system_status_incident")]
     public function incident(
         $id,
@@ -283,7 +284,12 @@ class SystemStatusController extends AbstractController
         return $this->redirectToRoute('app_system_status');
     }
 
-
+     
+   /**
+     * ========================================================================
+     * Delete System Status 
+     * ========================================================================
+     */
 
     #[Route("/system_status/{id}/delete", name: "app_system_status_delete")]
     public function delete(

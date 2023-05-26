@@ -7,6 +7,13 @@
    <title>Admin Dashboard</title>
    {% endif %}
    <title>System Status</title>
+   <!-- Include FullCalendar CSS -->
+    <link rel="stylesheet" href="{{ asset('../public/asset/css/fullcalendar.min.css')}}">
+
+    <!-- Include public/asset/js/calendar Maintenance/ JavaScript -->
+    <script src="{{ asset('../public/asset/js/calendar Maintenance/moment.min.js') }}"></script>
+    <script src="{{ asset('../public/asset/js/calendar Maintenance/fullcalendar.min.js') }}"></script>
+    <script src="{{ asset('../public/asset/js/calendar Maintenance/calender.index.global.min.js')}}"></script>
    <!-- Favicon -->
    <link rel="icon" type="image/x-icon" href="{{asset('../img/favicon.png')}}">
    <!-- Font -->
@@ -53,6 +60,9 @@
             </li>
             <li class="nav-item">
                <a class="nav-link" href="{{ path('app_subscription') }}">Subscription</a>
+            </li>
+             <li class="nav-item">
+               <a class="nav-link" href="{{ path('app_scheduled_maintenance')}}">Maintens Plan</a>
             </li>
             <li class="nav-item">
                <a class="nav-link" href="#">Contact</a>

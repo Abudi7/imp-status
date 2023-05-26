@@ -1,0 +1,135 @@
+{# {% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container">
+        <h1>Scheduled Maintenance Calendar</h1>
+        <div class="row">
+        <div id="calendar"></div></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            let calendarEl = document.getElementById('calendar');
+            let calendar = new FullCalendar.Calendar(calendarEl, {
+                timeZone: 'local', // Set the calendar's timezone to local
+                initialView: 'dayGridMonth',
+                events: [
+                    {% for event in maintenanceEvents %}
+                        {
+                            title: '{{ event.system }}',
+                            start: '{{ event.maintenanceStart|date('Y-m-d\TH:i:s') }}',
+                            end: '{{ event.maintenanceEnd|date('Y-m-d\TH:i:s') }}',
+                            url: '{{ path('app_scheduled_maintenance', {'id': event.id}) }}'
+                        },
+                    {% endfor %}
+                ],
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                themeSystem: 'bootstrap',
+                bootstrapFontAwesome: {
+                    prev: 'fa-chevron-left',
+                    next: 'fa-chevron-right'
+                },
+                contentHeight: 'auto',
+                aspectRatio: 1.5, // Adjust the value as needed for optimal display on different screen sizes
+                firstDay: 1 // Set Monday as the first day of the week (0: Sunday, 1: Monday, ...)
+            });
+            calendar.render();
+        });
+    </script>
+
+    {# Dump the maintenance events for debugging purposes 
+    {{ dump(maintenanceEvents) }}#}
+{#{% endblock %} #}
+
+{# {% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container">
+        <h1>Scheduled Maintenance</h1>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>System</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Responsible Person</th>
+                    <th>Info</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for event in maintenanceEvents %}
+                    <tr>
+                        <td>{{ event.system.name }}</td>
+                        <td>{{ event.maintenanceStart|date('Y-m-d H:i:s') }}</td>
+                        <td>{{ event.maintenanceEnd|date('Y-m-d H:i:s') }}</td>
+                        <td>{{ event.responsible_person }}</td>
+                        <td>{{ event.info }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %} #}
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<div class="container">
+    <h1 class="text-center">Scheduled Maintenance Calendar</h1>
+    <div class="row">
+        <div class="col-md-12">
+            <div id="calendar" class="row justify-content-center"></div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        let calendarEl = document.getElementById('calendar');
+        let calendar = new FullCalendar.Calendar(calendarEl, {
+            timeZone: 'local', // Set the calendar's timezone to local
+
+            initialView: 'dayGridMonth',
+            events: [
+                {% for event in maintenanceEvents %}
+                    {
+                        id: 'x',
+                        title: '{{ event.system.name }}',
+                        borderColor: '{% if event.status.name == 'Maintenance' %}rgb(255, 201, 73){% endif %}',
+                        start: '{{ event.maintenanceStart|date('Y-m-d H:i:s') }}',
+                        end: '{{ event.maintenanceEnd|date('Y-m-d H:i:s') }}',
+                        url: '{{ path('app_system_status_show', {'id': event.id}) }}'
+                    },
+                {% endfor %}
+            ],
+              {# events: [
+                    {
+                        id: 'a',
+                        title: 'my event',
+                        start: '2023-05-27'
+                    }
+                ], #}
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            },
+            themeSystem: 'bootstrap',
+            bootstrapFontAwesome: {
+                prev: 'fa-chevron-left',
+                next: 'fa-chevron-right'
+            },
+            contentHeight: 'auto',
+            aspectRatio: 1.5, // Adjust the value as needed for optimal display on different screen sizes
+            firstDay: 1 // Set Monday as the first day of the week (0: Sunday, 1: Monday, ...)
+        });
+
+        calendar.render();
+    });
+</script>
+{# {{ dump(maintenanceEvents) }} #}
+{% endblock %}

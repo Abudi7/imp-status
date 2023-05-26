@@ -65,6 +65,37 @@ class SystemStatusRepository extends ServiceEntityRepository
         ->getResult();
 }
 
+public function findFutureMaintenance(): array
+{
+    $qb = $this->createQueryBuilder('sys');
+    $now = new \DateTime();
+
+    // Filter maintenance events by the presence of maintenance start and end dates,
+    // and where the maintenance start date is greater than the current time
+    $qb->where($qb->expr()->isNotNull('sys.maintenanceStart'))
+       ->andWhere($qb->expr()->isNotNull('sys.maintenanceEnd'))
+       ->andWhere($qb->expr()->gt('sys.maintenanceStart', ':now'))
+       ->setParameter('now', $now)
+       ->orderBy('sys.maintenanceStart', 'ASC');
+
+    return $qb->getQuery()->getResult();
+}
+
+/**
+     * Find system statuses by status name.
+     *
+     * @param string $status The status name to filter by.
+     * @return SystemStatus[] An array of system statuses.
+     */
+    public function findByStatus(string $status): array
+    {
+        return $this->createQueryBuilder('ss')
+            ->join('ss.status', 's')
+            ->where('s.name = :status')
+            ->setParameter('status', $status)
+            ->getQuery()
+            ->getResult();
+    }
     
 
 
