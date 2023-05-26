@@ -128,5 +128,13 @@ This project demonstrates the use of Symfony, MySQL, Twig, and Bootstrap to crea
 * 17/05/2023: Implemented incident notification feature to inform users about system incidents.
 * 17/05/2023: Refactored code for improved readability and performance.
 
+## Updates (26/05/2023)
+Implement scheduled maintenance calendar view
+
+* - Created a new route and controller action for displaying the scheduled maintenance calendar.
+* - Added a repository method to fetch system statuses with the "Maintenance" status.
+* - Updated the Twig template to render the maintenance events in a monthly calendar.
+* - Styled the calendar using Bootstrap classes for responsive layout.
+* - Set the background color of maintenance events to red using RGB value.
 ## Credits
 This project was created by [ Abdulrhman Alshalal ](https://www.linkedin.com/in/abdulrhman-alshalal-556642196/?originalSubdomain=at) and is licensed under the [Anton Paar](https://www.anton-paar.com/at-de/)
