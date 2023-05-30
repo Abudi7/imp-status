@@ -3,7 +3,7 @@
         'name' => '__root__',
         'pretty_version' => 'dev-master',
         'version' => 'dev-master',
-        'reference' => '706af2d97f819e62acd88d5a34310501fd1cfe21',
+        'reference' => '85ef0584350c5b010915b4b786c80d35204af2ad',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -13,7 +13,7 @@
         '__root__' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => '706af2d97f819e62acd88d5a34310501fd1cfe21',
+            'reference' => '85ef0584350c5b010915b4b786c80d35204af2ad',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -1464,6 +1464,15 @@
             'aliases' => array(),
             'dev_requirement' => true,
         ),
+        'twbs/bootstrap' => array(
+            'pretty_version' => 'v5.3.0-alpha3',
+            'version' => '5.3.0.0-alpha3',
+            'reference' => 'ac576614a5515e429f27e756fad81d5aa05e95a6',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../twbs/bootstrap',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
         'twig/extra-bundle' => array(
             'pretty_version' => 'v3.6.0',
             'version' => '3.6.0.0',
@@ -1481,6 +1490,12 @@
             'install_path' => __DIR__ . '/../twig/twig',
             'aliases' => array(),
             'dev_requirement' => false,
+        ),
+        'twitter/bootstrap' => array(
+            'dev_requirement' => false,
+            'replaced' => array(
+                0 => 'v5.3.0-alpha3',
+            ),
         ),
         'webmozart/assert' => array(
             'pretty_version' => '1.11.0',

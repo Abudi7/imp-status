@@ -1,17 +1,17 @@
 # System Status Project
-In this project, we created a web application to manage system statuses. We used the Symfony framework and MySQL database.
+In this project, we have developed a web application using the Symfony framework and MySQL database to manage system statuses. The application allows Admin to create, edit, and delete system statuses,and regular users can subscribe and unsubscribe to them. Additionally, it provides a list of system statuses and their current status.
 
 ## Features
 The application has the following features:
 
-User authentication and authorization.
-Adding, editing, and deleting system statuses.
-Subscribing and unsubscribing to system statuses.
-Displaying the list of system statuses.
+- User authentication and authorization.
+- Adding, editing, and deleting system statuses.
+- Subscribing and unsubscribing to system statuses.
+- Displaying the list of system statuses.
 
 
 ## Technologies Used
-The following technologies were used in this project:
+The project utilizes the following technologies:
 
 * Symfony 6.2: PHP web application framework.
 * MySQL: Relational database management system.
@@ -19,7 +19,7 @@ The following technologies were used in this project:
 * Bootstrap 5: CSS framework used for styling the web pages.
 
 ## Installation
-To install the project, you need to follow these steps:
+To install the project, follow the steps below:
 
 1. Clone the repository to my machine.
 2. Install the required dependencies using the composer install command.
@@ -28,7 +28,7 @@ To install the project, you need to follow these steps:
 5. Create the database schema using the php bin/console doctrine:schema:create command.
 
 ## Usage
-To use the application, follow these steps:
+To use the application, follow the steps below:
 
 1. Start the web server using the symfony server:start command.
 2. Open a web browser and navigate to http://localhost:8000/.
@@ -51,32 +51,35 @@ To view the details of a status update or edit/delete an existing one, click on 
 ## Code Overview
 The project consists of the following main components:
 
-* Controllers: The controllers handle HTTP requests and responses, and contain the logic for the different application routes.
+* Controllers: Responsible for handling HTTP requests, responses, and logic for different application routes.
+  - HomeController: Handles the homepage and displays the system statuses.
+  - SecurityController: Handles user authentication and authorization.
+  - MailerController: This controller handles email notifications and sending system status updates to subscribed users.
+  - RegisterController: This controller handles user registration and account creation.
+  - ScheduledMaintenanceController: This controller manages the scheduled maintenance functionality, including creating, editing, and deleting maintenance events.
+  - StatusController: This controller handles the CRUD operations for system statuses, allowing admins to create, edit, and delete status updates.
+  - SystemController: This controller handles the CRUD operations for systems, including creating, editing, and deleting systems.
+  - SubscriptionController: This controller manages user subscriptions to system statuses, allowing users to subscribe or unsubscribe from specific systems.
+  - SystemStatusController: This controller manages the CRUD operations for system status updates, allowing admins to create, edit, and delete status updates for specific systems.
+  - TemplateController: This controller handles the management of templates used in the application, including creating, editing, and deleting templates.
 
-* Entities: The entities represent the different data models in the application and are used to interact with the database.
+* Entities: Represent the data models in the application and interact with the database.
+  - User: Represents a user of the application.
+  - SystemStatus: Represents a system status, including system name, status, and subscribers.
+  - Status: This entity represents a system status and contains information such as the status name.
+  - Subscription: This entity represents a subscription made by a user to receive status updates for a specific system.
+  - Template: This entity represents a template used in the application for generating system status notifications.
+  - System: This entity represents a system and contains information such as the system name and associated status updates.
 
-* Forms: The forms define the structure and validation rules for the different input forms in the 
-application.
+* Forms: Define the structure and validation rules for input forms in the application.
+  - SystemStatusType: Used for creating and editing system statuses.
 
-* Templates: The templates are written in Twig and define the structure and layout of the different application pages.
-
-## Controllers
-* HomeController: This controller handles the homepage and displays the list of system statuses.
-* SecurityController: This controller handles the user authentication and authorization.
-
-## Entities
-* User: This entity represents a user of the application.
-* SystemStatus: This entity represents a system status and contains information such as the system name, status, and subscribers.
-
-## Forms
-* SystemStatusType: This form type is used to create and edit system statuses.
-
-## Templates
-* base.html.twig: This template contains the base HTML structure for all pages.
-* home/index.html.twig: This template displays the list of system statuses.
-* security/login.html.twig: This template displays the login form.
-* system_status/new.html.twig: This template displays the form to create a new system status.
-* system_status/edit.html.twig: This template displays the form to edit an existing system status.
+* Templates: Written in Twig and define the structure and layout of the application pages.
+  - base.html.twig: Contains the base HTML structure for all pages.
+  - home/index.html.twig: Displays the list of system statuses.
+  - security/login.html.twig: Displays the login form.
+  - system_status/new.html.twig: Displays the form for creating a new system status.
+  - system_status/edit.html.twig: Displays the form for editing an existing system status.
 
 ## Available Routes
 1. app_home: This route is used to display the homepage of the application.
@@ -123,18 +126,20 @@ application.
 ## Conclusion
 This project demonstrates the use of Symfony, MySQL, Twig, and Bootstrap to create a web application that manages system statuses. The application provides basic functionality such as user authentication and authorization, creating, editing, and deleting system statuses, and subscribing and unsubscribing to system statuses.
 
-## Updates (17/05/2023)
+## Updates 
+
+### (17/05/2023)
 * 17/05/2023: Added maintenance functionality to notify subscribed users about system maintenance.
 * 17/05/2023: Implemented incident notification feature to inform users about system incidents.
 * 17/05/2023: Refactored code for improved readability and performance.
 
-## Updates (26/05/2023)
-Implement scheduled maintenance calendar view
+### (26/05/2023)
+* Implement scheduled maintenance calendar view
 
-* - Created a new route and controller action for displaying the scheduled maintenance calendar.
-* - Added a repository method to fetch system statuses with the "Maintenance" status.
-* - Updated the Twig template to render the maintenance events in a monthly calendar.
-* - Styled the calendar using Bootstrap classes for responsive layout.
-* - Set the background color of maintenance events to red using RGB value.
+  - Created a new route and controller action for displaying the scheduled maintenance calendar.
+  - Added a repository method to fetch system statuses with the "Maintenance" status.
+  - Updated the Twig template to render the maintenance events in a monthly calendar.
+  - Styled the calendar using Bootstrap classes for responsive layout.
+  - Set the background color of maintenance events to red using RGB value.
 ## Credits
 This project was created by [ Abdulrhman Alshalal ](https://www.linkedin.com/in/abdulrhman-alshalal-556642196/?originalSubdomain=at) and is licensed under the [Anton Paar](https://www.anton-paar.com/at-de/)

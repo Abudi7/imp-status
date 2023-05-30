@@ -46,61 +46,61 @@
                <tbody>
                   {% set availableSystems = [] %}
                   {% set inProgressSystems = [] %}
-                  {% set updateSystems = [] %}
                   {% set downSystems = [] %}
                   {% for status in statuses %}
-                  {% if status.status == 'Available' %}
-                  {% set availableSystems = availableSystems|merge([status]) %}
-                  {% elseif status.status == 'Maintenance' %}
-                  {% set inProgressSystems = inProgressSystems|merge([status]) %}
-                  {% elseif status.status == 'Update' %}
-                  {% set updateSystems = updateSystems|merge([status]) %}
-                  {% elseif status.status == 'Down' %}
-                  {% set downSystems = downSystems|merge([status]) %}
-                  {% endif %}
+                     {% if status.status == 'Available' %}
+                        {% set availableSystems = availableSystems|merge([status]) %}
+                     {% elseif status.status == 'Maintenance' and status.maintenanceStart >= date('today') %}
+                        {% set inProgressSystems = inProgressSystems|merge([status]) %}
+                     {% elseif status.status == 'Down' %}
+                        {% set downSystems = downSystems|merge([status]) %}
+                     {% endif %}
                   {% endfor %}
-                  {% set sortedSystems = availableSystems|merge(inProgressSystems)|merge(updateSystems)|merge(downSystems) %}
+                  {% set sortedSystems = availableSystems|merge(inProgressSystems)|merge(downSystems) %}
                   {% for status in sortedSystems %}
-                  <tr>
-                     <td>{{ status.system }}</td>
-                     <td>
-                        {% if status.status == 'Available' %}
-                        <div class="status-circle bg-success"></div>
-                        <span class="status-text">Available <span class="sr-only">(available)</span></span>
-                        {% elseif status.status == 'Maintenance' %}
-                        <div class="status-circle bg-warning"></div>
-                        <span class="status-text">Maintenance <span class="sr-only">(Maintenance)</span></span>
-                        {% elseif status.status == 'Update' %}
-                        <div class="status-circle bg-warning"></div>
-                        <span class="status-text">Update<span class="sr-only">(update)</span></span>
-                        {% elseif status.status == 'Down' %}
-                        <div class="status-circle bg-danger"></div>
-                        <span class="status-text">Down <span class="sr-only">(down)</span></span>
-                        {% endif %}
-                     </td>
-                     <td>{{ status.updatedAt|date('Y-m-d') }}</td>
-                     <td>{{ status.info }}</td>
-                     <td>
-                        <form action="{{ path('app_home_subscribe', {'id': status.id}) }}" method="post">
-                           <div class="form-check form-switch">
-                              {% set isSubscribed = false %}
-                              {% for subscription in status.subscriptions %}
-                              {% if subscription.user == app.user and subscription.isSubscribed %}
-                              {% set isSubscribed = true %}
-                              {% endif %}
-                              {% endfor %}
-                              <input class="form-check-input" type="checkbox" name="subscribe" id="subscribe{{ status.id }}" {% if isSubscribed %}checked{% endif %} onchange="this.form.submit()">
-                              <label class="form-check-label" for="subscribe{{ status.id }}">
-                              {% if status.subscription is defined and status.subscription.isSubscribed %}
-                              Unsubscribe
+                     <tr>
+                        <td>{{ status.system }}</td>
+                        <td>
+                           {% if status.status == 'Available' %}
+                              {% if status.maintenanceStart == date('today') %}
+                                 <div class="status-circle bg-warning"></div>
+                                 <span class="status-text">Maintenance <span class="sr-only">(Maintenance)</span></span>
                               {% else %}
-                              Subscribe
+                                 <div class="status-circle bg-success"></div>
+                                 <span class="status-text">Available <span class="sr-only">(available)</span></span>
                               {% endif %}
-                              </label>
-                           </div>
-                        </form>
-                     </td>
-                  </tr>
+                           {% elseif status.status == 'Maintenance' %}
+                              <i class="fa fa-exclamation-circle"></i>
+                              <div class="status-circle bg-success"></div>
+                              <span class="status-text">Available <span class="sr-only">(available)</span></span>
+                           {% elseif status.status == 'Down' %}
+                              <div class="status-circle bg-danger"></div>
+                              <span class="status-text">Down <span class="sr-only">(down)</span></span>
+                           {% endif %}
+                        </td>
+                        <td>{{ status.updatedAt|date('Y-m-d') }}</td>
+                        <td>{{ status.info }}</td>
+                        <td>
+                           <form action="{{ path('app_home_subscribe', {'id': status.id}) }}" method="post">
+                              <div class="form-check form-switch">
+                                 {% set isSubscribed = false %}
+                                 {% for subscription in status.subscriptions %}
+                                    {% if subscription.user == app.user and subscription.isSubscribed %}
+                                       {% set isSubscribed = true %}
+                                    {% endif %}
+                                 {% endfor %}
+                                 <input class="form-check-input" type="checkbox" name="subscribe" id="subscribe{{ status.id }}" {% if isSubscribed %}checked{% endif %} onchange="this.form.submit()">
+                                 <label class="form-check-label" for="subscribe{{ status.id }}">
+                                    {% if status.subscription is defined and status.subscription.isSubscribed %}
+                                       Unsubscribe
+                                    {% else %}
+                                       Subscribe
+                                    {% endif %}
+                                 </label>
+                              </div>
+                           </form>
+                        </td>
+                     </tr>
                   {% endfor %}
                </tbody>
             </table>

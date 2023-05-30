@@ -81,7 +81,7 @@ public function findFutureMaintenance(): array
     return $qb->getQuery()->getResult();
 }
 
-/**
+    /**
      * Find system statuses by status name.
      *
      * @param string $status The status name to filter by.

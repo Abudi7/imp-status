@@ -12,6 +12,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
@@ -212,9 +213,14 @@ class SystemStatusController extends AbstractController
                     ->context([
                         'user' => $user,
                     ]);
-    
+                // Send maintenance email notification to subscribed users
                 $mailer->send($email);
+                // Log the sent email to a file
+                $this->logEmail($to, $subject, $headers);
+                // Add a success flash message since the email sending process was successful
+                $this->addFlash('success', 'Maintenance notifications sent successfully.');
                 if (mail($to, $subject, $message, $headers)) {
+                    // Display a success flash message if the email is sent successfully, otherwise display an info flash message
                    $this->addFlash('success', 'Maintenance notifications sent successfully.');
                 } else {
                     $this->addFlash('info', 'No maintenance notification is required.');
@@ -271,6 +277,7 @@ class SystemStatusController extends AbstractController
                     ]);
     
                 $mailer->send($email);
+                $this->logEmail($to, $subject, $headers);
                 if (mail($to, $subject, $message, $headers)) {
                     $this->addFlash('success', 'Incident notifications sent successfully.');
                 } else {
@@ -282,6 +289,34 @@ class SystemStatusController extends AbstractController
         }
     
         return $this->redirectToRoute('app_system_status');
+    }
+      /**
+     * Logs the sent email to a file.
+     *
+     * @param string $to      The recipient of the email
+     * @param string $subject The subject of the email
+     * @param string $headers The headers of the email
+     */
+    private function logEmail($to, $subject, $headers)
+    {
+        // Get the current request to access the RequestStack
+        //$request = $this->container->get(RequestStack::class)->getCurrentRequest();
+
+        // Get the log file path
+        //$logFilePath = $request->server->get('DOCUMENT_ROOT') . 'C:/xampp/mailoutput/email_log.txt';
+        $logFilePath = 'C:' . DIRECTORY_SEPARATOR . 'xampp' . DIRECTORY_SEPARATOR . 'mailoutput' . DIRECTORY_SEPARATOR . 'email_log.txt';
+
+        // Format the log entry
+        $logEntry = sprintf(
+            "To: %s\nSubject: %s\nHeaders: %s\n\n\n",
+            $to,
+            $subject,
+            $headers,
+            
+        );
+
+        // Append the log entry to the log file
+        file_put_contents($logFilePath, $logEntry, FILE_APPEND);
     }
 
      
@@ -321,3 +356,5 @@ class SystemStatusController extends AbstractController
         return $this->redirectToRoute("app_system_status");
     }
 }
+
+
