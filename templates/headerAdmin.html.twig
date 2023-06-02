@@ -1,239 +1,225 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-   <meta charset="UTF-8">
-   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   {% if is_granted('ROLE_ADMIN') %}
-   <title>Admin Dashboard</title>
-   {% endif %}
-   <title>System Status</title>
-   <!-- Include FullCalendar CSS -->
-    <link rel="stylesheet" href="{{ asset('../public/asset/css/fullcalendar.min.css')}}">
+	<head>
+	<!-- Meta tags -->
+	<!-- Character encoding -->
+	<meta charset="UTF-8">
+	<!-- Responsive viewport -->
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <!-- Description of your web page -->
+	<meta name="description" content="System Status Application">
 
-    <!-- Include public/asset/js/calendar Maintenance/ JavaScript -->
-    <script src="{{ asset('../public/asset/js/calendar Maintenance/moment.min.js') }}"></script>
-    <script src="{{ asset('../public/asset/js/calendar Maintenance/fullcalendar.min.js') }}"></script>
-    <script src="{{ asset('../public/asset/js/calendar Maintenance/calender.index.global.min.js')}}"></script>
-   <!-- Favicon -->
-   <link rel="icon" type="image/x-icon" href="{{asset('../img/favicon.png')}}">
-   <!-- Font -->
-   <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
-   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
-   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=PT+Sans:wght@400;700&display=swap" rel="stylesheet">
-   <!-- Font Awesome -->
-   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-   <!-- Bootstrap -->
-   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css">
-   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-   <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.min.js"></script>
-   <!-- CSS -->
-   <link rel="stylesheet" href="{{asset('../public/asset/css/style.css')}}">
+	<!-- Define the author of a page -->
+	<meta name="author" content="Abdulrhman Alshalal">
+
+	<!-- Refresh document every 30 seconds -->
+	{# <meta http-equiv="refresh" content="30"> #}
+
+	<!-- Define keywords for search engines -->
+	<meta name="keywords" content="Status, maintenance, incident">
+   <!-- Define keywords for search engines -->
+   <meta http-equiv="cache-control" content="no-cache">
+	{% if is_granted('ROLE_ADMIN') %}
+		<!-- Admin Dashboard title -->
+		<title>Admin Dashboard</title>
+	{% endif %}
+
+	<!-- Default title -->
+	<title>System Status</title>
+
+	<!-- Include FullCalendar CSS -->
+	<link rel="stylesheet" href="{{ asset('../public/asset/css/fullcalendar.min.css') }}">
+
+	<!-- Include public/asset/js/calendar Maintenance/ JavaScript -->
+	<script src="{{ asset('../public/asset/js/calendar Maintenance/moment.min.js') }}"></script>
+	<script src="{{ asset('../public/asset/js/calendar Maintenance/fullcalendar.min.js') }}"></script>
+	<script src="{{ asset('../public/asset/js/calendar Maintenance/calender.index.global.min.js') }}"></script>
+
+	<!-- Favicon -->
+	<link rel="icon" type="image/x-icon" href="{{ asset('../img/favicon.png') }}">
+
+	<!-- Fonts -->
+	<link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=PT+Sans:wght@400;700&display=swap" rel="stylesheet">
+
+	<!-- Font Awesome -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	<link rel="stylesheet" href="{{ asset('../public/asset/css/font-awesome_4.7.0_css_font-awesome.min.css') }}">
+
+	<!-- Bootstrap -->
+	<link href="{{ asset('../public/asset/css/cdn.jsdelivr.net_npm_bootstrap@5.3.0_dist_css_bootstrap.min.css') }}" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+	<script src="{{ asset('../public/asset/js/Bootstrap/cdn.jsdelivr.net_npm_bootstrap@5.3.0_dist_js_bootstrap.bundle.min.js') }}" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+	<script src="{{ asset('../public/asset/js/Bootstrap/cdn.jsdelivr.net_npm_@popperjs_core@2.11.8_dist_umd_popper.min.js') }}" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+	<script src="{{ asset('../public/asset/js/Bootstrap/cdn.jsdelivr.net_npm_bootstrap@5.3.0_dist_js_bootstrap.min.js') }}" integrity="sha384-fbbOQedDUMZZ5KreZpsbe1LCZPVmfTnH7ois6mU1QK+m14rQ1l2bGBq41eYeM/fS" crossorigin="anonymous"></script>
+
+	<!-- Custom CSS -->
+	<link rel="stylesheet" href="{{ asset('../public/asset/css/style.css') }}">
 </head>
-<body>
-   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-      <a class="navbar-brand" href="{{ path('app_allSubscription') }}"><img src="{{asset('../img/logo.png')}}" alt="Anton Paar" width="150px"></a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-         <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-         <ul class="navbar-nav ml-auto">
-            <!-- Comment Dropdown menu -->
-            {# 
-            <li class="nav-item dropdown">
-               <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  Systems Status
-               </a>
-               <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                  <a class="dropdown-item" href="{{ path('app_system_status') }}">System Status</a>
-                  <a class="dropdown-item" href="{{ path('app_system_status_new') }}">New App Status</a>
-                  <a class="dropdown-item" href="{{ path('app_system_new') }}">Add new System</a>
-                  <a class="dropdown-item" href="{{ path('app_status_new') }}">Add new Status</a>
-               </div>
-            </li>
-            #}
-            <li class="nav-item"> 
-               <a class="nav-link" href="{{ path('app_system_status') }}">
-                  <i class="fa fa-pencil"></i>
-                  System Status
-               </a>
-            </li>
-            <li class="nav-item">
-               <a class="nav-link" href="{{ path('app_subscription') }}">Subscription</a>
-            </li>
-             <li class="nav-item">
-               <a class="nav-link" href="{{ path('app_scheduled_maintenance')}}">Maintens Plan</a>
-            </li>
-            <li class="nav-item">
-               <a class="nav-link" href="#">Contact</a>
-            </li>
-            <!-- Checks if there is a user currently logged in -->
-            {% if app.user %}
-            <li class="nav-item">
-               <a class="nav-link" href="{{ path('app_logout') }}">
-                  <i class="fa fa-sign-out"></i>
-                  Sign Out
-               </a>
-            </li>
-            <li class="nav-item">
-               <span class="navbar-text text-warning">{{ app.user.username }}</span>
-            </li>
-            {# 
-            <li class="nav-item">
-               <span class="navbar-text">Welcome, {{ app.user.username }}</span>
-            </li>
-            #}
-            {% else %}
-            <li class="nav-item">
-               <a class="nav-link" href="{{ path('app_login') }}">
-                  <i class="fa fa-sign-in"></i>
-                  Sign In
-               </a>
-            </li>
-            {% endif %}
-            <!-- Local Date -->
-            <li class="nav-item">
-               <span class="navbar-text ml-3">
-                  <script>
-                     const options = {
-                        weekday: 'long',
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                     };
-                     const today = new Date().toLocaleDateString('en-US', options);
-                     document.write(today);
-                  </script>
-               </span>
-            </li>
-         </ul>
-      </div>
-   </nav>
-   <div class="container-fluid">
-      <div class="row">
-         <!-- Admin Dashboard Dropdown Links For View From Database -->
-         <nav class="col-12 col-md-2 navbar-expand-md bg-light sidebar">
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavSideBar" aria-controls="navbarNavSideBar" aria-expanded="false" aria-label="Toggle navigation">
-               <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNavSideBar">
-               <ul class="navbar-nav flex-column">
-                  <li class="nav-item">
-                     <a class="h2 text-dark pt-4 navbar-brand">
-                        <i class="fa fa-dashboard"></i>
-                        Dashboard
+
+	<body>
+		<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+			<a class="navbar-brand" href="{{ path('app_allSubscription') }}"><img src="{{asset('../img/logo.png')}}" alt="Anton Paar" width="150px"></a>
+			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+			<div class="collapse navbar-collapse" id="navbarNav">
+				<ul class="navbar-nav ml-auto">
+					<!-- Comment Dropdown menu -->
+					{# 
+                  <li class="nav-item dropdown">
+                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Systems Status
                      </a>
+                     <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                        <a class="dropdown-item" href="{{ path('app_system_status') }}">System Status</a>
+                        <a class="dropdown-item" href="{{ path('app_system_status_new') }}">New App Status</a>
+                        <a class="dropdown-item" href="{{ path('app_system_new') }}">Add new System</a>
+                        <a class="dropdown-item" href="{{ path('app_status_new') }}">Add new Status</a>
+                     </div>
                   </li>
+               #}
+						<li class="nav-item"> <a class="nav-link" href="{{ path('app_system_status') }}">
+							<i class="fa fa-pencil"></i>
+							System Status
+						</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="{{ path('app_subscription') }}">Subscription</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="{{ path('app_scheduled_maintenance')}}">Maintens Plan</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="#">Contact</a>
+					</li>
+					<!-- Checks if there is a user currently logged in -->
+					{% if app.user %}
+						<li class="nav-item">
+							<a class="nav-link" href="{{ path('app_logout') }}">
+								<i class="fa fa-sign-out"></i>
+								Sign Out
+							</a>
+						</li>
+						<li class="nav-item">
+							<span class="navbar-text text-warning">{{ app.user.username }}</span>
+						</li>
+						{# 
                   <li class="nav-item">
-                     <p class="text-dark pt-2">
-                        <i class="fa fa-user-o fa-fw"></i>
-                        {{ app.user.email }}
-                     </p>
+                     <span class="navbar-text">Welcome, {{ app.user.username }}</span>
                   </li>
-                  <li class="nav-item">
-                     <a class="nav-link active" href="{{ path('app_system_status') }}">
-                        <i class="fa fa-server"></i>
-                        System Status
-                     </a>
-                  </li>
-                  <li class="nav-item">
-                     <a class="nav-link" href="{{ path('app_status') }}">
-                        <i class="fa fa-database"></i>
-                        Status
-                     </a>
-                  </li>
-                  <li class="nav-item">
-                     <a class="nav-link" href="{{ path('app_system') }}">
-                        <i class="fa fa-database"></i>
-                        Systems
-                     </a>
-                  </li>
-                  <li class="nav-item">
-                     <a class="nav-link" href="{{ path('app_template') }}">
-                        <i class="fa fa-database"></i>
-                        Template
-                     </a>
-                  </li>
-               </ul>
-            </div>
-         <!-- Burger Menu -->
-         <div class="d-md-none">
-            <hr class="mt-2 mb-3">
-            <ul class="navbar-nav flex-column">
-             <li class="nav-item">
-                  <a class="h2 text-dark pt-4 navbar-brand">
-                  <i class="fa fa-dashboard"></i>
-                  Dashboard
-                  </a>
-               </li>
-               <li class="nav-item">
-                  <p class="text-dark pt-2">
-                     <i class="fa fa-user-o fa-fw"></i>
-                     {{ app.user.email }}
-                  </p>
-               </li>
-               <li class="nav-item">
-                  <a class="nav-link active" href="{{ path('app_system_status') }}">
-                  <i class="fa fa-server"></i>
-                  System Status
-                  </a>
-               </li>
-               <li class="nav-item">
-                  <a class="nav-link" href="{{ path('app_status') }}">
-                  <i class="fa fa-database"></i>
-                  Status
-                  </a>
-               </li>
-               <li class="nav-item">
-                  <a class="nav-link" href="{{ path('app_system') }}">
-                  <i class="fa fa-database"></i>
-                  Systems
-                  </a>
-               </li>
-               <li class="nav-item">
-                  <a class="nav-link" href="{{ path('app_template') }}">
-                  <i class="fa fa-database"></i>
-                  Template
-                  </a>
-               </li>
-            </ul>
-         </div>
-      </nav>
-      <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
-      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-         <h1 class="h2">System Status</h1>
-         {# {% if app.user %}
-         <p class="h5 text-dark">Welcome, {{ app.user.username }}</p>
-         {% endif %} #}
-         <div
-            class="btn-toolbar mb-2 mb-md-0">
-            <!-- Dropdown Button For Create Actions -->
-            <div class="btn-group mr-5 pr-5">
-               <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-               <i class="fa fa-edit"></i>
-               New
-               </button>
-               <ul class="dropdown-menu">
-                  <li>
-                     <a class="dropdown-item" href="{{ path('app_system_status_new') }}">New App
-                     Status</a>
-                  </li>
-                  <li>
-                     <a class="dropdown-item" href="{{ path('app_system_new') }}">Add new System</a>
-                  </li>
-                  <li>
-                     <a class="dropdown-item" href="{{ path('app_status_new') }}">Add new Status</a>
-                  </li>
-               </ul>
-            </div>
-            {# 
-            <div class="btn-group mr-2">
-               <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
-               <button type="button" class="btn btn-sm btn-outline-secondary" id="exportBtn">Export</button>
-            </div>
-            <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
-            <span data-feather="calendar"></span>
-            This week
-            </button> #}
-         </div>
-      </div>
+                  #}
+					{% else %}
+						<li class="nav-item">
+							<a class="nav-link" href="{{ path('app_login') }}">
+								<i class="fa fa-sign-in"></i>
+								Sign In
+							</a>
+						</li>
+					{% endif %}
+					<!-- Local Date -->
+					<li class="nav-item">
+						<span class="navbar-text ml-3">
+							<script>
+								const options = {
+                                       weekday: 'long',
+                                       year: 'numeric',
+                                       month: 'long',
+                                       day: 'numeric'
+                                       };
+                                       const today = new Date().toLocaleDateString('en-US', options);
+                                       document.write(today);
+							</script>
+						</span>
+					</li>
+				</ul>
+			</div>
+		</nav>
+		<div class="container-fluid">
+			<div
+				class="row">
+				<!-- Admin Dashboard Dropdown Links For View From Database -->
+				<nav class="col-12 col-md-2 bg-light">
+					<div class="navbar navbar-expand-md navbar-light">
+						<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavSideBar" aria-controls="navbarNavSideBar" aria-expanded="false" aria-label="Toggle navigation">
+							<span class="navbar-toggler-icon"></span>
+						</button>
+						<div class="collapse navbar-collapse" id="navbarNavSideBar">
+							<ul class="navbar-nav flex-column">
+								<li class="nav-item">
+									<a class="h2 text-dark pt-4 navbar-brand">
+										<i class="fa fa-dashboard"></i>
+										Dashboard
+									</a>
+								</li>
+								<li class="nav-item">
+									<p class="text-dark pt-2">
+										<i class="fa fa-user-o fa-fw"></i>
+										{{ app.user.email }}
+									</p>
+								</li>
+								<li class="nav-item">
+									<a class="nav-link active" href="{{ path('app_system_status') }}">
+										<i class="fa fa-server"></i>
+										System Status
+									</a>
+								</li>
+								<li class="nav-item">
+									<a class="nav-link" href="{{ path('app_status') }}">
+										<i class="fa fa-database"></i>
+										Status
+									</a>
+								</li>
+								<li class="nav-item">
+									<a class="nav-link" href="{{ path('app_system') }}">
+										<i class="fa fa-database"></i>
+										Systems
+									</a>
+								</li>
+								<li class="nav-item">
+									<a class="nav-link" href="{{ path('app_template') }}">
+										<i class="fa fa-database"></i>
+										Template
+									</a>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</nav>
+				<main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+					<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+						<h1 class="h2">System Status</h1>
+						{# {% if app.user %}
+												         <p class="h5 text-dark">Welcome, {{ app.user.username }}</p>
+												         {% endif %} #}
+						<div
+							class="btn-toolbar mb-2 mb-md-0">
+							<!-- Dropdown Button For Create Actions -->
+							<div class="btn-group mr-5 pr-5">
+								<button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+									<i class="fa fa-edit"></i>
+									New
+								</button>
+								<ul class="dropdown-menu">
+									<li>
+										<a class="dropdown-item" href="{{ path('app_system_status_new') }}">New App Status</a>
+									</li>
+									<li>
+										<a class="dropdown-item" href="{{ path('app_system_new') }}">Add new System</a>
+									</li>
+									<li>
+										<a class="dropdown-item" href="{{ path('app_status_new') }}">Add new Status</a>
+									</li>
+								</ul>
+							</div>
+							{# 
+														            <div class="btn-group mr-2">
+														               <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
+														               <button type="button" class="btn btn-sm btn-outline-secondary" id="exportBtn">Export</button>
+														            </div>
+														            <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
+														            <span data-feather="calendar"></span>
+														            This week
+														            </button> #}
+						</div>
+					</div>

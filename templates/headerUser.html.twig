@@ -1,8 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
    <head>
+      <!-- Character encoding -->
       <meta charset="UTF-8">
+      <!-- Responsive viewport -->
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <!-- Description of your web page -->
+      <meta name="description" content="System Status Application">
+
+      <!-- Define the author of a page -->
+      <meta name="author" content="Abdulrhman Alshalal">
+
+      <!-- Refresh document every 30 seconds -->
+      <meta http-equiv="refresh" content="30">
+
+      <!-- Define No-cache meta tag -->
+      <meta name="keywords" content="Status, maintenance, incident">
+      <!-- Define keywords for search engines -->
+      <meta http-equiv="cache-control" content="no-cache">
       {% if is_granted('ROLE_ADMIN') %}
       <title>Admin Dashboard</title>
       {% endif %}
@@ -16,14 +31,13 @@
       <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
       <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=PT+Sans:wght@400;700&display=swap" rel="stylesheet">
       <!--Font Awesome-->
-      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.2/css/bootstrap.min.css">
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-OR+3HrZMS3zvA9gFp9XxHxCGyxlRzv0JhN/8Bb25NtMj+18GJn7GMW8Xgx/2xkeuA1vYJF+ymPGLJ/M2fqfz1Q==" crossorigin="anonymous" referrerpolicy="no-referrer"/>
-      <!--Bootstrap-->
-      <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css">
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.min.js"></script>
+      <!-- Bootstrap -->
+      <link href="{{ asset('../public/asset/css/cdn.jsdelivr.net_npm_bootstrap@5.3.0_dist_css_bootstrap.min.css')}}" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+      <script src="{{ asset('../public/asset/js/Bootstrap/cdn.jsdelivr.net_npm_bootstrap@5.3.0_dist_js_bootstrap.bundle.min.js')}}" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+      <script src="{{ asset('../public/asset/js/Bootstrap/cdn.jsdelivr.net_npm_@popperjs_core@2.11.8_dist_umd_popper.min.js')}}" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+      <script src="{{ asset('../public/asset/js/Bootstrap/cdn.jsdelivr.net_npm_bootstrap@5.3.0_dist_js_bootstrap.min.js')}}" integrity="sha384-fbbOQedDUMZZ5KreZpsbe1LCZPVmfTnH7ois6mU1QK+m14rQ1l2bGBq41eYeM/fS" crossorigin="anonymous"></script>
       
       <!--Css-->
       <link rel="stylesheet" href="{{asset('../public/asset/css/style.css')}}">

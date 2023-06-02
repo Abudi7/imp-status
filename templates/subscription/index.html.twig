@@ -7,13 +7,20 @@
                <div class="input-group">
                   <input type="text" id="searchInput" class="form-control" placeholder="Search...">
                   <div class="input-group-append">
-                     <button type="submit" class="btn btn-primary">Search</button>
+                     <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i></button>
                   </div>
                </div>
          </form>
       </div>
    </div>
-<div class="container mt-4">
+   {# Show a message if no system is found in search #}
+   <div class="row">
+      <div class="col-12 mb-3">
+         <div id="notFoundMessage" class="alert alert-danger" style="display: none;">
+       
+         </div>
+      </div>
+   <div class="container mt-4">
    {% if systemStatuses is empty %}
    <div class="alert alert-warning">There are no systems to subscribe to.</div>
    {% else %}
@@ -22,7 +29,7 @@
    {% else %}
    <h2 class="mb-3">My Subscriptions</h2>
    <div class="table-responsive">
-      <table class="table border" id="table">
+      <table class="table border table-md table-striped" id="table" style="font-size: 13px">
          <thead class="bg-light">
             <tr>
                <th scope="col">System</th>
@@ -35,19 +42,13 @@
             </tr>
          </thead>
          <tbody>
-            {% for subscription in subscriptions|sort((a, b) => (a.systemStatus.status == 'Available') ? -1 : ((b.systemStatus.status == 'Available') ? 1 : (a.systemStatus.status == 'In progress') ? -1 : ((b.systemStatus.status == 'In progress') ? 1 : (a.systemStatus.status == 'Update') ? -1 : ((b.systemStatus.status == 'Update') ? 1 : (a.systemStatus.status == 'Down') ? -1 : ((b.systemStatus.status == 'Down') ? 1 : 0))))) %}
+            {% for subscription in subscriptions %}
             <tr>
                <td>
                   <a href="{{ path('app_system_status_show', {'id': subscription.systemStatus.id}) }}">{{ subscription.systemStatus.system }}</a>
                </td>
                <td>
-                  {% if subscription.systemStatus.status == 'Available' %}
-                  <span class="badge bg-success text-white">Available</span>
-                  {% elseif subscription.systemStatus.status == 'Maintenance' %}
-                  <span class="badge bg-warning text-dark">Maintenance</span>
-                  {% elseif subscription.systemStatus.status == 'Down' %}
-                  <span class="badge bg-danger text-white">Down</span>
-                  {% endif %}
+                  <span id="status{{ subscription.systemStatus.id }}"></span>
                </td>
                <td>{{ subscription.systemStatus.updatedAt|date('Y-m-d H:i:s') }}</td>
                {% if is_granted('ROLE_ADMIN') %}
@@ -62,28 +63,48 @@
    {% endif %}
    {% endif %}
 </div>
-{# JavaScript Search file: /public/asset/js/search.js #}
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-    $(document).ready(function() {
-        // Prevent form submission
-        $('#searchForm').submit(function(event) {
-            event.preventDefault();
-        });
 
-        // Filter table rows based on search query
-        $('#searchInput').keyup(function() {
-            var searchQuery = $(this).val().toLowerCase();
-            $('#table tbody tr').each(function() {
-                var system = $(this).find('td:first-child a').text().toLowerCase();
-                var info = $(this).find('td:nth-child(3)').text().toLowerCase();
-                if (system.includes(searchQuery) || info.includes(searchQuery)) {
-                    $(this).show();
-                } else {
-                    $(this).hide();
-                }
-            });
-        });
-    });
+<script>
+   {% for subscription in subscriptions %}
+      var statusElement = document.getElementById("status{{ subscription.systemStatus.id }}");
+      var maintenanceStart = new Date("{{ subscription.systemStatus.maintenanceStart|date('Y-m-d H:i:s') }}");
+      var maintenanceEnd = new Date("{{ subscription.systemStatus.maintenanceEnd|date('Y-m-d H:i:s') }}");
+      var now = new Date();
+
+      if (maintenanceStart > now) {
+         // Update scheduled
+         statusElement.innerHTML = `
+         
+            <span class="badge bg-success text-white">Available</span>
+            <i class="fa fa-exclamation-circle" data-bs-html="true" data-bs-toggle="tooltip" title="Maintenance scheduled <br> start: {{subscription.systemStatus.maintenanceStart|date('Y-m-d H:i')}} <br> until: {{subscription.systemStatus.maintenanceEnd|date('Y-m-d H:i')}}  "></i>
+         `;
+         // Initialize tooltips
+                        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+                        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                        return new bootstrap.Tooltip(tooltipTriggerEl)
+                        })
+      } else if (maintenanceStart <= now && maintenanceEnd >= now) {
+         // Maintenance in progress
+         statusElement.innerHTML = `
+            <span class="badge bg-warning text-dark">Maintenance (In Progress)</span>
+             <i class="fa fa-refresh fa-spin" style="font-size:14px"></i>
+         `;
+      } else if ("{{ subscription.systemStatus.status }}" === 'Down') {
+         // Down
+         statusElement.innerHTML = `
+            <span class="badge bg-danger text-white">Down</span>
+         `;
+      } else {
+         // Available
+         statusElement.innerHTML = `
+            <span class="badge bg-success text-white">Available</span>
+         `;
+      }
+   {% endfor %}
 </script>
+
+
+{# JavaScript Search file: /public/asset/js/search.js #}
+<script src="{{ asset('../public/asset/js/Search_jquery-3.6.0.min.js')}}"></script>
+<script src="{{ asset('../public/asset/js/search.js')}}"></script>
 {% endblock %}

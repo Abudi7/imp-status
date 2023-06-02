@@ -7,7 +7,7 @@
                <div class="input-group">
                   <input type="text" id="searchInput" class="form-control" placeholder="Search...">
                   <div class="input-group-append">
-                     <button type="submit" class="btn btn-primary"><i class="fa fa-spinner fa-spin" style="font-size:16px"></i></button>
+                     <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i></button>
                   </div>
                </div>
          </form>
@@ -20,11 +20,10 @@
          </div>
       </div>
    </div>
-
    <div class="row">
       <div class="col-12 col-md-12">
          <div class="table-responsive mx-auto w-100">
-            <table class="table border table-sm table-striped" id="table" style="font-size: 12px">
+            <table class="table border table-md table-striped" id="table" style="font-size: 13px">
                <thead>
                   <tr>
                      <th>System</th>
@@ -67,18 +66,28 @@
                      <td>{{ status.responsible_person }}</td>
                      <td>
                         <div class="dropdown">
-                           <button class="btn btn-secondary dropdown-toggle btn-sm" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                           <i class="fa fa-cogs"></i>
+                           <button class="btn btn-secondary dropdown-toggle btn-sm" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                              <i class="fa fa-cogs"></i>
                            </button>
-                           <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                           <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                              <li>
                               <a class="dropdown-item" href="{{ path('app_system_status_edit', {id: status.id}) }}">Edit</a>
+                              </li>
+                              <li>
                               <a class="dropdown-item" href="{{ path('app_system_status_delete', {'id': status.id}) }}">Delete</a>
+                              </li>
+                              <li>
                               <a class="dropdown-item" href="{{ path('app_system_status_show', {'id': status.id}) }}">Show</a>
-                              <a class="dropdown-item" href="{{ path('app_system_status_maintenance', {'id': status.id}) }}">maintenance</a>
-                              <a class="dropdown-item" href="{{ path('app_system_status_incident', {'id': status.id}) }}">Incidents</a> 
-                           </div>
+                              </li>
+                              <li>
+                              <a class="dropdown-item" href="{{ path('app_system_status_maintenance', {'id': status.id}) }}">Maintenance</a>
+                              </li>
+                              <li>
+                              <a class="dropdown-item" href="{{ path('app_system_status_incident', {'id': status.id}) }}">Incidents</a>
+                              </li>
+                           </ul>
                         </div>
-                     </td>
+                        </td>
                      <td></td>
                      {% endif %}
                   </tr>
@@ -89,39 +98,7 @@
       </div>
    </div>
 </div>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-   $(document).ready(function() {
-      // Prevent form submission
-      $('#searchForm').submit(function(event) {
-         event.preventDefault();
-      });
-
-      // Filter table rows based on search query
-      $('#searchInput').keyup(function() {
-         var searchQuery = $(this).val().toLowerCase();
-         var found = false; // Flag to track if system is found
-
-         $('#table tbody tr').each(function() {
-            var system = $(this).find('td:first-child').text().toLowerCase();
-            var info = $(this).find('td:nth-child(4)').text().toLowerCase();
-
-            if (system.includes(searchQuery) || info.includes(searchQuery)) {
-               $(this).show();
-               found = true;
-            } else {
-               $(this).hide();
-            }
-         });
-
-         // Show message if system is not found
-         if (!found) {
-            $('#notFoundMessage').text('Sorry, the system you are searching for was not found.').show();
-         } else {
-            $('#notFoundMessage').hide();
-         }
-      });
-   });
-</script>
+<script src="{{ asset('../public/asset/js/Search_jquery-3.6.0.min.js')}}"></script>
+<script src="{{ asset('../public/asset/js/search.js')}}"></script>
 
 {% endblock %}

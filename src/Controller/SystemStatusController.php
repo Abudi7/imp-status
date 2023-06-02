@@ -8,6 +8,8 @@ use App\Entity\User;
 use App\Form\SystemStatusType;
 use App\Repository\SubscriptionRepository;
 use App\Repository\SystemStatusRepository;
+use DateTime;
+use DateTimeImmutable;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -215,8 +217,9 @@ class SystemStatusController extends AbstractController
                     ]);
                 // Send maintenance email notification to subscribed users
                 $mailer->send($email);
+                #$date = new \DateTime('today', new \DateTimeZone('Europe/Vienna'));
                 // Log the sent email to a file
-                $this->logEmail($to, $subject, $headers);
+                $this->logEmail($to, 'Maintenance',$subject, $headers);# , $date->format('y-m-d h:i:s'));
                 // Add a success flash message since the email sending process was successful
                 $this->addFlash('success', 'Maintenance notifications sent successfully.');
                 if (mail($to, $subject, $message, $headers)) {
@@ -277,7 +280,10 @@ class SystemStatusController extends AbstractController
                     ]);
     
                 $mailer->send($email);
-                $this->logEmail($to, $subject, $headers);
+                #$date = new \DateTime('today', new \DateTimeZone('Europe/Vienna'));
+                // $this->logEmail($to, $subject, $headers, $date->format('Y-m-d H:i:s'));
+                $this->logEmail($to, "Incident", $subject, $headers);
+
                 if (mail($to, $subject, $message, $headers)) {
                     $this->addFlash('success', 'Incident notifications sent successfully.');
                 } else {
@@ -294,10 +300,11 @@ class SystemStatusController extends AbstractController
      * Logs the sent email to a file.
      *
      * @param string $to      The recipient of the email
+     * @param string $type    The type of email
      * @param string $subject The subject of the email
      * @param string $headers The headers of the email
      */
-    private function logEmail($to, $subject, $headers)
+    private function logEmail($to, $type, $subject, $headers)
     {
         // Get the current request to access the RequestStack
         //$request = $this->container->get(RequestStack::class)->getCurrentRequest();
@@ -306,14 +313,18 @@ class SystemStatusController extends AbstractController
         //$logFilePath = $request->server->get('DOCUMENT_ROOT') . 'C:/xampp/mailoutput/email_log.txt';
         $logFilePath = 'C:' . DIRECTORY_SEPARATOR . 'xampp' . DIRECTORY_SEPARATOR . 'mailoutput' . DIRECTORY_SEPARATOR . 'email_log.txt';
 
+        $timestamp = new DateTime('now', new \DateTimeZone('Europe/Vienna'));
+
         // Format the log entry
         $logEntry = sprintf(
-            "To: %s\nSubject: %s\nHeaders: %s\n\n\n",
+            "%s %s To: %s Subject: %s Headers: %s \n",
+            $timestamp->format('Y-m-d H:i:s'),
+            strtoupper($type),
             $to,
             $subject,
-            $headers,
-            
+            $headers 
         );
+        
 
         // Append the log entry to the log file
         file_put_contents($logFilePath, $logEntry, FILE_APPEND);
