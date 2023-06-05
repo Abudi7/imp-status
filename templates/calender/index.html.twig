@@ -1,0 +1,94 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<style>
+.table-bordered thead td,
+.table-bordered thead th {
+    border-bottom-width: 2px;
+    background-color: antiquewhite;
+}
+.maintenance-info {
+    background-color: #17a2b8;
+    color: #fff;
+}
+
+.maintenance-event {
+    background-color: #17a2b8;
+    color: #fff;
+    border-radius: 5px;
+    padding: 5px;
+}
+
+.maintenance-event-icon {
+    display: inline-block;
+    margin-right: 5px;
+}
+</style>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="text-center">Calendar</h1>
+            <h3 class="text-center">{{ start_date|date('F Y') }}</h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12 text-left mb-3">
+            <a href="{{ path('app_calender', {'date': start_date|date_modify('-1 month')|date('Y-m-d')}) }}" class="btn btn-primary mr-2">Previous</a>
+            <a href="{{ path('app_calender', {'date': start_date|date_modify('+1 month')|date('Y-m-d')}) }}" class="btn btn-primary">Next</a>
+        </div>
+    </div>
+    <div class="row">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Monday</th>
+                    <th>Tuesday</th>
+                    <th>Wednesday</th>
+                    <th>Thursday</th>
+                    <th>Friday</th>
+                    <th>Saturday</th>
+                    <th>Sunday</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in 0..4 %}
+                    <tr>
+                        {% for col in 0..6 %}
+                            {% set index = row * 7 + col %}
+                            {% set date = start_date|date_modify((index - offset) ~ ' day') %}
+                            {% set isToday = date|date('Y-m-d') == 'now'|date('Y-m-d') %}
+                            {% set isCurrentMonth = date|date('m') == start_date|date('m') %}
+                            {% set isMaintenanceDay = date|date('Y-m-d') in maintenanceEvents %}
+                            <td class="{% if isToday %}bg-warning text-white{% elseif not isCurrentMonth %}bg-light{% endif %} {% if isMaintenanceDay %}maintenance-info{% endif %}">
+                                {% if isToday %}
+                                    <strong>{{ date|date('d') }}</strong>
+                                {% else %}
+                                    {{ date|date('d') }}
+                                {% endif %}
+                                {% for maintenanceEvent in maintenanceEvents %}
+                                    {% if maintenanceEvent.maintenanceStart|date('Y-m-d') == date|date('Y-m-d') %}
+                                        <div class="bg-info text-white m-2 pl-1" style="border-radius: 20px;">
+                                            {{ maintenanceEvent.system }}
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <h3>Maintenance Schedule:</h3>
+            <ul>
+                {% for maintenanceEvent in maintenanceEvents %}
+                    <li>{{ maintenanceEvent.system }} - {{ maintenanceEvent.maintenanceStart|date('Y.m.d  h:i') }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -132,65 +132,126 @@
     });
 </script> #}
 {# {{ dump(maintenanceEvents) }} #}
+<style>
+    .table-bordered thead td,
+    .table-bordered thead th {
+        border-bottom-width: 2px;
+        background-color: bisque;
+    }
+    @media (max-width: 576px) {
+        .table-responsive {
+            overflow-x: auto;
+        }
+    }
+</style>
 <div class="container">
-   
+    <!-- Navigation Row -->
     <div class="row">
         <div class="col-md-12">
-             <h1 class="text-center">Scheduled Maintenance Calendar</h1>
+            <!-- Navigation Buttons -->
+            <div class="d-flex justify-content-between align-items-center">
+                <a href="{{ path('app_scheduled_maintenance', {'date': startDate|date_modify('-1 month')|date('Y-m-d')}) }}" class="btn btn-primary mr-2">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+                <!-- Month and Calendar Icon -->
+                <h2 class="text-center">
+                    <strong>{{ startDate|date('F') }}</strong> <i class="fa fa-calendar"></i> Scheduled Maintenance Calendar
+                </h2>
+                <a href="{{ path('app_scheduled_maintenance', {'date': startDate|date_modify('+1 month')|date('Y-m-d')}) }}" class="btn btn-primary">
+                    <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+            <!-- Current Date and Time in UTC -->
+            <h4 class="text-center text-primary text-opacity-75">{{ today|date(' d. F. Y - H:i') }} UTC</h4>
+        </div>
+    </div>
+
+    <!-- Calendar Table -->
+    <div class="row">
+        <div class="col-md-12">
+            
+                <div class="table-responsive-xs">
+            
+                <table class="table table-bordered">
+                    <!-- Table Header -->
+                    <thead>
+                        <tr>
+                            <th>Monday</th>
+                            <th>Tuesday</th>
+                            <th>Wednesday</th>
+                            <th>Thursday</th>
+                            <th>Friday</th>
+                            <th>Saturday</th>
+                            <th>Sunday</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in 0..4 %}
+                            <tr>
+                                {% for col in 0..6 %}
+                                    {% set index = row * 7 + col %}
+                                    {% set date = startDate|date_modify((index - offset) ~ ' day') %}
+                                    {% set isToday = date|date('Y-m-d') == 'now'|date('Y-m-d') %}
+                                    {% set isCurrentMonth = date|date('m') == startDate|date('m') %}
+                                    {% set isMaintenanceDay = date|date('Y-m-d') in maintenanceEvents %}
+                                    <td class="{% if isToday %}bg-primary opacity-50 text-white{% elseif not isCurrentMonth %}bg-light{% endif %} {% if isMaintenanceDay %}maintenance-info{% endif %}">
+                                        {% if isToday %}
+                                            <!-- Bold Date for Today -->
+                                            <strong>{{ date|date('d F') }}</strong>
+                                        {% else %}
+                                            {{ date|date('d') }}
+                                        {% endif %}
+                                        {% for maintenanceEvent in maintenanceEvents %}
+                                            {% if maintenanceEvent.maintenanceStart|date('Y-m-d') == date|date('Y-m-d') or maintenanceEvent.maintenanceEnd|date('Y-m-d') == date|date('Y-m-d')%}
+                                                <!-- Maintenance Event -->
+                                                <div class="bg-warning m-2 pl-1" style="border-radius: 20px;">
+                                                    <i class="fa fa-exclamation-circle" style="font-size:14px"></i>
+                                                    <a href="{{ path('app_system_status_show', {'id': maintenanceEvent.id}) }}" class="link-underline-light text-dark">
+                                                        {{ maintenanceEvent.system }}
+                                                    </a>
+                                                </div>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Maintenance Schedule -->
+    <div class="row">
+        <div class="col-md-12">
+            <h3>Maintenance Schedule:</h3>
+            {% if maintenanceEvents|filter(m => m.maintenanceStart|date('m') == startDate|date('m'))|length > 0 %}
+                <ul>
+                    {% for maintenanceEvent in maintenanceEvents %}
+                        {% if maintenanceEvent.maintenanceStart|date('m') == startDate|date('m') %}
+                            <!-- Maintenance Event Information -->
+                            <div class="alert alert-warning text-dark" role="alert">
+                                <li>
+                                    <strong>{{ maintenanceEvent.system }}</strong>
+                                    <i class="fa fa-arrow-right"></i>
+                                    <i class="fa fa-frown-o" style="font-size:16px;color:red"></i>
+                                    {{ maintenanceEvent.maintenanceStart|date('Y.m.d  h:i') }} -- {{ maintenanceEvent.maintenanceEnd|date('Y.m.d  h:i') }}
+                                    <i class="fa fa-smile-o" style="font-size:16px;color:green"></i>
+                                </li>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <!-- No Maintenance Events -->
+                <div class="alert alert-success" role="alert">
+                    The system is running smoothly <i class="fa fa-smile-o"></i>.
+                    No maintenance events scheduled for this month.
+                </div>
+            {% endif %}
         </div>
     </div>
 </div>
- <div class="d-flex justify-content-between mb-3">
-  <div>
-    <a href="{{ path('app_scheduled_maintenance', { 'date': start_date|date_modify('-1 month')|date('Y-m-d') }) }}" class="btn btn-primary">Previous</a>
-    <a href="{{ path('app_scheduled_maintenance', { 'date': start_date|date_modify('+1 month')|date('Y-m-d') }) }}" class="btn btn-primary">Next</a>
-  </div>
-  <div>
-    <div class="btn-group" role="group">
-      <a href="{{ path('app_scheduled_maintenance', { 'date': 'month' }) }}" class="btn btn-secondary">Month</a>
-      <a href="{{ path('app_scheduled_maintenance', { 'date': 'week' }) }}" class="btn btn-secondary">Week</a>
-      <a href="{{ path('app_scheduled_maintenance', { 'date': 'day' }) }}" class="btn btn-secondary">Day</a>
-    </div>
-  </div>
-</div>
 
-<div id="calendar" class="table-responsive">
-  <table class="table table-bordered">
-    <thead>
-      <tr>
-        <th class="week-name">{{ 'Monday'|trans }}</th>
-        <th class="week-name">{{ 'Tuesday'|trans }}</th>
-        <th class="week-name">{{ 'Wednesday'|trans }}</th>
-        <th class="week-name">{{ 'Thursday'|trans }}</th>
-        <th class="week-name">{{ 'Friday'|trans }}</th>
-        <th class="week-name">{{ 'Saturday'|trans }}</th>
-        <th class="week-name">{{ 'Sunday'|trans }}</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% set currentDate = start_date|date_modify('last Monday') %}
-      {% for week in 1..num_weeks %}
-        <tr>
-          {% for day in 1..7 %}
-            {% set isCurrentMonth = currentDate|date('m') == currentDate|date_modify('today', 'Europe/Vienna')|date('m') %}
-            {% set isToday = currentDate|date('Y-m-d') == 'now'|date('Y-m-d') %}
-            <td class="{% if not isCurrentMonth %}inactive{% endif %} {% if isToday %}today{% endif %}">
-              <span class="day">{{ currentDate|date('d') }}</span>
-              {% for maintenance in maintenanceEvents %}
-                {% set maintenanceStart = maintenance.maintenanceStart|date('Y-m-d') %}
-                {% set maintenanceEnd = maintenance.maintenanceEnd|date('Y-m-d') %}
-                {% if currentDate|date('Y-m-d') >= maintenanceStart and currentDate|date('Y-m-d') <= maintenanceEnd %}
-                  <div class="maintenance bg-info text-white">
-                    {{ maintenance.system }}
-                  </div>
-                {% endif %}
-              {% endfor %}
-            </td>
-            {% set currentDate = currentDate|date_modify('+1 day') %}
-          {% endfor %}
-        </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-</div>
 {% endblock %}

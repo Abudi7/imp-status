@@ -17,6 +17,8 @@ The project utilizes the following technologies:
 * MySQL: Relational database management system.
 * Twig: Template engine used for generating HTML.
 * Bootstrap 5: CSS framework used for styling the web pages.
+- HTML, CSS, JavaScript
+- Font Awesome
 
 ## Installation
 To install the project, follow the steps below:
@@ -141,5 +143,13 @@ This project demonstrates the use of Symfony, MySQL, Twig, and Bootstrap to crea
   - Updated the Twig template to render the maintenance events in a monthly calendar.
   - Styled the calendar using Bootstrap classes for responsive layout.
   - Set the background color of maintenance events to red using RGB value.
+
+  ### Features (05/06/2023)
+
+- Display a monthly calendar with maintenance events highlighted
+- Navigate between months using previous and next buttons
+- View details of each maintenance event
+- Responsive design for mobile and desktop devices
+
 ## Credits
 This project was created by [ Abdulrhman Alshalal ](https://www.linkedin.com/in/abdulrhman-alshalal-556642196/?originalSubdomain=at) and is licensed under the [Anton Paar](https://www.anton-paar.com/at-de/)

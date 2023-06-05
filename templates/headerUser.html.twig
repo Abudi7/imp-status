@@ -12,7 +12,7 @@
       <meta name="author" content="Abdulrhman Alshalal">
 
       <!-- Refresh document every 30 seconds -->
-      <meta http-equiv="refresh" content="30">
+      {# <meta http-equiv="refresh" content="30"> #}
 
       <!-- Define No-cache meta tag -->
       <meta name="keywords" content="Status, maintenance, incident">
@@ -57,9 +57,9 @@
        {% else %}
          <a class="navbar-brand" href="{{ path('app_home') }}"><img src="{{asset('../img/logo.png')}}" alt="Anton Paar" width="150px"></a>
          {% endif %}
-         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-         <span class="navbar-toggler-icon"></span>
-         </button>
+         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			</button>
          <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ml-auto"></ul>
             <ul class="navbar-nav ml-auto">
