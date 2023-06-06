@@ -144,7 +144,7 @@
         }
     }
 </style>
-<div class="container">
+<div class="container" id="calendar-container">
     <!-- Navigation Row -->
     <div class="row">
         <div class="col-md-12">
@@ -155,22 +155,21 @@
                 </a>
                 <!-- Month and Calendar Icon -->
                 <h2 class="text-center">
-                    <strong>{{ startDate|date('F') }}</strong> <i class="fa fa-calendar"></i> Scheduled Maintenance Calendar
+                    <strong>{{ startDate|date('F-Y') }}</strong> <i class="fa fa-calendar"></i> Scheduled Maintenance Calendar
                 </h2>
                 <a href="{{ path('app_scheduled_maintenance', {'date': startDate|date_modify('+1 month')|date('Y-m-d')}) }}" class="btn btn-primary">
                     <i class="fa fa-angle-right"></i>
                 </a>
             </div>
             <!-- Current Date and Time in UTC -->
-            <h4 class="text-center text-primary text-opacity-75">{{ today|date(' d. F. Y - H:i') }} UTC</h4>
+            <h4 class="text-center text-primary text-opacity-75">{{ today|date(' d. F. Y - H:i:s') }} UTC</h4>
         </div>
     </div>
-
     <!-- Calendar Table -->
     <div class="row">
         <div class="col-md-12">
             
-                <div class="table-responsive-xs">
+                <div class="table-responsive">
             
                 <table class="table table-bordered">
                     <!-- Table Header -->
@@ -225,8 +224,9 @@
     <!-- Maintenance Schedule -->
     <div class="row">
         <div class="col-md-12">
-            <h3>Maintenance Schedule:</h3>
+            
             {% if maintenanceEvents|filter(m => m.maintenanceStart|date('m') == startDate|date('m'))|length > 0 %}
+                <h3>Maintenance Schedule:</h3>
                 <ul>
                     {% for maintenanceEvent in maintenanceEvents %}
                         {% if maintenanceEvent.maintenanceStart|date('m') == startDate|date('m') %}
@@ -252,6 +252,47 @@
             {% endif %}
         </div>
     </div>
+</div>
+<!-- Http Request -->
+    <script>
+        // Function to update the calendar table
+        function updateCalendarTable() {
+            // Create an XMLHttpRequest object
+            var xhr = new XMLHttpRequest();
+            // Define the request URL
+            var url = "http://localhost/AP_status/system_status/public/index.php/scheduled/maintenance";
+
+            // Configure the AJAX request
+            xhr.open("GET", url, true);
+            // Set the callback function when the request is complete
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    var responseData = xhr.responseText; // Get the response HTML
+
+                    // Create a temporary div element to extract the table HTML
+                    var tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = responseData;
+
+                    // Find the table element within the temporary div
+                    var table = tempDiv.querySelector('.container');
+
+                    // Update the table with the new data
+                    if (table) {
+                        var actualTable = document.getElementById("calendar-container");
+                        actualTable.innerHTML = table.innerHTML;
+                    }
+                }
+            };
+            // Send the AJAX request
+            xhr.send();
+        }
+
+        // Call the updateCalendarTable function initially
+        updateCalendarTable();
+
+        // Set a timer to call the function periodically
+        setInterval(updateCalendarTable, 10000); // Refresh every 10 seconds (adjust as needed)
+    </script>
 </div>
 
 {% endblock %}

@@ -1,25 +1,27 @@
 {% extends 'base.html.twig' %}
 {% block title %}Subscribe{% endblock %}
 {% block body %}
-<div class="row">
-      <div class="col-12 col-md-12 mb-4">
-         <form id="searchForm">
-               <div class="input-group">
-                  <input type="text" id="searchInput" class="form-control" placeholder="Search...">
-                  <div class="input-group-append">
-                     <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i></button>
+   <div class="container">
+      <div class="row">
+         <div class="col-12 col-md-12 mb-4">
+            <form id="searchForm">
+                  <div class="input-group">
+                     <input type="text" id="searchInput" class="form-control" placeholder="Search...">
+                     <div class="input-group-append">
+                        <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i></button>
+                     </div>
                   </div>
-               </div>
-         </form>
-      </div>
-   </div>
-   {# Show a message if no system is found in search #}
-   <div class="row">
-      <div class="col-12 mb-3">
-         <div id="notFoundMessage" class="alert alert-danger" style="display: none;">
-       
+            </form>
          </div>
       </div>
+      {# Show a message if no system is found in search #}
+      <div class="row">
+         <div class="col-12 mb-3">
+            <div id="notFoundMessage" class="alert alert-danger" style="display: none;">
+            </div>
+         </div>
+      </div>
+   </div>
    <div class="container mt-4">
    {% if systemStatuses is empty %}
    <div class="alert alert-warning">There are no systems to subscribe to.</div>

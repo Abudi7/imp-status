@@ -38,11 +38,13 @@ class SubscriptionController extends AbstractController
     #[Route('/subscription', name: 'app_subscription')]
 public function index(Request $request, ManagerRegistry $managerRegistry, TokenStorageInterface $tokenStorageInterface): Response
 {
-    //set the looged user to user varible 
+    // Get the logged-in user
     $user = $tokenStorageInterface->getToken()->getUser();
     
+    // Fetch the user's subscriptions
     $subscriptions = $managerRegistry->getRepository(Subscription::class)->findBy(['user' => $user]);
 
+    // Create the subscription form
     $form = $this->createFormBuilder()
         ->add('systemStatus', EntityType::class, [
             'class' => SystemStatus::class,
@@ -57,26 +59,37 @@ public function index(Request $request, ManagerRegistry $managerRegistry, TokenS
     $form->handleRequest($request);
 
     if ($form->isSubmitted() && $form->isValid()) {
+        // Handle the form submission
+
+        // Get the selected system status
         $systemStatus = $form->get('systemStatus')->getData();
 
         if ($systemStatus) {
+            // Create a new subscription
             $subscription = new Subscription();
             $subscription->setUser($user);
             $subscription->setSystemStatus($systemStatus);
             $subscription->setIsSubscribed(true);
 
+            // Save the subscription to the database
             $em = $managerRegistry->getManager();
             $em->persist($subscription);
             $em->flush();
+            
+          
 
+            // Display a success flash message
             $this->addFlash('success', 'You have successfully subscribed to ' . $systemStatus->getSystem());
 
+            // Redirect the user back to the subscription page
             return $this->redirectToRoute('app_subscription');
         }
     }
 
+    // Fetch all system statuses
     $systemStatuses = $managerRegistry->getRepository(SystemStatus::class)->findAll();
 
+    // Render the subscription page with the necessary data
     return $this->render('subscription/index.html.twig', [
         'systemStatuses' => $systemStatuses,
         'subscriptions' => $subscriptions,
@@ -86,18 +99,22 @@ public function index(Request $request, ManagerRegistry $managerRegistry, TokenS
 
 /* The unsubscribe method is responsible for removing a subscription from the database. */
 #[Route('/subscription/{id}/unsbuscribe', name: 'app_subscription_unsbuscribe')]
-public function unsubscribe($id , ManagerRegistry $entityManger, SubscriptionRepository $subscriptionRepository)
+public function unsubscribe($id , ManagerRegistry $entityManager, SubscriptionRepository $subscriptionRepository)
 {
+    // Find the subscription to unsubscribe from
+    $unsubscribe = $subscriptionRepository->find($id);
 
-    $unsubscripition = $subscriptionRepository->find($id);
+    // Get the entity manager
+    $entityManager = $entityManager->getManager();
 
-    $entityManger = $entityManger->getManager();
+    // Remove the subscription from the database
+    $entityManager->remove($unsubscribe);
+    $entityManager->flush();
 
-    $entityManger->remove($unsubscripition);
-    $entityManger->flush();
-
+    // Display a success flash message
     $this->addFlash('success', 'You have successfully unsubscribed from the subscription.');
 
+    // Redirect the user back to the subscription page
     return $this->redirectToRoute('app_subscription');
 }
 

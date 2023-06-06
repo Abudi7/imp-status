@@ -14,7 +14,6 @@ use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
@@ -23,6 +22,17 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 //use Symfony\Component\HttpFoundation\Response;
 class SystemStatusController extends AbstractController
 {
+    /**
+     * This controller is responsible for managing system statuses.
+     * It provides actions for viewing, adding, editing, and deleting system statuses.
+     * It also includes methods for sending maintenance and incident notifications by email.
+     */
+
+    /**
+     * View all systems statuses at the moment.
+     * This action retrieves all system statuses from the repository and renders the index view.
+     */
+
     /**
      * =======================================
      * View all systems statuses at the moment
@@ -38,11 +48,10 @@ class SystemStatusController extends AbstractController
     }
 
     /**
-     * =================================================================
-     * Method new
      * Adding the state of a new system to the database,
      * storing it and displaying it to the user in the main interface.
-     * =================================================================
+     * This action handles the form submission for adding a new system status.
+     * It creates a new SystemStatus instance, binds the form data, and persists it to the database.
      */
 
      #[Route("/system_status/new", name: "app_system_status_new")]
@@ -57,7 +66,7 @@ class SystemStatusController extends AbstractController
                  ->getRepository(Status::class)
                  ->findOneBy(["name" => "Available"]),
          ]);
-     
+        // Handle form submission
          $form->handleRequest($request);
      
          if ($form->isSubmitted() && $form->isValid()) {
@@ -74,10 +83,10 @@ class SystemStatusController extends AbstractController
              // Persist and flush the SystemStatus entity
              $entityManager->persist($status);
              $entityManager->flush();
-     
+            // Redirect to the system status index page
              return $this->redirectToRoute("app_system_status");
          }
-     
+         // Render the new view with the form
          return $this->render("system_status/new.html.twig", [
              "form" => $form->createView(),
          ]);
@@ -86,6 +95,7 @@ class SystemStatusController extends AbstractController
     /**
      * =======================================
      * Show one system status by ID
+     * This action retrieves a specific system status by its ID and renders the show view.
      * =======================================
      */
 
@@ -101,6 +111,8 @@ class SystemStatusController extends AbstractController
      * ========================================================================
      * Modify the state of the stored system in the database,
      * store it again, and display it to the user in the main interface.
+     * This action handles the form submission for editing a system status.
+     * It retrieves the existing system status, binds the form data, and updates the database record.
      * ========================================================================
      */
     
@@ -166,6 +178,8 @@ class SystemStatusController extends AbstractController
     /**
      * ========================================================================
      * Maintenance Notification by Email
+     * This method is responsible for sending maintenance notification emails
+     * to the users specified in the configuration.
      * ========================================================================
      */
 
@@ -240,6 +254,8 @@ class SystemStatusController extends AbstractController
    /**
      * ========================================================================
      * Incident Notification by Email
+     * This method is responsible for sending incident notification emails
+     * to the users specified in the configuration.
      * ========================================================================
      */
 
@@ -334,6 +350,8 @@ class SystemStatusController extends AbstractController
    /**
      * ========================================================================
      * Delete System Status 
+     * This action handles the deletion of a system status by its ID.
+     * It retrieves the system status, removes it from the database, and redirects to the index page.
      * ========================================================================
      */
 

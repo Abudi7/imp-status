@@ -16,9 +16,9 @@ class ScheduledMaintenanceController extends AbstractController
     public function scheduledMaintenance(Request $request, SystemStatusRepository $systemStatusRepository): Response
     {
         // Create a DateTime object for today
-        $today = new \DateTime('now', new \DateTimeZone('Europe/Vienna'));
+        //$today = new \DateTime('now', new \DateTimeZone('Europe/Vienna'));
          // Create a DateTime object for today in UTC timezone
-        //$today = new \DateTime('now', new \DateTimeZone('UTC'));
+        $today = new \DateTime('now', new \DateTimeZone('UTC'));
 
         // Get the date from the request query parameters
         $date = $request->query->get('date');
