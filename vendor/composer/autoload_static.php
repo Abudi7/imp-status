@@ -35,6 +35,7 @@ class ComposerStaticInit282d7f5406549670da6e072b3ac4f6ee
         'W' => 
         array (
             'Webmozart\\Assert\\' => 17,
+            'WebSocket\\' => 10,
         ),
         'T' => 
         array (
@@ -217,6 +218,10 @@ class ComposerStaticInit282d7f5406549670da6e072b3ac4f6ee
         'Webmozart\\Assert\\' => 
         array (
             0 => __DIR__ . '/..' . '/webmozart/assert/src',
+        ),
+        'WebSocket\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/textalk/websocket/lib',
         ),
         'Twig\\Extra\\TwigExtraBundle\\' => 
         array (

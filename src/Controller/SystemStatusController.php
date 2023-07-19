@@ -17,9 +17,10 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
-
+use \WebSocket\Client;
 
 //use Symfony\Component\HttpFoundation\Response;
+
 class SystemStatusController extends AbstractController
 {
     /**
@@ -106,6 +107,17 @@ class SystemStatusController extends AbstractController
             "status" => $status,
         ]);
     }
+    /**
+     * Send a WebSocket message to notify users about system maintenance.
+     *
+     * @param string $system The system being updated
+     */
+     private function sendMaintenanceNotification(string $system)
+    {
+        $client = new Client("ws://localhost:8000");
+        $message = "The system '{$system}' is in maintenance";
+        $client->send($message);
+    }
 
     /**
      * ========================================================================
@@ -116,7 +128,7 @@ class SystemStatusController extends AbstractController
      * ========================================================================
      */
     
-    #[Route("/system_status/{id}/edit", name: "app_system_status_edit")]
+     #[Route("/system_status/{id}/edit", name: "app_system_status_edit")]
     public function edit(Request $request, SystemStatus $status, ManagerRegistry $entityManager, MailerInterface $mailer, $id)
     {
         // Retrieve the actual data from the database
@@ -158,9 +170,14 @@ class SystemStatusController extends AbstractController
             } elseif($status->getStatus()->getName() === 'Maintenance' && $status->getMaintenanceEnd() == null) {
                 return $this->redirectToRoute('app_system_status_edit',['id'=>$id]);
             }
-            
+
             // Redirect to the maintenance route if start and end are set
             if ($status->getStatus()->getName() === 'Maintenance' && $status->getMaintenanceStart() != null && $status->getMaintenanceEnd() != null ) {
+
+                // Assuming you have a "getSystem" method in your SystemStatus entity
+                $system = $status->getSystem()->getName(); 
+                $this->sendMaintenanceNotification($system);
+
                 return $this->redirectToRoute('app_system_status_maintenance', ['id' => $id]);
             }
     
