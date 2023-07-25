@@ -111,11 +111,13 @@ class SystemStatusController extends AbstractController
      * Send a WebSocket message to notify users about system maintenance.
      *
      * @param string $system The system being updated
+     * @param string $user The system being updated
      */
-     private function sendMaintenanceNotification(string $system)
+     private function sendMaintenanceNotification($system, $user)
     {
         $client = new Client("ws://localhost:8000");
-        $message = "The system '{$system}' is in maintenance";
+         // Use the username property to represent the user in the message
+         $message = "Hello '{$user}': The system '{$system}' is in maintenance";
         $client->send($message);
     }
 
@@ -129,7 +131,7 @@ class SystemStatusController extends AbstractController
      */
     
      #[Route("/system_status/{id}/edit", name: "app_system_status_edit")]
-    public function edit(Request $request, SystemStatus $status, ManagerRegistry $entityManager, MailerInterface $mailer, $id)
+    public function edit(Request $request, SystemStatus $status, ManagerRegistry $entityManager, MailerInterface $mailer, $id, SubscriptionRepository $subscriptionRepository)
     {
         // Retrieve the actual data from the database
         $form = $this->createForm(SystemStatusType::class,$status,[
@@ -176,7 +178,14 @@ class SystemStatusController extends AbstractController
 
                 // Assuming you have a "getSystem" method in your SystemStatus entity
                 $system = $status->getSystem()->getName(); 
-                $this->sendMaintenanceNotification($system);
+                //Find only subscribed User to get the message notification via Websocket 
+                 $subscribedUsers =$subscriptionRepository->findSubscribedUsers($id);
+                 foreach ($subscribedUsers as $subscription) {
+                    $user = $subscription->getUser();
+                    $userSubscribe = $user->getEmail(); 
+                    //call the private methode uns pass the argument 
+                $this->sendMaintenanceNotification($system,$userSubscribe);
+                 }
 
                 return $this->redirectToRoute('app_system_status_maintenance', ['id' => $id]);
             }
