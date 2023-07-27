@@ -85,7 +85,6 @@ public function index(Request $request, ManagerRegistry $managerRegistry, TokenS
             return $this->redirectToRoute('app_subscription');
         }
     }
-
     // Fetch all system statuses
     $systemStatuses = $managerRegistry->getRepository(SystemStatus::class)->findAll();
 

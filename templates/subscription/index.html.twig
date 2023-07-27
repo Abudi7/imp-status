@@ -65,6 +65,7 @@
    {% endif %}
    {% endif %}
 </div>
+
 <script>
    {% for subscription in subscriptions %}
       var statusElement = document.getElementById("status{{ subscription.systemStatus.id }}");
@@ -80,10 +81,10 @@
             <i class="fa fa-exclamation-circle" data-bs-html="true" data-bs-toggle="tooltip" title="Maintenance scheduled <br> start: {{subscription.systemStatus.maintenanceStart|date('Y-m-d H:i')}} <br> until: {{subscription.systemStatus.maintenanceEnd|date('Y-m-d H:i')}}  "></i>
          `;
          // Initialize tooltips
-                        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-                        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-                        return new bootstrap.Tooltip(tooltipTriggerEl)
-                        })
+         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+         var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+         return new bootstrap.Tooltip(tooltipTriggerEl)
+         })
       } else if (maintenanceStart <= now && maintenanceEnd >= now) {
          // Maintenance in progress
          statusElement.innerHTML = `
@@ -103,14 +104,69 @@
       }
    {% endfor %}
 </script>
-
-
 {# JavaScript Search file: /public/asset/js/search.js #}
 <script src="{{ asset('../public/asset/js/Search_jquery-3.6.0.min.js')}}"></script>
 <script src="{{ asset('../public/asset/js/search.js')}}"></script>
+ <script>
+    const socketUrl = `ws://localhost:8000`;
+
+    const socket = new WebSocket(socketUrl); // Replace the URL with your WebSocket server URL
+
+    socket.addEventListener('open', (event) => {
+        console.log('WebSocket connection established.');
+        //sendMessage('action:subscribe:'+uid);
+    });
+
+    // Listen for incoming messages from the WebSocket server
+    socket.addEventListener('message', (event) => {
+       
+      const message =JSON.parse(event.data);
+      var subscriptions=[]; 
+      {% for subscription in subscriptions %}
+      subscriptions.push('{{ subscription.systemStatus.system }}');
+      {% endfor %}
+        // Check if the user is subscribed before showing the notification
+        if (subscriptions.includes(message.system)) {
+            // Display a Chrome browser notification with sound
+            if (Notification.permission === 'granted') {
+                showNotification('New Message', message.message);
+            } else if (Notification.permission !== 'denied') {
+                Notification.requestPermission().then((permission) => {
+                    if (permission === 'granted') {
+                        showNotification('New Message', message.message);
+                    }
+                });
+            }
+            console.log('Received message:', message.message);
+        } else {
+            // Hide the message because the user is not subscribed
+            console.log('Message hidden: User not subscribed.');
+        }       
+    });
+
+    // Function to send a message via the WebSocket connection
+    function sendMessage(message) {
+        socket.send(message);
+    }
+
+    // Function to display a Chrome browser notification with sound
+    function showNotification(title, body) {
+        const options = {
+            body: body,
+            icon: '{{ asset('img/favicon.png') }}', // Replace with the path to your notification icon
+            sound: '{{ asset('asset/sound/notification.mp3') }}', // Replace with the path to your notification sound
+        };
+        new Notification(title, options);
+    }
+</script>
 
 
-<!-- Add an ID to the WebSocket connection element -->
+
+
+
+
+
+{# <!-- Add an ID to the WebSocket connection element -->
 <script>
     // Establish a WebSocket connection
     const socket = new WebSocket('ws://localhost:8000'); // Replace the URL with your WebSocket server URL
@@ -151,5 +207,5 @@
         };
         new Notification(title, options);
     }
-</script>
+</script> #}
 {% endblock %}
