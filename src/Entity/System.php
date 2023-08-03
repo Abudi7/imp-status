@@ -28,6 +28,7 @@ class System
     public function __construct()
     {
         $this->systemStatuses = new ArrayCollection();
+        $this->createdAt = new \DateTime();
     }
 
     public function getId(): ?int

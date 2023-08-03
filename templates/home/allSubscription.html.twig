@@ -101,6 +101,36 @@
                   {% endfor %}
                   {% set sortedSystems = availableSystems|merge(inProgressSystems)|merge(downSystems) %}
                   {% for status in sortedSystems %}
+                  {% if status.isdeactive == 1 %}
+                     <tr class="d-none">
+                        <td>{{ status.system }}</td>
+                        <td>
+                           <div id="status{{ status.id }}" class="status-container"></div>
+                        </td>
+                        <td>{{ status.updatedAt|date('Y-m-d') }}</td>
+                        <td>{{ status.info }}</td>
+                        <td>
+                           <form action="{{ path('app_home_subscribe', {'id': status.id}) }}" method="post">
+                              <div class="form-check form-switch">
+                                 {% set isSubscribed = false %}
+                                 {% for subscription in status.subscriptions %}
+                                    {% if subscription.user == app.user and subscription.isSubscribed %}
+                                       {% set isSubscribed = true %}
+                                    {% endif %}
+                                 {% endfor %}
+                                 <input class="form-check-input" type="checkbox" name="subscribe" id="subscribe{{ status.id }}" {% if isSubscribed %}checked{% endif %} onchange="this.form.submit()">
+                                 <label class="form-check-label" for="subscribe{{ status.id }}">
+                                    {% if status.subscription is defined and status.subscription.isSubscribed %}
+                                       Unsubscribe
+                                    {% else %}
+                                       Subscribe
+                                    {% endif %}
+                                 </label>
+                              </div>
+                           </form>
+                        </td>
+                     </tr>
+                    {% else %} 
                      <tr>
                         <td>{{ status.system }}</td>
                         <td>
@@ -129,6 +159,7 @@
                            </form>
                         </td>
                      </tr>
+                     {% endif %}
                   <script>
                      var maintenanceStart = new Date("{{ status.maintenanceStart|date('Y-m-d H:i:s') }}");
                      var maintenanceEnd = new Date("{{ status.maintenanceEnd|date('Y-m-d H:i:s') }}");
@@ -187,6 +218,10 @@
 {# JavaScript Search file: /public/asset/js/search.js #}
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="{{ asset('../public/asset/js/search.js')}}"></script>
+
+
+
+
 {# JavaScript Search file: /public/asset/js/search.js #}
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="{{ asset('../public/asset/js/search.js')}}"></script>
