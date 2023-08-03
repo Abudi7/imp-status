@@ -13,6 +13,7 @@ use DateTimeImmutable;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Annotation\Route;
@@ -23,6 +24,44 @@ use \WebSocket\Client;
 
 class SystemStatusController extends AbstractController
 {
+   /**
+ * Build a private method to change the value in the database.
+ *
+ * @param integer $id
+ * @param ManagerRegistry $managerRegistry
+ * @param boolean $isdeactive
+ * @return array
+ */
+private function updateIsDeactive($id, ManagerRegistry $managerRegistry, $isdeactive): array
+{
+    $em = $managerRegistry->getManager();
+    $status = $em->getRepository(SystemStatus::class)->find($id);
+
+    if (!$status) {
+        return ['success' => false, 'message' => 'System status not found.'];
+    }
+
+    $previousIsDeactive = $status->isIsdeactive();
+    
+    if ($previousIsDeactive !== $isdeactive) {
+        $status->setIsdeactive($isdeactive);
+        $em->persist($status);
+        $em->flush();
+
+        $message = $isdeactive
+            ? 'System status has been deactivated.'
+            : 'System status has been reactivated.';
+            
+        return ['success' => true, 'message' => $message];
+    } else {
+        $message = $isdeactive
+            ? 'System status is already deactivated.'
+            : 'System status is already active.';
+            
+        return ['success' => false, 'message' => $message];
+    }
+}
+
     /**
      * This controller is responsible for managing system statuses.
      * It provides actions for viewing, adding, editing, and deleting system statuses.
@@ -39,14 +78,33 @@ class SystemStatusController extends AbstractController
      * View all systems statuses at the moment
      * =======================================
      */
+       
     #[Route("/system_status", name: "app_system_status")]
-    public function index(SystemStatusRepository $systemStatusRepository)
+    public function index(SystemStatusRepository $systemStatusRepository, Request $request, ManagerRegistry $managerRegistry)
     {
-        $statuses = $systemStatusRepository->findAll();
+        $systems = $systemStatusRepository->findAll();
+    
+        // Check if the request contains the 'status_id' and 'isdeactive' parameters
+        $statusId = $request->get('status_id');
+        $isDeactive = $request->get('isdeactive');
+        
+        if ($statusId !== null && $isDeactive !== null) {
+            // Call the updateIsDeactive() method with the provided parameters
+            $updateResult = $this->updateIsDeactive($statusId, $managerRegistry, $isDeactive);
+            
+            // Handle the update result, e.g., show a flash message
+            if ($updateResult['success']) {
+                $this->addFlash('success', $updateResult['message']);
+            } else {
+                $this->addFlash('error', $updateResult['message']);
+            }
+        }
+    
         return $this->render("system_status/index.html.twig", [
-            "statuses" => $statuses,
+            "systems" => $systems,
         ]);
     }
+    
 
     /**
      * Adding the state of a new system to the database,

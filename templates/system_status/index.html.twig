@@ -33,39 +33,44 @@
                         {% if is_granted('ROLE_ADMIN') %}
                         <th>Responsible Person</th>
                         <th>Settings</th>
+                        <th>Activate/Deactivate</th>
                         {% endif %}
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- Sort List Twig language -->
-                    {% set statuses_sorted = statuses|sort((a, b) => (a.status == 'Available') ? -1 : ((b.status == 'Available') ? 1 : (a.status == 'In progress') ? -1 : ((b.status == 'In progress') ? 1 : (a.status == 'Update') ? -1 : ((b.status == 'Update') ? 1 : (a.status == 'Down') ? -1 : ((b.status == 'Down') ? 1 : 0))))) %}
-                    {% for status in statuses_sorted %}
-                    <tr>
-                        <td><a href="{{ path('app_system_status_show', {'id': status.id}) }}">{{ status.system }}</a></td>
+                   <tbody>
+                     <!-- Sort List Twig language -->
+                    {% set systems_sorted = systems|sort((a, b) => (a.status == 'Available') ? -1 : ((b.status == 'Available') ? 1 : (a.status == 'In progress') ? -1 : ((b.status == 'In progress') ? 1 : (a.status == 'Update') ? -1 : ((b.status == 'Update') ? 1 : (a.status == 'Down') ? -1 : ((b.status == 'Down') ? 1 : 0))))) %}
+                   
+                   {% for status in systems_sorted %}
+                    <tr {% if status.isdeactive %}class="disabled-row"{% endif %}>
+                        <td class="{% if status.isdeactive %}disabled{% endif %}">
+                            <a href="{{ path('app_system_status_show', {'id': status.id}) }} " class="btn btn-sm btn-link {% if status.isdeactive %}disabled{% endif %}">{{ status.system }}</a>
+                        </td>
                         <td>
                             {% if status.status == 'Available' %}
                             <div class="status-circle bg-success"></div>
-                            <span class="status-text">Available
+                            <span class="status-text {% if status.isdeactive %}d-none{% endif %}">Available
                                 <span class="sr-only">(available)</span>
                             </span>
                             {% elseif status.status == 'Maintenance' %}
                             <div class="status-circle bg-warning"></div>
-                            <span class="status-text">Maintenance
+                            <span class="status-text {% if status.isdeactive %}d-none{% endif %}">Maintenance
                                 <span class="sr-only">(Maintenance)</span>
                             </span>
                             {% elseif status.status == 'Down' %}
                             <div class="status-circle bg-danger"></div>
-                            <span class="status-text">Down
+                            <span class="status-text {% if status.isdeactive %}d-none{% endif %}">Down
                                 <span class="sr-only">(down)</span>
                             </span>
                             {% endif %}
                         </td>
-                        <td>{{status.info}}</td>
-                        <td>{{ status.updatedAt|date('Y-m-d H:i:s') }}</td>
+                        <td><div  class="btn btn-sm {% if status.isdeactive %}disabled{% endif %}">{{status.info}}</div></td>
+                        <td><div  class="btn btn-sm {% if status.isdeactive %}disabled{% endif %}">{{ status.updatedAt|date('Y-m-d H:i:s') }}</div></td>
                         {% if is_granted('ROLE_ADMIN') %}
-                        <td>{{ status.responsible_person }}</td>
-                        <td class=" d-xs-table-cell">
-                            <div class="dropdown">
+                        <td> <div  class="btn btn-sm {% if status.isdeactive %}disabled{% endif %}">{{ status.responsible_person }}</td>
+                        <td>
+                            <div class="dropdown {% if status.isdeactive %}d-none{% endif %}">
                                 <button class="btn btn-secondary dropdown-toggle btn-sm" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="fa fa-cogs"></i>
                                 </button>
@@ -87,6 +92,13 @@
                                     </li>
                                 </ul>
                             </div>
+                            </div>
+                        </td>
+                          <td>
+                            <a href="{{ path('app_system_status', {'status_id': status.id, 'isdeactive': status.isdeactive ? 0 : 1 }) }}"
+                               class="btn btn-sm btn-link">
+                                {{ status.isdeactive ?   'Deactivate' : 'Activate' }}
+                            </a>
                         </td>
                         {% endif %}
                     </tr>
@@ -96,9 +108,7 @@
         </div>
     </div>
 </div>
-
 </div>
 <script src="{{ asset('../public/asset/js/Search_jquery-3.6.0.min.js')}}"></script>
 <script src="{{ asset('../public/asset/js/search.js')}}"></script>
-
 {% endblock %}

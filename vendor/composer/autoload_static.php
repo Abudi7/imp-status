@@ -748,6 +748,11 @@ class ComposerStaticInit282d7f5406549670da6e072b3ac4f6ee
         ),
     );
 
+    public static $fallbackDirsPsr4 = array (
+        0 => __DIR__ . '/..' . '/phrity/net-uri/src',
+        1 => __DIR__ . '/..' . '/phrity/util-errorhandler/src',
+    );
+
     public static $prefixesPsr0 = array (
         'E' => 
         array (
@@ -1400,6 +1405,7 @@ class ComposerStaticInit282d7f5406549670da6e072b3ac4f6ee
         return \Closure::bind(function () use ($loader) {
             $loader->prefixLengthsPsr4 = ComposerStaticInit282d7f5406549670da6e072b3ac4f6ee::$prefixLengthsPsr4;
             $loader->prefixDirsPsr4 = ComposerStaticInit282d7f5406549670da6e072b3ac4f6ee::$prefixDirsPsr4;
+            $loader->fallbackDirsPsr4 = ComposerStaticInit282d7f5406549670da6e072b3ac4f6ee::$fallbackDirsPsr4;
             $loader->prefixesPsr0 = ComposerStaticInit282d7f5406549670da6e072b3ac4f6ee::$prefixesPsr0;
             $loader->classMap = ComposerStaticInit282d7f5406549670da6e072b3ac4f6ee::$classMap;
 

@@ -139,4 +139,5 @@ return array(
     'Clue\\StreamFilter\\' => array($vendorDir . '/clue/stream-filter/src'),
     'App\\Tests\\' => array($baseDir . '/tests'),
     'App\\' => array($baseDir . '/src'),
+    '' => array($vendorDir . '/phrity/net-uri/src', $vendorDir . '/phrity/util-errorhandler/src'),
 );

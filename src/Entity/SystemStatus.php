@@ -47,6 +47,9 @@ class SystemStatus
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $maintenanceEnd = null;
 
+    #[ORM\Column]
+    private ?bool $isdeactive = null;
+
     public function __construct()
     {
         $this->createdAt = new \DateTime();
@@ -185,6 +188,18 @@ class SystemStatus
     public function setMaintenanceEnd(?\DateTimeInterface $maintenanceEnd): self
     {
         $this->maintenanceEnd = $maintenanceEnd;
+
+        return $this;
+    }
+
+    public function isIsdeactive(): ?bool
+    {
+        return $this->isdeactive;
+    }
+
+    public function setIsdeactive(bool $isdeactive): static
+    {
+        $this->isdeactive = $isdeactive;
 
         return $this;
     }
