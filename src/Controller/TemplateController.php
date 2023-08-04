@@ -27,11 +27,8 @@ class TemplateController extends AbstractController
     {
         $template = new Template();
         $form = $this->createFormBuilder($template)
-            ->add("maintenance", TextareaType::class, [
+            ->add("template", TextareaType::class, [
                 "label" => "Maintenance URL",
-            ])
-            ->add("incident", TextareaType::class, [
-                "label" => "Incident URL",
             ])
             ->add("save", SubmitType::class, [
                 "label" => "Save",
