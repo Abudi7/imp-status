@@ -25,10 +25,17 @@ class System
     #[ORM\OneToMany(mappedBy: 'system', targetEntity: SystemStatus::class)]
     private Collection $systemStatuses;
 
+    #[ORM\OneToMany(mappedBy: 'system', targetEntity: Subscription::class)]
+    private Collection $subscriptions;
+
+    #[ORM\Column]
+    private ?bool $active = null;
+
     public function __construct()
     {
         $this->systemStatuses = new ArrayCollection();
         $this->createdAt = new \DateTime();
+        $this->subscriptions = new ArrayCollection();
 
     }
 
@@ -99,6 +106,48 @@ class System
         }
         
         // ...
+
+        /**
+         * @return Collection<int, Subscription>
+         */
+        public function getSubscriptions(): Collection
+        {
+            return $this->subscriptions;
+        }
+
+        public function addSubscription(Subscription $subscription): static
+        {
+            if (!$this->subscriptions->contains($subscription)) {
+                $this->subscriptions->add($subscription);
+                $subscription->setSystem($this);
+            }
+
+            return $this;
+        }
+
+        public function removeSubscription(Subscription $subscription): static
+        {
+            if ($this->subscriptions->removeElement($subscription)) {
+                // set the owning side to null (unless already changed)
+                if ($subscription->getSystem() === $this) {
+                    $subscription->setSystem(null);
+                }
+            }
+
+            return $this;
+        }
+
+        public function isActive(): ?bool
+        {
+            return $this->active;
+        }
+
+        public function setActive(bool $active): static
+        {
+            $this->active = $active;
+
+            return $this;
+        }
     
 
 }

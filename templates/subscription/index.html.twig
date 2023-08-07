@@ -23,17 +23,21 @@
       </div>
    </div>
    <div class="container mt-4">
-   {% if systemStatuses is empty %}
-   <div class="alert alert-warning">There are no systems to subscribe to.</div>
+   {# {% if systemStatuses is empty %} #}
+   {# <div class="alert alert-warning">There are no systems to subscribe to.</div>
    {% else %}
-   {% if subscriptions is empty %}
-   <div class="alert alert-warning">You are not subscribed to any systems.</div>
-   {% else %}
+   {# {% if subscriptions is empty %} #}
+   {#<div class="alert alert-warning">You are not subscribed to any systems.</div>
+   {% else %} #}
    <h2 class="mb-3">My Subscriptions</h2>
+   {% if subs is empty %}
+       <div class="alert alert-warning">You are not subscribed to any systems.</div>
+    {% else %}
+       
    <div class="table-responsive">
       <table class="table border table-md table-striped" id="table" style="font-size: 13px">
-         <thead class="bg-light">
-            <tr>
+         <thead class="bg-primary text-white">
+             <tr>
                <th scope="col">System</th>
                <th scope="col">Status</th>
                <th scope="col">Last Updated</th>
@@ -41,70 +45,23 @@
                <th scope="col">Responsible Person</th>
                {% endif %}
                <th scope="col">Info</th>
-            </tr>
+            </tr> 
          </thead>
          <tbody>
-            {% for subscription in subscriptions %}
+            {% for sub in subs %}
             <tr>
-               <td>
-                  <a href="{{ path('app_system_status_show', {'id': subscription.systemStatus.id}) }}">{{ subscription.systemStatus.system }}</a>
-               </td>
-               <td>
-                  <span id="status{{ subscription.systemStatus.id }}"></span>
-               </td>
-               <td>{{ subscription.systemStatus.updatedAt|date('Y-m-d H:i:s') }}</td>
-               {% if is_granted('ROLE_ADMIN') %}
-               <td>{{ subscription.systemStatus.responsible_person }}</td>
-               {% endif %}
-               <td>{{ subscription.systemStatus.info }}</td>
+               <td> {{ sub.system.name }} </td>
+               <td>  </td>
+               <td> {{ sub.system.createdAt|date('Y-m-d H:i:s') }} </td>
+               <td>  </td>
+               <td>  </td>
             </tr>
-            {% endfor %}
+            {% endfor %} 
+            {% endif %}
          </tbody>
       </table>
    </div>
-   {% endif %}
-   {% endif %}
-</div>
-<script>
-   {% for subscription in subscriptions %}
-      var statusElement = document.getElementById("status{{ subscription.systemStatus.id }}");
-      var maintenanceStart = new Date("{{ subscription.systemStatus.maintenanceStart|date('Y-m-d H:i:s') }}");
-      var maintenanceEnd = new Date("{{ subscription.systemStatus.maintenanceEnd|date('Y-m-d H:i:s') }}");
-      var now = new Date();
-
-      if (maintenanceStart > now) {
-         // Update scheduled
-         statusElement.innerHTML = `
-         
-            <span class="badge bg-success text-white">Available</span>
-            <i class="fa fa-exclamation-circle" data-bs-html="true" data-bs-toggle="tooltip" title="Maintenance scheduled <br> start: {{subscription.systemStatus.maintenanceStart|date('Y-m-d H:i')}} <br> until: {{subscription.systemStatus.maintenanceEnd|date('Y-m-d H:i')}}  "></i>
-         `;
-         // Initialize tooltips
-                        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-                        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-                        return new bootstrap.Tooltip(tooltipTriggerEl)
-                        })
-      } else if (maintenanceStart <= now && maintenanceEnd >= now) {
-         // Maintenance in progress
-         statusElement.innerHTML = `
-            <span class="badge bg-warning text-dark">Maintenance (In Progress)</span>
-             <i class="fa fa-refresh fa-spin" style="font-size:14px"></i>
-         `;
-      } else if ("{{ subscription.systemStatus.status }}" === 'Down') {
-         // Down
-         statusElement.innerHTML = `
-            <span class="badge bg-danger text-white">Down</span>
-         `;
-      } else {
-         // Available
-         statusElement.innerHTML = `
-            <span class="badge bg-success text-white">Available</span>
-         `;
-      }
-   {% endfor %}
-</script>
-
-
+ </div>
 {# JavaScript Search file: /public/asset/js/search.js #}
 <script src="{{ asset('../public/asset/js/Search_jquery-3.6.0.min.js')}}"></script>
 <script src="{{ asset('../public/asset/js/search.js')}}"></script>

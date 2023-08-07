@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Subscription;
+use App\Entity\System;
 use App\Entity\SystemStatus;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -21,8 +22,8 @@ class HomeController extends AbstractController
     public function subscribe($id, Request $request, ManagerRegistry $registry)
     {
         // Retrieve the SystemStatus entity from the database
-        $status = $registry->getRepository(SystemStatus::class)->find($id);
-        if (!$status) {
+        $system = $registry->getRepository(System::class)->find($id);
+        if (!$system) {
             throw $this->createNotFoundException(
                 "The system status does not exist"
             );
@@ -40,7 +41,7 @@ class HomeController extends AbstractController
         $subscription = $registry
             ->getRepository(Subscription::class)
             ->findOneBy([
-                "systemStatus" => $status,
+                "system" => $system,
                 "user" => $user,
             ]);
 
@@ -56,7 +57,7 @@ class HomeController extends AbstractController
                 $this->addFlash(
                     "success",
                     "You have cancelled your subscription to " .
-                        $status->getSystem()
+                        $system->getName()
                 );
 
                 return $this->redirectToRoute("app_allSubscription");
@@ -65,7 +66,7 @@ class HomeController extends AbstractController
             // If the subscription checkbox was checked, create a new subscription or update the existing one
             if (!$subscription) {
                 $subscription = new Subscription();
-                $subscription->setSystemStatus($status);
+                $subscription->setSystem($system);
                 $subscription->setUser($user);
             }
             $subscription->setIsSubscribed(true);
@@ -77,12 +78,12 @@ class HomeController extends AbstractController
             // Add a flash message to indicate that the subscription was successful
             $this->addFlash(
                 "success",
-                "You have subscribed to " . $status->getSystem()
+                "You have subscribed to " . $system->getName()
             );
         }
         $message =
             "You have subscribed to " .
-            $status->getSystem() .
+            $system->getName() .
             "to Your subscription System site";
         // Render the subscription switch in the template
         // return $this->render('home/index.html.twig', [
@@ -91,7 +92,7 @@ class HomeController extends AbstractController
 
         // ]);
         return $this->render("home/allSubscription.html.twig", [
-            "statuses" => $em->getRepository(SystemStatus::class)->findAll(),
+            "system" => $em->getRepository(System::class)->findAll(),
         ]);
     }
 
@@ -132,7 +133,7 @@ class HomeController extends AbstractController
 
         // render the template with the list of SystemStatus entities in allSubscription.html.twig
         return $this->render("home/allSubscription.html.twig", [
-            "statuses" => $em->getRepository(SystemStatus::class)->findAll(),
+            "system" => $em->getRepository(System::class)->findAll(),
         ]);
     }
 }

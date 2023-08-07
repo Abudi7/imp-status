@@ -3,14 +3,16 @@
 <div class="container">
    <div class="row">
       <main role="main" class="col-md-12 order-md-1 pt-1 px-2">
-         <h1 class="text-center mt-5 mb-3">System In Database </h1>
-         <table class="table border"id="table">
-            <thead>
-               <tr>
-                  <th>ID</th>
-                  <th>Name</th>
-                  <th>Created At</th>
-               </tr>
+         <h1 class="text-center mt-5 mb-3">Systems</h1>
+         <div class="table-responsive">
+         <table class="table border table-md table-striped" id="table" style="font-size: 13px">
+         <thead class="bg-primary text-white">
+            <tr>
+               <th scope="col">ID</th>
+               <th scope="col">Name</th>
+               <th scope="col">Created at</th>
+               <th scope="col"> Active | Deactive </th>
+            </tr>
             </thead>
             <tbody>
                {% for system in systems %}
@@ -18,6 +20,12 @@
                   <td>{{ system.id}}</td>
                   <td>{{ system.name}}</td>
                   <td>{{ system.createdAt|date('Y-m-d H:i:s') }}</td>
+                  <td>
+                     <a href="{{ path('app_system', {'system_id': system.id, 'active': system.active ? 0 : 1 }) }}"
+                        class="btn btn-sm btn-link">
+                        {{ system.active ?   'Deactivate' : 'Activate' }}
+                     </a>
+                   </td>
                </tr>
                {% endfor %}
             </tbody>

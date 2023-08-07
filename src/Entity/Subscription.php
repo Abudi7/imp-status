@@ -16,13 +16,15 @@ class Subscription
     #[ORM\Column]
     private ?bool $isSubscribed = null;
 
-    #[ORM\ManyToOne(inversedBy: 'subscriptions')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?SystemStatus $systemStatus = null;
+   
 
     #[ORM\ManyToOne(inversedBy: 'subscriptions')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
+
+    #[ORM\ManyToOne(inversedBy: 'subscriptions')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?System $system = null;
 
     public function getId(): ?int
     {
@@ -40,19 +42,7 @@ class Subscription
 
         return $this;
     }
-
-    public function getSystemStatus(): ?SystemStatus
-    {
-        return $this->systemStatus;
-    }
-
-    public function setSystemStatus(?SystemStatus $systemStatus): self
-    {
-        $this->systemStatus = $systemStatus;
-
-        return $this;
-    }
-
+    
     public function getUser(): ?User
     {
         return $this->user;
@@ -61,6 +51,18 @@ class Subscription
     public function setUser(?User $user): self
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    public function getSystem(): ?System
+    {
+        return $this->system;
+    }
+
+    public function setSystem(?System $system): static
+    {
+        $this->system = $system;
 
         return $this;
     }

@@ -16,21 +16,21 @@
 						<thead>
 							<tr>
 								<th scope="col">System</th>
-								<th scope="col">Status</th>
-								<th scope="col">Last Update</th>
+								{# <th scope="col">Status</th>
+								<th scope="col">Last Update</th> #}
 							</tr>
 						</thead>
 						<tbody>
 							<tr>
-								<td>{{ statuses.system }}</td>
-								<td>{{ statuses.status }}</td>
-								<td>{{ statuses.updatedAt|date('Y-m-d H:i:s') }}</td>
+								<td>{{ systems.name }}</td>
+								{# <td>{{ systems.status }}</td>
+								<td>{{ systems.updatedAt|date('Y-m-d H:i:s') }}</td> #}
 							</tr>
 						</tbody>
 					</table>
 					<div class="form-group">
 						<label for="system">System</label>
-						<input type="text" class="form-control" id="system" name="system" value="{{ statuses.system }}" readonly>
+						<input type="text" class="form-control" id="system" name="system" value="{{ systems.name }}" readonly>
 					</div>
 					<div class="text-center">
 						<button type="submit" class="btn btn-danger">Unsubscribe</button>

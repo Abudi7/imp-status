@@ -2,50 +2,50 @@
 {% block body %}
 {# Slider Text status Information  #}
 <div class="container mt-4">
-    <div class="row">
+   <div class="row">
       <div class="col-md-12">
-        <p class="lead">Status Colors:</p>
-        <p class="text-muted">This application displays different status colors to represent the current state of a system:</p>
+         <p class="lead">Status Colors:</p>
+         <p class="text-muted">This application displays different status colors to represent the current state of a system:</p>
       </div>
-    </div>
-    <div class="row">
+   </div>
+   <div class="row">
       <div class="col-md-3 col-sm-6 mb-4">
-        <div class="d-flex align-items-center">
-          <div class="status-circle bg-success slide-in-animation">
-            {# <span class="mb-3">&#10004;</span> #}
-           </div>
-          <div class="status-text">Available</div>
-        </div>
+         <div class="d-flex align-items-center">
+            <div class="status-circle bg-success slide-in-animation">
+               {# <span class="mb-3">&#10004;</span> #}
+            </div>
+            <div class="status-text">Available</div>
+         </div>
       </div>
       <div class="col-md-3 col-sm-6">
-        <div class="d-flex align-items-center">
-          <div class="status-circle bg-warning slide-in-animation">
-            {# <span>&#9888;</span> #}
-          </div>
-          <div class="status-text">Maintenance</div>
-        </div>
+         <div class="d-flex align-items-center">
+            <div class="status-circle bg-warning slide-in-animation">
+               {# <span>&#9888;</span> #}
+            </div>
+            <div class="status-text">Maintenance</div>
+         </div>
       </div>
       <div class="col-md-3 col-sm-6">
-        <div class="d-flex align-items-center">
-          <div class="status-circle bg-success slide-in-animation">
-            {# <span>&#128467;</span> #}
-          </div>
-          <div class="status-text"> <i class="fa fa-exclamation-circle"></i> Maintenance Scheduled</div>
-        </div>
+         <div class="d-flex align-items-center">
+            <div class="status-circle bg-success slide-in-animation">
+               {# <span>&#128467;</span> #}
+            </div>
+            <div class="status-text"> <i class="fa fa-exclamation-circle"></i> Maintenance Scheduled</div>
+         </div>
       </div>
       <div class="col-md-3 col-sm-6">
-        <div class="d-flex align-items-center">
-          <div class="status-circle bg-danger slide-in-animation"> 
-            {# <span>&#9888;</span> #}
-           </div>
-          <div class="status-text">Down</div>
-        </div>
+         <div class="d-flex align-items-center">
+            <div class="status-circle bg-danger slide-in-animation"> 
+               {# <span>&#9888;</span> #}
+            </div>
+            <div class="status-text">Down</div>
+         </div>
       </div>
-    </div> 
-  </div>  
+   </div>
+</div>
 {# Search in the body center #}
 <div class="container">
-     <div class="row">
+   <div class="row">
       <div class="col-12 col-md-12 mb-4">
          <form id="searchForm">
             <div class="input-group">
@@ -61,7 +61,6 @@
    <div class="row">
       <div class="col-12 mb-3">
          <div id="notFoundMessage" class="alert alert-danger" style="display: none;">
-       
          </div>
       </div>
    </div>
@@ -75,105 +74,43 @@
    </div>
    <div class="row">
       <div class="col-12">
-         <div class="table-responsive mx-auto w-100">
-            <table class="table border table-md table-striped" id="table" style="font-size: 13px">
-               <thead>
+            <div class="table-responsive">
+               <table class="table border table-md table-striped" id="table" style="font-size: 13px">
+               <thead class="bg-primary text-white">
                   <tr>
                      <th>System</th>
                      <th>Status</th>
-                     <th>Updated</th>
-                     <th>Info</th>
                      <th>Subscription</th>
                   </tr>
                </thead>
                <tbody>
-                  {% set availableSystems = [] %}
-                  {% set inProgressSystems = [] %}
-                  {% set downSystems = [] %}
-                  {% for status in statuses %}
-                     {% if status.status == 'Available' %}
-                        {% set availableSystems = availableSystems|merge([status]) %}
-                     {% elseif status.status == 'Maintenance'%}
-                        {% set inProgressSystems = inProgressSystems|merge([status]) %}
-                     {% elseif status.status == 'Down' %}
-                        {% set downSystems = downSystems|merge([status]) %}
-                     {% endif %}
-                  {% endfor %}
-                  {% set sortedSystems = availableSystems|merge(inProgressSystems)|merge(downSystems) %}
-                  {% for status in sortedSystems %}
-                     <tr>
-                        <td>{{ status.system }}</td>
-                        <td>
-                           <div id="status{{ status.id }}" class="status-container"></div>
-                        </td>
-                        <td>{{ status.updatedAt|date('Y-m-d') }}</td>
-                        <td>{{ status.info }}</td>
-                        <td>
-                           <form action="{{ path('app_home_subscribe', {'id': status.id}) }}" method="post">
-                              <div class="form-check form-switch">
-                                 {% set isSubscribed = false %}
-                                 {% for subscription in status.subscriptions %}
-                                    {% if subscription.user == app.user and subscription.isSubscribed %}
-                                       {% set isSubscribed = true %}
-                                    {% endif %}
-                                 {% endfor %}
-                                 <input class="form-check-input" type="checkbox" name="subscribe" id="subscribe{{ status.id }}" {% if isSubscribed %}checked{% endif %} onchange="this.form.submit()">
-                                 <label class="form-check-label" for="subscribe{{ status.id }}">
-                                    {% if status.subscription is defined and status.subscription.isSubscribed %}
-                                       Unsubscribe
-                                    {% else %}
-                                       Subscribe
-                                    {% endif %}
-                                 </label>
-                              </div>
-                           </form>
-                        </td>
-                     </tr>
-                  <script>
-                     var maintenanceStart = new Date("{{ status.maintenanceStart|date('Y-m-d H:i:s') }}");
-                     var maintenanceEnd = new Date("{{ status.maintenanceEnd|date('Y-m-d H:i:s') }}");
-                      var status = "{{ status.status }}";
-                     var now = new Date();
-                     var statusElement = document.getElementById("status{{ status.id }}");
-
-                     if (maintenanceStart > now) {
-                        // Update scheduled
-                        statusElement.innerHTML = `
-                           <div class="status-circle bg-success"></div>
-                            
-                           <i class="fa fa-exclamation-circle" data-bs-html="true" data-bs-toggle="tooltip" title="Maintenance scheduled <br> start: {{status.maintenanceStart|date('Y-m-d H:i')}} <br> until: {{status.maintenanceEnd|date('Y-m-d H:i')}}  "></i>
-                    
-                           <span class="status-text">Available<span class="sr-only">(update)</span></span>
-                        `;
-
-                       // Initialize tooltips
-                        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-                        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-                        return new bootstrap.Tooltip(tooltipTriggerEl)
-                        })
-
-                     } else if (maintenanceStart <= now && now < maintenanceEnd) {
-                        // Maintenance (Updating)
-                        statusElement.innerHTML = `
-                           <div class="status-circle bg-warning"></div>
-                           <i class="fa fa-refresh fa-spin" style="font-size:14px"></i>
-                           <span class="status-text">Updating right now <span class="sr-only">(maintenance)</span></span>
-                        `;
-                     } else if (status === 'Down') {
-                        // Down
-                        statusElement.innerHTML = `
-                           <div class="status-circle bg-danger"></div>
-                           <span class="status-text">Down <span class="sr-only">(down)</span></span>
-                        `;
-                     } else {
-                        // Available
-                        statusElement.innerHTML = `
-                           <div class="status-circle bg-success"></div>
-                           <span class="status-text">Available <span class="sr-only">(available)</span></span>
-                        `;
-                     }
-                  </script>
-
+                  {% for systemSub in system %}
+                  <tr>
+                     <td><a class="link-offset-2 link-underline link-underline-opacity-0" href="{{ path('app_system') }}">{{ systemSub.name }}</a></td>
+                     <td>
+                        <div id="status{{ systemSub.id }}" class="status-container"></div>
+                     </td>
+                     <td>
+                        <form action="{{ path('app_home_subscribe', {'id': systemSub.id}) }}" method="post">
+                           <div class="form-check form-switch">
+                              {% set isSubscribed = false %}
+                              {% for subscription in systemSub.subscriptions %}
+                              {% if subscription.user == app.user and subscription.isSubscribed %}
+                              {% set isSubscribed = true %}
+                              {% endif %}
+                              {% endfor %}
+                              <input class="form-check-input" type="checkbox" name="subscribe" id="subscribe{{ systemSub.id }}" {% if isSubscribed %}checked{% endif %} onchange="this.form.submit()">
+                              <label class="form-check-label" for="subscribe{{ systemSub.id }}">
+                              {% if systemSub.subscription is defined and systemSub.subscription.isSubscribed %}
+                              Unsubscribe
+                              {% else %}
+                              Subscribe
+                              {% endif %}
+                              </label>
+                           </div>
+                        </form>
+                     </td>
+                  </tr>
                   {% endfor %}
                </tbody>
             </table>
@@ -181,60 +118,53 @@
       </div>
    </div>
 </div>
-
 </div>
-
 {# JavaScript Search file: /public/asset/js/search.js #}
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="{{ asset('../public/asset/js/search.js')}}"></script>
-
-
-
-
 {# JavaScript Search file: /public/asset/js/search.js #}
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="{{ asset('../public/asset/js/search.js')}}"></script>
 <!-- Add an ID to the WebSocket connection element -->
 <script>
-    // Establish a WebSocket connection
-    const socket = new WebSocket('ws://localhost:8000'); // Replace the URL with your WebSocket server URL
-
-    socket.addEventListener('open', (event) => {
-        console.log('WebSocket connection established.');
-    });
-
-    // Listen for incoming messages from the WebSocket server
-    socket.addEventListener('message', (event) => {
-        const message = event.data;
-
-        // Display a Chrome browser notification with sound
-        if (Notification.permission === 'granted') {
-            showNotification('New Message', message);
-        } else if (Notification.permission !== 'denied') {
-            Notification.requestPermission().then((permission) => {
-                if (permission === 'granted') {
-                    showNotification('IMP', message);
-                }
-            });
-        }
-
-        console.log('Received message:', message);
-    });
-
-    // Function to send a message via the WebSocket connection
-    function sendMessage(message) {
-        socket.send(message);
-    }
-
-    // Function to display a Chrome browser notification with sound
-    function showNotification(title, body) {
-        const options = {
-            body: body,
-            icon: '{{ asset('img/favicon.png') }}', // Replace with the path to your notification icon
-            sound: '{{ asset('asset/sound/notification.mp3') }}', // Replace with the path to your notification sound
-        };
-        new Notification(title, options);
-    }
+   // Establish a WebSocket connection
+   const socket = new WebSocket('ws://localhost:8000'); // Replace the URL with your WebSocket server URL
+   
+   socket.addEventListener('open', (event) => {
+       console.log('WebSocket connection established.');
+   });
+   
+   // Listen for incoming messages from the WebSocket server
+   socket.addEventListener('message', (event) => {
+       const message = event.data;
+   
+       // Display a Chrome browser notification with sound
+       if (Notification.permission === 'granted') {
+           showNotification('New Message', message);
+       } else if (Notification.permission !== 'denied') {
+           Notification.requestPermission().then((permission) => {
+               if (permission === 'granted') {
+                   showNotification('IMP', message);
+               }
+           });
+       }
+   
+       console.log('Received message:', message);
+   });
+   
+   // Function to send a message via the WebSocket connection
+   function sendMessage(message) {
+       socket.send(message);
+   }
+   
+   // Function to display a Chrome browser notification with sound
+   function showNotification(title, body) {
+       const options = {
+           body: body,
+           icon: '{{ asset('img/favicon.png') }}', // Replace with the path to your notification icon
+           sound: '{{ asset('asset/sound/notification.mp3') }}', // Replace with the path to your notification sound
+       };
+       new Notification(title, options);
+   }
 </script>
-
 {% endblock %}
