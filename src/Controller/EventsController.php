@@ -37,21 +37,13 @@ class EventsController extends AbstractController
         $event->setSystem($system);
         $event->setCreator($admin);
 
-        $templat = new Template();
+        
         // Create the form for event creation
         $form = $this->createForm(EventsType::class, $event);
 
         // Handle form submission
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            // Retrieve selected template from the form
-            $selectedTemplate = $form->get('template')->getData();
-
-            // Get the content of the selected template (adjust this based on your Template entity structure)
-            $templateContent = $selectedTemplate->getTemplate();
-
-            // Set the template content to the email field
-            $event->setEmail($templateContent);
             // Persist the new event
             $entityManager->persist($event);
             $entityManager->flush();
@@ -65,4 +57,18 @@ class EventsController extends AbstractController
             "system" => $system,
         ]);
     }
+
+    #[Route("/get_template/{id}", name: "get_template")]
+        public function getTemplateContent($id, ManagerRegistry $managerRegistry): Response
+        {
+            $em = $managerRegistry->getManager();
+            $template = $em->getRepository(Template::class)->find($id);
+
+            if ($template) {
+                return new Response($template->getTemplate());
+            }
+
+            return new Response('');
+        }
+
 }

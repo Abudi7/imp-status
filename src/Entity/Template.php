@@ -17,6 +17,12 @@ class Template
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $template = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $title = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $subject = null;
+
 
 
 
@@ -33,6 +39,30 @@ class Template
     public function setTemplate(?string $template): self
     {
         $this->template = $template;
+
+        return $this;
+    }
+
+    public function getTitle(): ?string
+    {
+        return $this->title;
+    }
+
+    public function setTitle(string $title): static
+    {
+        $this->title = $title;
+
+        return $this;
+    }
+
+    public function getSubject(): ?string
+    {
+        return $this->subject;
+    }
+
+    public function setSubject(string $subject): static
+    {
+        $this->subject = $subject;
 
         return $this;
     }

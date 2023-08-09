@@ -23,8 +23,11 @@ class EventsType extends AbstractType
         ->add('system', EntityType::class, [
             "class" => System::class,
             "choice_label" => "name",
-            
+            "placeholder" => "Select a system", // Optional placeholder text
+            "required" => false, // Mark the field as not required
+            "disabled" => true, // Set the field as disabled
         ])
+        
             ->add('type', ChoiceType::class, [
                 'choices' => [
                     'Maintenance' => 'maintenance',
@@ -39,16 +42,15 @@ class EventsType extends AbstractType
             ])
             ->add('emailtemplate', EntityType::class, [
                 'class' => Template::class,
-                'choice_label' => 'template',
+                'choice_label' => 'subject',
                 'label' => 'Select Template', // Adjust label as needed
             ])
             ->add('email', TextareaType::class, [
                 'mapped' => false,
                 'required' => false,
                 'label' => 'Email Template',
-                'attr' => ['rows' => 5], // Adjust rows as needed
-            ])
-        ;
+                'attr' => ['rows' => 5, 'class' => 'template-textarea'], // Add a class for selecting the textarea with JS
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

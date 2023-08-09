@@ -1,5 +1,3 @@
-{# templates/events/new.html.twig #}
-
 {% extends 'base.html.twig' %}
 
 {% block body %}
@@ -10,8 +8,30 @@
         {{ form_row(form.type) }}
         {{ form_row(form.start) }}
         {{ form_row(form.end) }}
-        {{ form_row(form.email) }}
+        {{ form_row(form.emailtemplate, {'attr': {'class': 'template-select'}}) }}
+        {{ form_row(form.email, {'attr': {'class': 'email-textarea'}}) }}
         <button type="submit" class="btn btn-primary">Create Event</button>
         {{ form_end(form) }}
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+        const templateSelect = document.querySelector('.template-select');
+        const emailTextarea = document.querySelector('.email-textarea');
+
+        templateSelect.addEventListener('change', function() {
+            const selectedTemplateId = templateSelect.value;
+            console.log('Selected Template ID:', selectedTemplateId);
+
+            // Make an AJAX request to fetch template content
+            fetch(`/get_template/${selectedTemplateId}`)
+                .then(response => response.text())
+                .then(content => {
+                    console.log('Template Content:', content);
+                    emailTextarea.value = content;
+                })
+                .catch(error => console.error(error));
+        });
+    });
+    </script>
 {% endblock %}
