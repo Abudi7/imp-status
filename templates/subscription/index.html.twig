@@ -53,8 +53,8 @@
                <td> {{ sub.system.name }} </td>
                <td>  </td>
                <td> {{ sub.system.createdAt|date('Y-m-d H:i:s') }} </td>
-               <td>  </td>
-               <td>  </td>
+               <td> {{ sub.system.creator.username }} </td>
+               <td> {{ sub.system.info }} </td>
             </tr>
             {% endfor %} 
             {% endif %}

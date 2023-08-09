@@ -2,27 +2,27 @@
 
 namespace App\Repository;
 
-use App\Entity\Evnets;
+use App\Entity\Events;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Evnets>
+ * @extends ServiceEntityRepository<Events>
  *
- * @method Evnets|null find($id, $lockMode = null, $lockVersion = null)
- * @method Evnets|null findOneBy(array $criteria, array $orderBy = null)
- * @method Evnets[]    findAll()
- * @method Evnets[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Events|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Events|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Events[]    findAll()
+ * @method Events[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class EvnetsRepository extends ServiceEntityRepository
+class EventsRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Evnets::class);
+        parent::__construct($registry, Events::class);
     }
 
 //    /**
-//     * @return Evnets[] Returns an array of Evnets objects
+//     * @return Events[] Returns an array of Events objects
 //     */
 //    public function findByExampleField($value): array
 //    {
@@ -36,7 +36,7 @@ class EvnetsRepository extends ServiceEntityRepository
 //        ;
 //    }
 
-//    public function findOneBySomeField($value): ?Evnets
+//    public function findOneBySomeField($value): ?Events
 //    {
 //        return $this->createQueryBuilder('e')
 //            ->andWhere('e.exampleField = :val')

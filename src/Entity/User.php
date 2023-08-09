@@ -35,9 +35,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Subscription::class)]
     private Collection $subscriptions;
 
+    #[ORM\OneToMany(mappedBy: 'creator', targetEntity: System::class)]
+    private Collection $systems;
+
+    #[ORM\OneToMany(mappedBy: 'creator', targetEntity: Events::class)]
+    private Collection $events;
+
     public function __construct()
     {
         $this->subscriptions = new ArrayCollection();
+        $this->systems = new ArrayCollection();
+        $this->events = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -146,6 +154,66 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($subscription->getUser() === $this) {
                 $subscription->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, System>
+     */
+    public function getSystems(): Collection
+    {
+        return $this->systems;
+    }
+
+    public function addSystem(System $system): static
+    {
+        if (!$this->systems->contains($system)) {
+            $this->systems->add($system);
+            $system->setCreator($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSystem(System $system): static
+    {
+        if ($this->systems->removeElement($system)) {
+            // set the owning side to null (unless already changed)
+            if ($system->getCreator() === $this) {
+                $system->setCreator(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Events>
+     */
+    public function getEvents(): Collection
+    {
+        return $this->events;
+    }
+
+    public function addEvent(Events $event): static
+    {
+        if (!$this->events->contains($event)) {
+            $this->events->add($event);
+            $event->setCreator($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEvent(Events $event): static
+    {
+        if ($this->events->removeElement($event)) {
+            // set the owning side to null (unless already changed)
+            if ($event->getCreator() === $this) {
+                $event->setCreator(null);
             }
         }
 

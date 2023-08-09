@@ -1,0 +1,17 @@
+{# templates/events/new.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container">
+        <h2>Create New Event</h2>
+        {{ form_start(form) }}
+        {{ form_row(form.system) }}
+        {{ form_row(form.type) }}
+        {{ form_row(form.start) }}
+        {{ form_row(form.end) }}
+        {{ form_row(form.email) }}
+        <button type="submit" class="btn btn-primary">Create Event</button>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}
