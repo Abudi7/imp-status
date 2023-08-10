@@ -6,8 +6,10 @@ use App\Entity\Events;
 use App\Entity\System;
 use App\Entity\Template;
 use App\Form\EventsType;
+use App\Repository\TemplateRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -58,17 +60,17 @@ class EventsController extends AbstractController
         ]);
     }
 
-    #[Route("/get_template/{id}", name: "get_template")]
-        public function getTemplateContent($id, ManagerRegistry $managerRegistry): Response
-        {
-            $em = $managerRegistry->getManager();
-            $template = $em->getRepository(Template::class)->find($id);
+    #[Route("/events/get-template-content/{id}", name: "get_template_content")]
+    public function getTemplateContent($id, TemplateRepository $templateRepository): JsonResponse
+    {
+        $template = $templateRepository->find($id);
 
-            if ($template) {
-                return new Response($template->getTemplate());
-            }
-
-            return new Response('');
+        if (!$template) {
+            return new JsonResponse(['content' => 'Template not found'], 404);
         }
+
+        return new JsonResponse(['content' => $template->getTemplate()]);
+    }
+
 
 }

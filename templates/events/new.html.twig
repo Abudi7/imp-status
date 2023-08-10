@@ -2,36 +2,40 @@
 
 {% block body %}
     <div class="container">
-        <h2>Create New Event</h2>
-        {{ form_start(form) }}
-        {{ form_row(form.system) }}
-        {{ form_row(form.type) }}
-        {{ form_row(form.start) }}
-        {{ form_row(form.end) }}
-        {{ form_row(form.emailtemplate, {'attr': {'class': 'template-select'}}) }}
-        {{ form_row(form.email, {'attr': {'class': 'email-textarea'}}) }}
-        <button type="submit" class="btn btn-primary">Create Event</button>
-        {{ form_end(form) }}
-    </div>
+    <h2>Create New Event</h2>
+    {{ form_start(form) }}
+    {{ form_row(form.system) }}
+    {{ form_row(form.type) }}
+    {{ form_row(form.start) }}
+    {{ form_row(form.end) }}
+    {{ form_row(form.emailtemplate, {'attr': {'class': 'template-select'}}) }}
+    {{ form_row(form.email, {'attr': {'class': 'email-field'}}) }}
+    <button type="submit" class="btn btn-primary">Create Event</button>
+    {{ form_end(form) }}
+</div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-        const templateSelect = document.querySelector('.template-select');
-        const emailTextarea = document.querySelector('.email-textarea');
-
-        templateSelect.addEventListener('change', function() {
-            const selectedTemplateId = templateSelect.value;
-            console.log('Selected Template ID:', selectedTemplateId);
-
-            // Make an AJAX request to fetch template content
-            fetch(`/get_template/${selectedTemplateId}`)
+<script>
+    // Add event listener to emailtemplate dropdown
+    const templateSelect = document.querySelector('.template-select');
+    const emailField = document.querySelector('.email-field');
+    
+    templateSelect.addEventListener('change', () => {
+        const selectedTemplateId = templateSelect.value;
+        if (selectedTemplateId) {
+            fetch(`http://localhost/AP_status/system_status/public/index.php/template/${selectedTemplateId}/get-template-content/`)
                 .then(response => response.text())
                 .then(content => {
-                    console.log('Template Content:', content);
-                    emailTextarea.value = content;
+                    console.log(content)
+                    console.log(emailField)
+                    console.log(`http://localhost/AP_status/system_status/public/index.php/template/${selectedTemplateId}/get-template-content/`)
+                    emailField.value = content; // Populate email textarea
                 })
-                .catch(error => console.error(error));
-        });
+                .catch(error => {
+                    console.error('Error fetching template content:', error);
+                });
+        } else {
+            emailField.value = ''; // Clear email textarea if no template selected
+        }
     });
-    </script>
+</script>
 {% endblock %}
