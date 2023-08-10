@@ -6,8 +6,10 @@ use App\Entity\Events;
 use App\Entity\System;
 use App\Entity\Template;
 use App\Form\EventsType;
+use App\Repository\TemplateRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -37,21 +39,13 @@ class EventsController extends AbstractController
         $event->setSystem($system);
         $event->setCreator($admin);
 
-        $templat = new Template();
+        
         // Create the form for event creation
         $form = $this->createForm(EventsType::class, $event);
 
         // Handle form submission
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            // Retrieve selected template from the form
-            $selectedTemplate = $form->get('template')->getData();
-
-            // Get the content of the selected template (adjust this based on your Template entity structure)
-            $templateContent = $selectedTemplate->getTemplate();
-
-            // Set the template content to the email field
-            $event->setEmail($templateContent);
             // Persist the new event
             $entityManager->persist($event);
             $entityManager->flush();
@@ -65,4 +59,18 @@ class EventsController extends AbstractController
             "system" => $system,
         ]);
     }
+
+    #[Route("/events/get-template-content/{id}", name: "get_template_content")]
+    public function getTemplateContent($id, TemplateRepository $templateRepository): JsonResponse
+    {
+        $template = $templateRepository->find($id);
+
+        if (!$template) {
+            return new JsonResponse(['content' => 'Template not found'], 404);
+        }
+
+        return new JsonResponse(['content' => $template->getTemplate()]);
+    }
+
+
 }

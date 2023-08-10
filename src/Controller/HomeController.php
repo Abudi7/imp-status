@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Events;
 use App\Entity\Subscription;
 use App\Entity\System;
 use App\Entity\SystemStatus;
@@ -134,6 +135,7 @@ class HomeController extends AbstractController
         // render the template with the list of SystemStatus entities in allSubscription.html.twig
         return $this->render("home/allSubscription.html.twig", [
             "system" => $em->getRepository(System::class)->findAll(),
+            "events"=> $em->getRepository(Events::class)->findAll(),
         ]);
     }
 }

@@ -8,6 +8,8 @@ use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -27,6 +29,8 @@ class TemplateController extends AbstractController
     {
         $template = new Template();
         $form = $this->createFormBuilder($template)
+            ->add('title', TextType::class)
+            ->add('subject', TextType::class)
             ->add("template", TextareaType::class, [
                 "label" => "Maintenance URL",
             ])
@@ -51,5 +55,14 @@ class TemplateController extends AbstractController
         return $this->render("template/new.html.twig", [
             "form" => $form->createView(),
         ]);
+    }
+
+
+    
+    #[Route("/template/{id}/get-template-content", name:"get_template_content")]
+    public function getTemplateContent(Template $template): JsonResponse
+    {
+        $templateContent = $template->getTemplate();
+        return new JsonResponse($templateContent);
     }
 }
