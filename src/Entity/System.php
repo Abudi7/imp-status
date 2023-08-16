@@ -49,7 +49,6 @@ class System
         $this->subscriptions = new ArrayCollection();
         $this->events = new ArrayCollection();
 
-
     }
 
     public function getId(): ?int
