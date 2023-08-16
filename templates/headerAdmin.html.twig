@@ -39,9 +39,12 @@
 	<link rel="icon" type="image/x-icon" href="{{ asset('../img/favicon.png') }}">
 
 	<!-- Fonts -->
-	<link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+	{# <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
 	<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
-	<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=PT+Sans:wght@400;700&display=swap" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=PT+Sans:wght@400;700&display=swap" rel="stylesheet"> #}
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=PT+Sans:wght@400;700&family=Tajawal:wght@200;300;400;500;700;800;900&display=swap" rel="stylesheet">
 
 	<!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -80,9 +83,9 @@
                      </div>
                   </li>
                #}
-						<li class="nav-item"> <a class="nav-link" href="{{ path('app_system_status') }}">
+						<li class="nav-item"> <a class="nav-link" href="{{ path('app_system') }}">
 							<i class="fa fa-pencil"></i>
-							System Status
+							Systems
 						</a>
 					</li>
 					<li class="nav-item">
@@ -160,9 +163,9 @@
 									</p>
 								</li>
 								<li class="nav-item">
-									<a class="nav-link active" href="{{ path('app_system_status') }}">
+									<a class="nav-link active" href="{{ path('app_system') }}">
 										<i class="fa fa-server"></i>
-										System Status
+										Systems
 									</a>
 								</li>
 								<li class="nav-item">
@@ -171,12 +174,12 @@
 										Status
 									</a>
 								</li>
-								<li class="nav-item">
+								{# <li class="nav-item">
 									<a class="nav-link" href="{{ path('app_system') }}">
 										<i class="fa fa-database"></i>
 										Systems
 									</a>
-								</li>
+								</li> #}
 								<li class="nav-item">
 									<a class="nav-link" href="{{ path('app_template') }}">
 										<i class="fa fa-database"></i>
@@ -189,7 +192,7 @@
 				</nav>
 				<main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
 					<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-						<h1 class="h2">System Status</h1>
+						<h1 class="h2">Incdient Maintenance Platform</h1>
 						{# {% if app.user %}
 												         <p class="h5 text-dark">Welcome, {{ app.user.username }}</p>
 												         {% endif %} #}
@@ -202,14 +205,17 @@
 									New
 								</button>
 								<ul class="dropdown-menu">
-									<li>
+									{# <li>
 										<a class="dropdown-item" href="{{ path('app_system_status_new') }}">New App Status</a>
-									</li>
+									</li> #}
 									<li>
 										<a class="dropdown-item" href="{{ path('app_system_new') }}">Add new System</a>
 									</li>
 									<li>
 										<a class="dropdown-item" href="{{ path('app_status_new') }}">Add new Status</a>
+									</li>
+									<li>
+										<a class="dropdown-item" href="{{ path('app_template_new') }}">Add new Template</a>
 									</li>
 								</ul>
 							</div>

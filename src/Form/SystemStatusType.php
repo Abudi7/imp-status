@@ -33,6 +33,7 @@ class SystemStatusType extends AbstractType
                 "class" => Status::class,
                 "choice_label" => "name",
                 "placeholder" => "Choose a status",
+
                 "required" => true,
                 "multiple" => false,
                 "expanded" => false,
@@ -41,6 +42,14 @@ class SystemStatusType extends AbstractType
                 // "attr" => [
                 //     "id" => "status_field",
                 //],
+
+                //"constraints" => [new NotNull()],
+                // "data" => $options["Available"],
+                // "attr" => [
+                //     "id" => "status_field",
+                // ],
+                
+
             ])
             ->add("info", TextType::class, [
                 "label" => "Information",

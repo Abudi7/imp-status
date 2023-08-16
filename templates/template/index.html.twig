@@ -15,17 +15,15 @@
                 <table class="table table-bordered">
                     <thead>
                         <tr>
+                            <th> ID </th>
                             <th>Template</th>
-                            <th>Maintenance</th>
-                            <th>Incident</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for template in templates %}
                             <tr>
                                 <td>{{ template.id }}</td>
-                                <td>{{ template.maintenance }}</td>
-                                <td>{{ template.incident }}</td>
+                                <td>{{ template.template }}</td>
                             </tr>
                         {% endfor %}
                     </tbody>

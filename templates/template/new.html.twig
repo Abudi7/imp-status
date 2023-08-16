@@ -1,14 +1,24 @@
+{# templates/email_template/index.html.twig #}
+
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <h1>Add Template</h1>
+    <div class="container mt-5">
+        <h2 class="mb-4">Create a New Email Template</h2>
+                {{ form_start(form) }}
 
-    {{ form_start(form) }}
+                    {{ form_row(form.title,{'attr': {'class': 'form-control mb-3', 'placeholder': 'Title'}}) }}
+                    {{ form_row(form.subject,{'attr': {'class': 'form-control mb-3', 'placeholder': 'Subject'}}) }}
+                    {{ form_row(form.template,{'attr': {'class': 'form-control mb-3', 'rows': 6, 'placeholder': 'Body'}}) }}
+                    {{ form_widget(form.save) }}
 
-    {{ form_row(form.maintenance) }}
-    {{ form_row(form.incident) }}
-
-    {{ form_widget(form.save) }}
-
-    {{ form_end(form) }}
+                {{ form_end(form) }}
+         {# <form method="post" action="{{ path('app_template_new') }}" class="needs-validation" novalidate>
+            {{ form_row(form.title, {'attr': {'class': 'form-control mb-3', 'placeholder': 'Title'}}) }}
+            {{ form_row(form.subject, {'attr': {'class': 'form-control mb-3', 'placeholder': 'Subject'}}) }}
+            {{ form_row(form.template, {'attr': {'class': 'form-control mb-3', 'rows': 6, 'placeholder': 'Body'}}) }}
+            {{ form_widget(form.save) }}
+        </form>  #}
+        
+    </div>
 {% endblock %}

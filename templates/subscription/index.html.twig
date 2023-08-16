@@ -23,17 +23,21 @@
       </div>
    </div>
    <div class="container mt-4">
-   {% if systemStatuses is empty %}
-   <div class="alert alert-warning">There are no systems to subscribe to.</div>
+   {# {% if systemStatuses is empty %} #}
+   {# <div class="alert alert-warning">There are no systems to subscribe to.</div>
    {% else %}
-   {% if subscriptions is empty %}
-   <div class="alert alert-warning">You are not subscribed to any systems.</div>
-   {% else %}
+   {# {% if subscriptions is empty %} #}
+   {#<div class="alert alert-warning">You are not subscribed to any systems.</div>
+   {% else %} #}
    <h2 class="mb-3">My Subscriptions</h2>
+   {% if subs is empty %}
+       <div class="alert alert-warning">You are not subscribed to any systems.</div>
+    {% else %}
+       
    <div class="table-responsive">
       <table class="table border table-md table-striped" id="table" style="font-size: 13px">
-         <thead class="bg-light">
-            <tr>
+         <thead class="bg-primary text-white">
+             <tr>
                <th scope="col">System</th>
                <th scope="col">Status</th>
                <th scope="col">Last Updated</th>
@@ -41,132 +45,29 @@
                <th scope="col">Responsible Person</th>
                {% endif %}
                <th scope="col">Info</th>
-            </tr>
+            </tr> 
          </thead>
          <tbody>
-            {% for subscription in subscriptions %}
+            {% for sub in subs %}
             <tr>
-               <td>
-                  <a href="{{ path('app_system_status_show', {'id': subscription.systemStatus.id}) }}">{{ subscription.systemStatus.system }}</a>
-               </td>
-               <td>
-                  <span id="status{{ subscription.systemStatus.id }}"></span>
-               </td>
-               <td>{{ subscription.systemStatus.updatedAt|date('Y-m-d H:i:s') }}</td>
-               {% if is_granted('ROLE_ADMIN') %}
-               <td>{{ subscription.systemStatus.responsible_person }}</td>
-               {% endif %}
-               <td>{{ subscription.systemStatus.info }}</td>
+               <td> {{ sub.system.name }} </td>
+               <td>  </td>
+               <td> {{ sub.system.createdAt|date('Y-m-d H:i:s') }} </td>
+               <td> {{ sub.system.creator.username }} </td>
+               <td> {{ sub.system.info }} </td>
             </tr>
-            {% endfor %}
+            {% endfor %} 
+            {% endif %}
          </tbody>
       </table>
    </div>
-   {% endif %}
-   {% endif %}
-</div>
-
-<script>
-   {% for subscription in subscriptions %}
-      var statusElement = document.getElementById("status{{ subscription.systemStatus.id }}");
-      var maintenanceStart = new Date("{{ subscription.systemStatus.maintenanceStart|date('Y-m-d H:i:s') }}");
-      var maintenanceEnd = new Date("{{ subscription.systemStatus.maintenanceEnd|date('Y-m-d H:i:s') }}");
-      var now = new Date();
-
-      if (maintenanceStart > now) {
-         // Update scheduled
-         statusElement.innerHTML = `
-         
-            <span class="badge bg-success text-white">Available</span>
-            <i class="fa fa-exclamation-circle" data-bs-html="true" data-bs-toggle="tooltip" title="Maintenance scheduled <br> start: {{subscription.systemStatus.maintenanceStart|date('Y-m-d H:i')}} <br> until: {{subscription.systemStatus.maintenanceEnd|date('Y-m-d H:i')}}  "></i>
-         `;
-         // Initialize tooltips
-         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-         var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-         return new bootstrap.Tooltip(tooltipTriggerEl)
-         })
-      } else if (maintenanceStart <= now && maintenanceEnd >= now) {
-         // Maintenance in progress
-         statusElement.innerHTML = `
-            <span class="badge bg-warning text-dark">Maintenance (In Progress)</span>
-             <i class="fa fa-refresh fa-spin" style="font-size:14px"></i>
-         `;
-      } else if ("{{ subscription.systemStatus.status }}" === 'Down') {
-         // Down
-         statusElement.innerHTML = `
-            <span class="badge bg-danger text-white">Down</span>
-         `;
-      } else {
-         // Available
-         statusElement.innerHTML = `
-            <span class="badge bg-success text-white">Available</span>
-         `;
-      }
-   {% endfor %}
-</script>
+ </div>
 {# JavaScript Search file: /public/asset/js/search.js #}
 <script src="{{ asset('../public/asset/js/Search_jquery-3.6.0.min.js')}}"></script>
 <script src="{{ asset('../public/asset/js/search.js')}}"></script>
- <script>
-    const socketUrl = `ws://localhost:8000`;
-
-    const socket = new WebSocket(socketUrl); // Replace the URL with your WebSocket server URL
-
-    socket.addEventListener('open', (event) => {
-        console.log('WebSocket connection established.');
-        //sendMessage('action:subscribe:'+uid);
-    });
-
-    // Listen for incoming messages from the WebSocket server
-    socket.addEventListener('message', (event) => {
-       
-      const message =JSON.parse(event.data);
-      var subscriptions=[]; 
-      {% for subscription in subscriptions %}
-      subscriptions.push('{{ subscription.systemStatus.system }}');
-      {% endfor %}
-        // Check if the user is subscribed before showing the notification
-        if (subscriptions.includes(message.system)) {
-            // Display a Chrome browser notification with sound
-            if (Notification.permission === 'granted') {
-                showNotification('New Message', message.message);
-            } else if (Notification.permission !== 'denied') {
-                Notification.requestPermission().then((permission) => {
-                    if (permission === 'granted') {
-                        showNotification('New Message', message.message);
-                    }
-                });
-            }
-            console.log('Received message:', message.message);
-        } else {
-            // Hide the message because the user is not subscribed
-            console.log('Message hidden: User not subscribed.');
-        }       
-    });
-
-    // Function to send a message via the WebSocket connection
-    function sendMessage(message) {
-        socket.send(message);
-    }
-
-    // Function to display a Chrome browser notification with sound
-    function showNotification(title, body) {
-        const options = {
-            body: body,
-            icon: '{{ asset('img/favicon.png') }}', // Replace with the path to your notification icon
-            sound: '{{ asset('asset/sound/notification.mp3') }}', // Replace with the path to your notification sound
-        };
-        new Notification(title, options);
-    }
-</script>
 
 
-
-
-
-
-
-{# <!-- Add an ID to the WebSocket connection element -->
+<!-- Add an ID to the WebSocket connection element -->
 <script>
     // Establish a WebSocket connection
     const socket = new WebSocket('ws://localhost:8000'); // Replace the URL with your WebSocket server URL
@@ -207,5 +108,5 @@
         };
         new Notification(title, options);
     }
-</script> #}
+</script>
 {% endblock %}

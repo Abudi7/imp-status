@@ -54,7 +54,7 @@ class SystemStatus
     {
         $this->createdAt = new \DateTime();
         $this->updatedAt = new \DateTime();
-        $this->subscriptions = new ArrayCollection();
+        
     }
 
     public function getId(): ?int
@@ -134,27 +134,7 @@ class SystemStatus
         return $this->subscriptions;
     }
 
-    public function addSubscription(Subscription $subscription): self
-    {
-        if (!$this->subscriptions->contains($subscription)) {
-            $this->subscriptions->add($subscription);
-            $subscription->setSystemStatus($this);
-        }
-
-        return $this;
-    }
-
-    public function removeSubscription(Subscription $subscription): self
-    {
-        if ($this->subscriptions->removeElement($subscription)) {
-            // set the owning side to null (unless already changed)
-            if ($subscription->getSystemStatus() === $this) {
-                $subscription->setSystemStatus(null);
-            }
-        }
-
-        return $this;
-    }
+   
 
     public function getInfo(): ?string
     {

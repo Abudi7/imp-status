@@ -15,10 +15,14 @@ class Template
     private ?int $id = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
-    private ?string $maintenance = null;
+    private ?string $template = null;
 
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
-    private ?string $incident = null;
+    #[ORM\Column(length: 255)]
+    private ?string $title = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $subject = null;
+
 
 
 
@@ -27,26 +31,38 @@ class Template
         return $this->id;
     }
 
-    public function getMaintenance(): ?string
+    public function getTemplate(): ?string
     {
-        return $this->maintenance;
+        return $this->template;
     }
 
-    public function setMaintenance(?string $maintenance): self
+    public function setTemplate(?string $template): self
     {
-        $this->maintenance = $maintenance;
+        $this->template = $template;
 
         return $this;
     }
 
-    public function getIncident(): ?string
+    public function getTitle(): ?string
     {
-        return $this->incident;
+        return $this->title;
     }
 
-    public function setIncident(?string $incident): self
+    public function setTitle(string $title): static
     {
-        $this->incident = $incident;
+        $this->title = $title;
+
+        return $this;
+    }
+
+    public function getSubject(): ?string
+    {
+        return $this->subject;
+    }
+
+    public function setSubject(string $subject): static
+    {
+        $this->subject = $subject;
 
         return $this;
     }

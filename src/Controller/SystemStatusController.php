@@ -15,6 +15,7 @@ use DateTimeImmutable;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Annotation\Route;
@@ -25,7 +26,8 @@ use \WebSocket\Client;
 
 class SystemStatusController extends AbstractController
 {
-      /**
+
+   /**
  * Build a private method to change the value in the database.
  *
  * @param integer $id
@@ -172,6 +174,7 @@ private function updateIsDeactive($id, ManagerRegistry $managerRegistry, $isdeac
      * @param string $system The system being updated
      * @param string $user The system being updated
      */
+
     private function sendMaintenanceNotification($system, $user)
     {
         $client = new Client("ws://localhost:8000");
@@ -179,6 +182,7 @@ private function updateIsDeactive($id, ManagerRegistry $managerRegistry, $isdeac
          $msg = "Hello '{$user}': The system '{$system}' is in maintenance";
          $message = ["system"=> $system,"message"=> $msg];
         $client->send(json_encode($message));
+
     }
 
     /**
@@ -191,6 +195,7 @@ private function updateIsDeactive($id, ManagerRegistry $managerRegistry, $isdeac
      */
     
      #[Route("/system_status/{id}/edit", name: "app_system_status_edit")]
+
     public function edit(Request $request,SubscriptionRepository $subscriptionRepository, SystemStatus $status, ManagerRegistry $entityManager, MailerInterface $mailer, $id)
     {
         // Retrieve the actual data from the database
@@ -246,8 +251,10 @@ private function updateIsDeactive($id, ManagerRegistry $managerRegistry, $isdeac
                     //call the private methode uns pass the argument 
                 $this->sendMaintenanceNotification($system,$userSubscribe);
                  }
+
                     
                             return $this->redirectToRoute('app_system_status_maintenance', ['id' => $id]);
+
             }
     
             // Redirect to the system status route if not in maintenance mode

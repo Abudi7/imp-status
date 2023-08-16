@@ -2566,7 +2566,7 @@ class Parser
      *      EmptyCollectionComparisonExpression | CollectionMemberExpression |
      *      InstanceOfExpression
      *
-     * @return AST\BetweenExpression|
+     * @return (AST\BetweenExpression|
      *         AST\CollectionMemberExpression|
      *         AST\ComparisonExpression|
      *         AST\EmptyCollectionComparisonExpression|
@@ -2574,7 +2574,7 @@ class Parser
      *         AST\InExpression|
      *         AST\InstanceOfExpression|
      *         AST\LikeExpression|
-     *         AST\NullComparisonExpression
+     *         AST\NullComparisonExpression)
      */
     public function SimpleConditionalExpression()
     {

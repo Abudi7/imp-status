@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Subscription;
-use App\Entity\SystemStatus;
+use App\Entity\System;
 use App\Repository\SubscriptionRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -36,65 +36,73 @@ class SubscriptionController extends AbstractController
 * It renders the subscription page and passes in system statuses, subscriptions, and the subscription form.
 */
     #[Route('/subscription', name: 'app_subscription')]
-public function index(Request $request, ManagerRegistry $managerRegistry, TokenStorageInterface $tokenStorageInterface): Response
+public function index(Request $request, ManagerRegistry $managerRegistry, TokenStorageInterface $tokenStorageInterface, SubscriptionRepository $subscriptionRepository): Response
 {
-    // Get the logged-in user
     $user = $tokenStorageInterface->getToken()->getUser();
+    $sub = $subscriptionRepository->findBy(['user' => $user]);
+    return $this->render('subscription/index.html.twig', [
+        'subs'=> $sub,
+    ]);
+}
+//     // Get the logged-in user
+//     $user = $tokenStorageInterface->getToken()->getUser();
     
-    // Fetch the user's subscriptions
-    $subscriptions = $managerRegistry->getRepository(Subscription::class)->findBy(['user' => $user]);
+//     // Fetch the user's subscriptions
+//     $subscriptions = $managerRegistry->getRepository(Subscription::class)->findBy(['user' => $user]);
 
-    // Create the subscription form
-    $form = $this->createFormBuilder()
-        ->add('systemStatus', EntityType::class, [
-            'class' => SystemStatus::class,
-            'choice_label' => 'system',
-            'placeholder' => 'Select a system',
-        ])
-        ->add('subscribe', SubmitType::class, [
-            'label' => 'Subscribe',
-        ])
-        ->getForm();
+//     // Create the subscription form
+//     $form = $this->createFormBuilder()
+//         ->add('systemStatus', EntityType::class, [
+//             'class' => System::class,
+//             'choice_label' => 'system',
+//             'placeholder' => 'Select a system',
+//         ])
+//         ->add('subscribe', SubmitType::class, [
+//             'label' => 'Subscribe',
+//         ])
+//         ->getForm();
 
-    $form->handleRequest($request);
+//     $form->handleRequest($request);
 
-    if ($form->isSubmitted() && $form->isValid()) {
-        // Handle the form submission
+//     if ($form->isSubmitted() && $form->isValid()) {
+//         // Handle the form submission
 
-        // Get the selected system status
-        $systemStatus = $form->get('systemStatus')->getData();
+//         // Get the selected system status
+//         $systemStatus = $form->get('systemStatus')->getData();
 
-        if ($systemStatus) {
-            // Create a new subscription
-            $subscription = new Subscription();
-            $subscription->setUser($user);
-            $subscription->setSystemStatus($systemStatus);
-            $subscription->setIsSubscribed(true);
+//         if ($systemStatus) {
+//             // Create a new subscription
+//             $subscription = new Subscription();
+//             $subscription->setUser($user);
+//             $subscription->setSystem($systemStatus);
+//             $subscription->setIsSubscribed(true);
 
-            // Save the subscription to the database
-            $em = $managerRegistry->getManager();
-            $em->persist($subscription);
-            $em->flush();
+//             // Save the subscription to the database
+//             $em = $managerRegistry->getManager();
+//             $em->persist($subscription);
+//             $em->flush();
             
           
 
-            // Display a success flash message
-            $this->addFlash('success', 'You have successfully subscribed to ' . $systemStatus->getSystem());
+//             // Display a success flash message
+//             $this->addFlash('success', 'You have successfully subscribed to ' . $systemStatus->getSystem());
 
-            // Redirect the user back to the subscription page
-            return $this->redirectToRoute('app_subscription');
-        }
-    }
-    // Fetch all system statuses
-    $systemStatuses = $managerRegistry->getRepository(SystemStatus::class)->findAll();
+//             // Redirect the user back to the subscription page
+//             return $this->redirectToRoute('app_subscription');
+//         }
+//     }
 
-    // Render the subscription page with the necessary data
-    return $this->render('subscription/index.html.twig', [
-        'systemStatuses' => $systemStatuses,
-        'subscriptions' => $subscriptions,
-        'form' => $form->createView(),
-    ]);
-}
+//     // Fetch all system statuses
+//     $systemStatuses = $managerRegistry->getRepository(System::class)->findAll();
+
+
+//     // Render the subscription page with the necessary data
+//     return $this->render('subscription/index.html.twig', [
+//         'systemStatuses' => $systemStatuses,
+//         'subscriptions' => $subscriptions,
+//         'form' => $form->createView(),
+//     ]);
+// }
 
 /* The unsubscribe method is responsible for removing a subscription from the database. */
 #[Route('/subscription/{id}/unsbuscribe', name: 'app_subscription_unsbuscribe')]
