@@ -51,11 +51,28 @@
             {% for sub in subs %}
             <tr>
                <td> {{ sub.system.name }} </td>
-               <td>  </td>
+               <td class="status-cell" data-system-id="{{ sub.system.id }}"></td>
                <td> {{ sub.system.createdAt|date('Y-m-d H:i:s') }} </td>
                <td> {{ sub.system.creator.username }} </td>
                <td> {{ sub.system.info }} </td>
             </tr>
+            <script>
+               document.addEventListener('DOMContentLoaded', function() {
+                  const statusCells = document.querySelectorAll('.status-cell');
+
+                  statusCells.forEach(cell => {
+                        const systemId = cell.dataset.systemId;
+                           fetch(`http://localhost:8080/public/events/get-system-status/${systemId}`)
+                           .then(response => response.json())
+                           .then(data => {
+                              cell.textContent = data.status; // Set the status in the cell
+                           })
+                           .catch(error => {
+                              console.error('Error fetching system status:', error);
+                           });
+                  });
+               });
+            </script>
             {% endfor %} 
             {% endif %}
          </tbody>

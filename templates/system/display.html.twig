@@ -19,7 +19,9 @@
                 </div>
                 <div class="card-footer">
                     <a href="{{ path('app_system')}}" class="btn btn-secondary">Back</a>
-                    <a href="{{ path('app_events_new', {'id': displays.id}) }}" class="btn btn-secondary">Events</a>
+                    <a href="{{ path('app_events_system', {'systemId': displays.id}) }}" class="btn btn-secondary">Events list</a>
+                    <a href="{{ path('app_events_new_maintenance', {'id': displays.id}) }}" class="btn btn-warning">Maintenance</a>
+                    <a href="{{ path('app_events_new_incident', {'id': displays.id}) }}" class="btn btn-danger">Incident</a>
                     <a href="{{ path('app_system_delete', {'id': displays.id}) }}" class="btn btn-danger float-right"><i class="fa fa-trash"></i></a>
                 </div>
             </div>

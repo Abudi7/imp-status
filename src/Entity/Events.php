@@ -9,6 +9,11 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: EventsRepository::class)]
 class Events
 {
+    public function __construct()
+    {
+        $this->start = new \DateTime(); // Set the start time to the current date and time when creating an event
+       //$this->end = new \DateTime('9999-99-99'); // Set the end time 99999
+    }
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

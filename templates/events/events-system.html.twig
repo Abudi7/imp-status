@@ -1,0 +1,52 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container">
+        <h2 class="bg-info text-center text-white rounded-pill">Events for {{ system.name }}</h2>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Type</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for event in events %}
+                    <tr>
+                        <td>{{ event.type }}</td>
+                        <td>{{ event.start|date('Y-m-d H:i:s') }}</td>
+                        <td>
+                            {% if event.end %}
+                                {{ event.end|date('Y-m-d H:i:s') }}
+                            {% else %}
+                                Not resolved yet
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if event.type == 'incident' and event.end|date('Y-m-d') == '9999-12-31' %}
+                                <a href="{{ path('app_events_resolve_incident', {'id': event.id}) }}" class="btn btn-success">Resolve Incident</a>
+                            {% elseif event.type == 'incident' and event.end %}
+                                <button class="btn btn-secondary" disabled>Resolved</button>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const resolvedButtons = document.querySelectorAll('.btn-secondary[disabled]');
+            resolvedButtons.forEach(button => {
+                button.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    alert('This incident is already resolved.');
+                    // You can add more custom behavior here if needed
+                });
+            });
+        });
+    </script>
+{% endblock %}

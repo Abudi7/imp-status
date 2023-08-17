@@ -122,25 +122,8 @@
                      <td><a class="link-offset-2 link-underline link-underline-opacity-0"
                            href="{{ path('app_system') }}">{{ systemSub.name }}</a></td>
                      <td>
-                        {% for event in events %}
-                           {% if events.system.type == "maintenance" %}
-                               <div class="status-circle bg-warning">
-                                 {# <span>&#9888;</span> #}
-                              </div>
-                              <div class="status-text">Maintenance</div>
-                              {% elseif event.system.type == "identnce" %}
-                              <div class="status-circle bg-danger">
-                                 {# <span>&#9888;</span> #}
-                              </div>
-                              <div class="status-text">Down</div>
-                           {% endif %}
-                           <div class="status-circle bg-success slide-in-animation">
-                              {# <span class="mb-3">&#10004;</span> #}
-                           </div>
-                           <div class="status-text">Available</div>
-                           {% else %}
-
-                        {% endfor %}
+                       
+                      
                         {# <div id="status{{ systemSub.id }}" class="status-container"></div>
                         <div class="status-circle bg-success slide-in-animation">
                               {# <span class="mb-3">&#10004;</span> #}
