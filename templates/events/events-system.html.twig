@@ -1,15 +1,23 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <div class="container">
-        <h2 class="bg-info text-center text-white rounded-pill">Events for {{ system.name }}</h2>
-        <table class="table table-bordered">
-            <thead>
+   <<div class="container">
+    <div class="mb-3">
+        <a href="{{ path('app_system_display', {'id': system.id}) }}" class="btn btn-secondary">Back to Display System</a>
+    </div>
+    <h2 class="bg-info text-center text-white rounded-pill">Events for {{ system.name }}</h2>
+    <div class="table-responsive">
+        <table class="table table-bordered table-md" id="table" style="font-size: 13px">
+            <thead class="bg-primary text-white">
                 <tr>
-                    <th>Type</th>
-                    <th>Start Date</th>
-                    <th>End Date</th>
-                    <th>Actions</th>
+                    <th scope="col">Type</th>
+                    <th scope="col">Start Date</th>
+                    <th scope="col">End Date</th>
+                    <th scope="col">Info</th>
+                    <th scope="col">Created at</th>
+                    <th scope="col">Created by</th>
+                    <th scope="col">Email body</th>
+                    <th scope="col">Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -24,11 +32,17 @@
                                 Not resolved yet
                             {% endif %}
                         </td>
+                        <td>{{ event.info }}</td>
+                        <td>{{ event.createdAt|date('Y-m-d H:i:s') }}</td>
+                        <td>{{ event.creator.email }}</td>
+                        <td>{{ event.email }}</td>
                         <td>
                             {% if event.type == 'incident' and event.end|date('Y-m-d') == '9999-12-31' %}
                                 <a href="{{ path('app_events_resolve_incident', {'id': event.id}) }}" class="btn btn-success">Resolve Incident</a>
                             {% elseif event.type == 'incident' and event.end %}
                                 <button class="btn btn-secondary" disabled>Resolved</button>
+                            {% elseif event.type == 'maintenance' %}
+                                <a href="{{ path('app_events_change_to_available', {'id': event.id}) }}" class="btn btn-warning">Change to Available</a>
                             {% endif %}
                         </td>
                     </tr>
@@ -36,6 +50,8 @@
             </tbody>
         </table>
     </div>
+</div>
+
     
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -43,10 +59,34 @@
             resolvedButtons.forEach(button => {
                 button.addEventListener('click', function(event) {
                     event.preventDefault();
+                     // Check if the incident is resolved
+                if (event.target.textContent === 'Resolved') {
                     alert('This incident is already resolved.');
-                    // You can add more custom behavior here if needed
-                });
+                } else {
+                    // Prompt the user for confirmation
+                    const confirmed = confirm('Are you sure you want to perform this action?');
+                    
+                    if (confirmed) {
+                        // Perform the action (you can replace this with your custom logic)
+                        performCustomAction(event.target);
+                        
+                        // Update the button text to show the action has been performed
+                        event.target.textContent = 'Action Performed';
+                        event.target.classList.remove('btn-secondary');
+                        event.target.classList.add('btn-success');
+                    }
+                }
             });
         });
+        
+        // Function to perform a custom action
+        function performCustomAction(button) {
+            // Example: You can make an AJAX request, update the UI, etc.
+            // Here, we are just logging a message
+            console.log('Custom action performed for button:', button);
+        }
+    });
+
     </script>
 {% endblock %}
+

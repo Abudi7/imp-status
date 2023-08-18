@@ -32,7 +32,7 @@ class TemplateController extends AbstractController
             ->add('title', TextType::class)
             ->add('subject', TextType::class)
             ->add("template", TextareaType::class, [
-                "label" => "Maintenance URL",
+                "label" => "Content",
             ])
             ->add("save", SubmitType::class, [
                 "label" => "Save",

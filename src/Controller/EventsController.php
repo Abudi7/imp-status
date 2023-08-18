@@ -4,6 +4,10 @@ namespace App\Controller;
 
 use App\Entity\Events;
 use App\Entity\System;
+use App\Entity\User;
+use App\Entity\Subscription;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
 use App\Entity\Template;
 use App\Form\EventsType;
 use App\Repository\TemplateRepository;
@@ -12,6 +16,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -23,6 +28,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class EventsController extends AbstractController
 {
+    // Default route for the EventsController
     #[Route('/events', name: 'app_events')]
     public function index(): Response
     {
@@ -30,9 +36,9 @@ class EventsController extends AbstractController
             'controller_name' => 'EventsController',
         ]);
     }
-
+    // Create a new maintenance event
     #[Route("/events/{id}/new-Maintenance", name:"app_events_new_maintenance")]
-    public function maintenance(Request $request, $id , ManagerRegistry $managerRegistry): Response
+    public function maintenance(Request $request, $id , ManagerRegistry $managerRegistry,MailerInterface $mailer): Response
     {
         // Get the authenticated user (admin)
         $admin = $this->getUser();
@@ -56,16 +62,42 @@ class EventsController extends AbstractController
             "required" => false, // Mark the field as not required
             "disabled" => true, // Set the field as disabled
         ])
+        ->add('creator', EntityType::class,[
+            "class" => User::class,
+            "choice_label" => "email",
+            "required" => false, // Mark the field as not required
+            "disabled" => true, // Set the field as disabled
+
+        ])
+        ->add('created_at', DateTimeType::class, [
+            'widget' => 'single_text',
+            "required" => false, // Mark the field as not required
+            "disabled" => true,
+        ])
         ->add('type', ChoiceType::class, [
             'choices' => [
                 'Maintenance' => 'maintenance',
             ],
+            
         ])
+        ->add('send_email', CheckboxType::class, [
+            'label' => 'Send Email',
+            'required' => false,
+            'attr' => [
+                'class' => 'custom-switch-input', // Add a class for the switch style
+            ],       
+        ])       
         ->add('start', DateTimeType::class, [
             'widget' => 'single_text',
         ])
         ->add('end', DateTimeType::class, [
             'widget' => 'single_text',
+        ])
+        ->add('info', TextType::class, [
+            'attr' => [
+                'class' => 'custom-css-class',
+                'placeholder' => 'Enter information...',
+            ],
         ])
         ->add('emailtemplate', EntityType::class, [
             'class' => Template::class,
@@ -84,10 +116,28 @@ class EventsController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             // Set the 'email' property based on the form data
             $event->setEmail($form->get('email')->getData());
+            
+             // Send email to subscribed users if send_email is checked
+            if ($event->isSendEmail()) {
+                $subscribedUsers = $system->getSubscriptions(); // Implement this method in your System entity
+
+                
+            foreach ($subscribedUsers as $subscription) {
+                $user = $subscription->getUser(); // Assuming Subscription entity has a user relation
+                $emailAddress = $user->getEmail();
+
+                $email = (new Email())
+                    ->from('your@example.com')
+                    ->to($emailAddress)
+                    ->subject('Maintenance Event Notification')
+                    ->text($form->get('email')->getData());
+
+                $mailer->send($email);
+            }
+            }
             // Persist the new event
             $entityManager->persist($event);
             $entityManager->flush();
-
             // Redirect to the system page or a confirmation page
             return $this->redirectToRoute("app_system_display", ["id" => $id]);
         }
@@ -97,51 +147,73 @@ class EventsController extends AbstractController
             "system" => $system,
         ]);
     }
-    
+    // Create a new incident event
     #[Route("/events/{id}/new-Incident", name:"app_events_new_incident")]
     public function incident(Request $request, $id , ManagerRegistry $managerRegistry): Response
     {
         // Get the authenticated user (admin)
         $admin = $this->getUser();
         
-        // Load the System entity
+        // Load the System entity using Doctrine's Entity Manager
         $entityManager = $managerRegistry->getManager();
         $system = $entityManager->getRepository(System::class)->find($id);
 
-        // Create a new Events entity
+        // Create a new Events entity for the incident event
         $event = new Events();
         $event->setSystem($system);
         $event->setCreator($admin);
-        $event->setEnd(new \DateTime('9999-12-31')); // Set a future date as a placeholder
+        $event->setEnd(new \DateTime('9999-12-31')); // Set a future date as a placeholder for end date
         
-        // Create the form for maintence event creation
+        // Create the form for incident event creation
         $form = $this->createFormBuilder($event)
-        ->add('system', EntityType::class, [
-            "class" => System::class,
-            "choice_label" => "name",
-            "placeholder" => "Select a system", // Optional placeholder text
-            "required" => false, // Mark the field as not required
-            "disabled" => true, // Set the field as disabled
-        ])
-        ->add('type', ChoiceType::class, [
-            'choices' => [
-                'Incident' => 'incident',
-            ],
-        ])
-        // ->add('end', DateType::class, [
-        //     'widget' => 'single_text',
-        // ])
-        ->add('emailtemplate', EntityType::class, [
-            'class' => Template::class,
-            'choice_label' => 'subject',
-            'label' => 'Select Template', // Adjust label as needed
-        ])
-        ->add('email', TextareaType::class, [
-            'mapped' => false,
-            'required' => false,
-            'label' => 'Email Template',
-            'attr' => ['rows' => 5, 'class' => 'template-textarea'], // Add a class for selecting the textarea with JS
-        ]);
+            ->add('system', EntityType::class, [
+                "class" => System::class,
+                "choice_label" => "name",
+                "placeholder" => "Select a system", // Optional placeholder text
+                "required" => false, // Mark the field as not required
+                "disabled" => true, // Set the field as disabled
+            ])
+            ->add('creator', EntityType::class,[
+                "class" => User::class,
+                "choice_label" => "email",
+                "required" => false, // Mark the field as not required
+                "disabled" => true, // Set the field as disabled
+    
+            ])
+            ->add('created_at', DateTimeType::class, [
+                'widget' => 'single_text',
+                "required" => false, // Mark the field as not required
+                "disabled" => true,
+            ])
+            ->add('info', TextType::class, [
+                'attr' => [
+                    'class' => 'custom-css-class',
+                    'placeholder' => 'Enter information...',
+                ],
+            ])
+            ->add('type', ChoiceType::class, [
+                'choices' => [
+                    'Incident' => 'incident',
+                ],
+            ])
+            ->add('emailtemplate', EntityType::class, [
+                'class' => Template::class,
+                'choice_label' => 'subject',
+                'label' => 'Select Template', // Customize the label as needed
+            ])
+            ->add('send_email', CheckboxType::class, [
+                'label' => 'Send Email',
+                'required' => false,
+                'attr' => [
+                    'class' => 'custom-switch-input', // Add a class for the switch style
+                ],       
+            ])  
+            ->add('email', TextareaType::class, [
+                'mapped' => false,
+                'required' => false,
+                'label' => 'Email Template',
+                'attr' => ['rows' => 5, 'class' => 'template-textarea'], // Customize the textarea appearance
+            ]);
         $form = $form->getForm();
 
         // Handle form submission
@@ -149,7 +221,8 @@ class EventsController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             // Set the 'email' property based on the form data
             $event->setEmail($form->get('email')->getData());
-            // Persist the new event
+            
+            // Persist the new incident event to the database
             $entityManager->persist($event);
             $entityManager->flush();
 
@@ -157,27 +230,39 @@ class EventsController extends AbstractController
             return $this->redirectToRoute("app_system_display", ["id" => $id]);
         }
 
+        // Render the incident event creation form
         return $this->render("events/new-Incident.html.twig", [
             "form" => $form->createView(),
             "system" => $system,
         ]);
     }
 
+
     /**
-     * display system events liste 
+     * Display the list of events associated with a system.
+     *
+     * @param int $systemId The ID of the system for which to retrieve events
+     * @param ManagerRegistry $managerRegistry The Doctrine manager registry
+     * @return Response
      */
     #[Route("/system/{systemId}/events", name:"app_events_system")]
     public function systemEvents($systemId, ManagerRegistry $managerRegistry): Response
     {
+        // Get the Entity Manager from the registry
         $entityManager = $managerRegistry->getManager();
+
+        // Load the System entity based on the provided systemId
         $system = $entityManager->getRepository(System::class)->find($systemId);
 
+        // Check if the system exists, if not throw a 404 error
         if (!$system) {
             throw $this->createNotFoundException('System not found');
         }
 
+        // Retrieve events associated with the system
         $events = $entityManager->getRepository(Events::class)->findBy(['system' => $system]);
 
+        // Render the events list view with the associated system and events
         return $this->render('events/events-system.html.twig', [
             'system' => $system,
             'events' => $events,
@@ -186,7 +271,12 @@ class EventsController extends AbstractController
 
 
     /**
-     * Edit Record
+     * Edit an existing event record.
+     *
+     * @param Request $request The HTTP request object
+     * @param int $id The ID of the event to edit
+     * @param ManagerRegistry $managerRegistry The Doctrine manager registry
+     * @return Response
      */
 
      #[Route("/events/{id}/edit", name:"app_events_edit")]
@@ -198,12 +288,14 @@ class EventsController extends AbstractController
              throw $this->createNotFoundException('Event not found');
          }
      
+         // Create the form using the EventsType form type and pre-populate it with the event data
          $form = $this->createForm(EventsType::class, $event);
      
          $form->handleRequest($request);
          if ($form->isSubmitted() && $form->isValid()) {
+             // Save the changes to the event
              $entityManager->flush();
-             // You can add a success flash message here if needed
+          
              return $this->redirectToRoute('app_events_system', ['systemId' => $event->getSystem()->getId()]);
          }
      
@@ -213,9 +305,13 @@ class EventsController extends AbstractController
          ]);
      }
 
-     /**
-      * Resolve Incident
-      */
+    /**
+     * Resolve an incident event.
+     *
+     * @param int $id The ID of the incident event to resolve
+     * @param ManagerRegistry $managerRegistry The Doctrine manager registry
+     * @return Response
+     */
      #[Route("/events/{id}/resolve-incident", name:"app_events_resolve_incident")]
     public function resolveIncident($id, ManagerRegistry $managerRegistry): Response
     {
@@ -237,6 +333,13 @@ class EventsController extends AbstractController
         return $this->redirectToRoute('app_events_system', ['systemId' => $event->getSystem()->getId()]);
     }
 
+    /**
+     * Get the system status based on the events associated with it.
+     *
+     * @param int $id The ID of the system to retrieve the status for
+     * @param ManagerRegistry $managerRegistry The Doctrine manager registry
+     * @return JsonResponse
+     */
     #[Route("/events/get-system-status/{id}", name:"get_system_status")]
     public function getSystemStatus($id, ManagerRegistry $managerRegistry): JsonResponse
     {
@@ -253,6 +356,27 @@ class EventsController extends AbstractController
         return new JsonResponse(['status' => $status]);
     }
 
+    #[Route("/events/{id}/change-to-available", name:"app_events_change_to_available")]
+    public function changeToAvailable($id, ManagerRegistry $managerRegistry): Response
+    {
+        // Get the authenticated user (admin)
+        $admin = $this->getUser();
+        
+        // Load the Event entity
+        $entityManager = $managerRegistry->getManager();
+        $event = $entityManager->getRepository(Events::class)->find($id);
 
+        if (!$event) {
+            throw $this->createNotFoundException('Event not found');
+        }
+
+        // Change the event type to 'available'
+        $event->setType('available');
+        
+        // Persist the updated event
+        $entityManager->flush();
+
+        return $this->redirectToRoute('app_system_display', ['id' => $event->getSystem()->getId()]);
+    }
 
 }

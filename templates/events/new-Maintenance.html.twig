@@ -5,11 +5,15 @@
     <h2 class="bg-warning text-center rounded-pill ">Create New Maintenance Event</h2>
     {{ form_start(form) }}
     {{ form_row(form.system) }}
+    {{ form_row(form.creator) }}
+    {{ form_row(form.created_at) }}
+    {{ form_row(form.info) }}
     {{ form_row(form.type) }}
     {{ form_row(form.start) }}
     {{ form_row(form.end) }}
     {{ form_row(form.emailtemplate, {'attr': {'class': 'template-select'}}) }}
     {{ form_row(form.email, {'attr': {'class': 'email-field'}}) }}
+    {{ form_row(form.send_email) }}
     <button type="submit" class="btn btn-primary">Create Event</button>
     {{ form_end(form) }}
 </div>

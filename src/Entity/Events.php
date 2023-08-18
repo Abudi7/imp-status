@@ -11,7 +11,8 @@ class Events
 {
     public function __construct()
     {
-        $this->start = new \DateTime(); // Set the start time to the current date and time when creating an event
+        $this->start = new \DateTime();// Set the start time to the current date and time when creating an event
+        $this->created_at = new \DateTime(); 
        //$this->end = new \DateTime('9999-99-99'); // Set the end time 99999
     }
     #[ORM\Id]
@@ -40,6 +41,15 @@ class Events
     private ?User $creator = null;
 
     private ?Template $emailTemplate = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?bool $send_email = null;
+
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $info = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private ?\DateTimeInterface $created_at = null;
     public function setEmailTemplate($emailTemplate) {
          $this->emailTemplate = $emailTemplate; 
     }
@@ -120,6 +130,42 @@ class Events
     public function setCreator(?User $creator): static
     {
         $this->creator = $creator;
+
+        return $this;
+    }
+
+    public function isSendEmail(): ?bool
+    {
+        return $this->send_email;
+    }
+
+    public function setSendEmail(?bool $send_email): static
+    {
+        $this->send_email = $send_email;
+
+        return $this;
+    }
+
+    public function getInfo(): ?string
+    {
+        return $this->info;
+    }
+
+    public function setInfo(string $info): static
+    {
+        $this->info = $info;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->created_at;
+    }
+
+    public function setCreatedAt(\DateTimeInterface $created_at): static
+    {
+        $this->created_at = $created_at;
 
         return $this;
     }
