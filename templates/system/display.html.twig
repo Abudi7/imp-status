@@ -24,8 +24,9 @@
                     
                     <!-- Add more fields as needed -->
                 </div>
-                <div class="card-footer d-flex justify-content-between">
-                    <a href="{{ path('app_system')}}" class="btn btn-secondary">Back</a>
+                <div class="card-footer d-flex justify-content-between">   
+                     <a href="{% if is_granted('ROLE_ADMIN') %}{{ path('app_system')}}{% else %}{{ path('app_allSubscription')}}{% endif %}" class="btn btn-secondary">Back</a>
+                      {% if is_granted('ROLE_ADMIN') %} 
                     <div class="dropdown">
                         <a href="#" class="btn btn-secondary dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             Events
@@ -36,6 +37,7 @@
                             <a class="dropdown-item" href="{{ path('app_events_new_incident', {'id': displays.id}) }}">Incident</a>
                         </div>
                     </div>
+                    {% endif %} 
                     <a href="{{ path('app_system_delete', {'id': displays.id}) }}" class="btn btn-danger"><i class="fa fa-trash"></i></a>
                 </div>
             </div>

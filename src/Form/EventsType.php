@@ -44,6 +44,7 @@ class EventsType extends AbstractType
         ->add('type', ChoiceType::class, [
             'choices' => [
                 'Maintenance' => 'maintenance',
+                'Incident' => 'incident',
             ],
             
         ])

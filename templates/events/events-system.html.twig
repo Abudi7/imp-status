@@ -1,7 +1,7 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-   <<div class="container">
+   <div class="container">
     <div class="mb-3">
         <a href="{{ path('app_system_display', {'id': system.id}) }}" class="btn btn-secondary">Back to Display System</a>
     </div>
@@ -39,7 +39,7 @@
                         <td>{{ event.email }}</td>
                         <td>
                                 {% if event.type == 'incident' and event.end|date('Y-m-d') == '9999-12-31' %}
-                                    <a href="{{ path('app_events_resolve_incident', {'id': event.id}) }}" class="btn btn-success">Resolve Incident</a>
+                                    <a href="{{ path('app_events_resolve_incident', {'id': event.id}) }}" class="btn btn-danger">Revoke Incident</a>
                                 {% elseif event.type == 'incident' and event.end %}
                                     <button class="btn btn-secondary" disabled>Resolved</button>
                                 {% elseif event.type == 'available'%}

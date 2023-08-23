@@ -119,17 +119,59 @@
                   </tr>
                   {% else %}
                   <tr>
-                     <td><a class="link-offset-2 link-underline link-underline-opacity-0"
-                           href="{{ path('app_system') }}">{{ systemSub.name }}</a></td>
+                     <td>{% if is_granted('ROLE_ADMIN') %}
+                            <a class="link-offset-2 link-underline link-underline-opacity-0" href="{{ path('app_system') }}">{{ systemSub.name }}</a>
+                        {% else %}
+                            <a class="link-offset-2 link-underline link-underline-opacity-0" href="{{ path('app_system_display', {'id': systemSub.id}) }}">{{ systemSub.name }}</a>
+                        {% endif %}
+                     </td>
                      <td>
-                       
-                      
+                          <div id="status{{ systemSub.id }}" class="status-container">
+                <script>
+                    // Get the current date and time
+                    var currentDate = new Date();
+
+                    // Check if the system is in maintenance or incident
+                    var isInMaintenance = false;
+                    var isInIncident = false;
+
+                    {% for event in systemSub.events %}
+                        var start = new Date('{{ event.start|date('Y-m-d H:i:s') }}');
+                        var end = new Date('{{ event.end|date('Y-m-d H:i:s') }}');
+                        
+                        if (currentDate >= start && currentDate <= end) {
+                            if ('{{ event.type }}' === 'maintenance') {
+                                isInMaintenance = true;
+                                break;
+                            } else if ('{{ event.type }}' === 'incident') {
+                                isInIncident = true;
+                                break;
+                            }
+                        }
+                    {% endfor %}
+                    
+                    if (isInMaintenance) {
+                        document.getElementById("status{{ systemSub.id }}").innerHTML = `
+                            <div class="status-circle bg-danger slide-in-animation"></div>
+                            <div class="status-text">Maintenance</div>`;
+                    } else if (isInIncident) {
+                        document.getElementById("status{{ systemSub.id }}").innerHTML = `
+                            <div class="status-circle bg-warning slide-in-animation"></div>
+                            <div class="status-text">Incident</div>`;
+                    } else {
+                        document.getElementById("status{{ systemSub.id }}").innerHTML = `
+                            <div class="status-circle bg-success slide-in-animation"></div>
+                            <div class="status-text">Active</div>`;
+                    }
+                </script>
+            </div>
+                                 
                         {# <div id="status{{ systemSub.id }}" class="status-container"></div>
                         <div class="status-circle bg-success slide-in-animation">
                               {# <span class="mb-3">&#10004;</span> #}
                           {# </div>
                            <div class="status-text">Available</div>
-                        </div> #}
+                        </div> #} 
 
                      </td>
                      <td>
