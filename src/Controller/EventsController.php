@@ -105,7 +105,7 @@ class EventsController extends AbstractController
             'label' => 'Select Template', // Adjust label as needed
         ])
         ->add('email', TextareaType::class, [
-            'mapped' => false,
+            'mapped' => true,
             'required' => false,
             'label' => 'Email Template',
             'attr' => ['rows' => 5, 'class' => 'template-textarea'], // Add a class for selecting the textarea with JS
@@ -147,6 +147,7 @@ class EventsController extends AbstractController
             "system" => $system,
         ]);
     }
+    
     // Create a new incident event
     #[Route("/events/{id}/new-Incident", name:"app_events_new_incident")]
     public function incident(Request $request, $id , ManagerRegistry $managerRegistry): Response
@@ -209,7 +210,7 @@ class EventsController extends AbstractController
                 ],       
             ])  
             ->add('email', TextareaType::class, [
-                'mapped' => false,
+                'mapped' => true,
                 'required' => false,
                 'label' => 'Email Template',
                 'attr' => ['rows' => 5, 'class' => 'template-textarea'], // Customize the textarea appearance
@@ -269,41 +270,39 @@ class EventsController extends AbstractController
         ]);
     }
 
+   // Edit an existing maintenance event
+    #[Route("/events/{eventId}/edit-Maintenance", name:"app_events_edit_maintenance")]
+    public function editMaintenance(Request $request, $eventId, ManagerRegistry $managerRegistry): Response
+    {
+        $entityManager = $managerRegistry->getManager();
+        
+        // Find the maintenance event by ID
+        $event = $entityManager->getRepository(Events::class)->find($eventId);
 
-    /**
-     * Edit an existing event record.
-     *
-     * @param Request $request The HTTP request object
-     * @param int $id The ID of the event to edit
-     * @param ManagerRegistry $managerRegistry The Doctrine manager registry
-     * @return Response
-     */
+        // Uncomment this section if you want to restrict editing to only maintenance events
+        // if (!$event || $event->getType() !== 'maintenance') {
+        //     throw $this->createNotFoundException('Maintenance event not found');
+        // }
 
-     #[Route("/events/{id}/edit", name:"app_events_edit")]
-     public function edit(Request $request, $id, ManagerRegistry $managerRegistry): Response
-     {
-         $entityManager = $managerRegistry->getManager();
-         $event = $entityManager->getRepository(Events::class)->find($id);
-         if (!$event) {
-             throw $this->createNotFoundException('Event not found');
-         }
-     
-         // Create the form using the EventsType form type and pre-populate it with the event data
-         $form = $this->createForm(EventsType::class, $event);
-     
-         $form->handleRequest($request);
-         if ($form->isSubmitted() && $form->isValid()) {
-             // Save the changes to the event
-             $entityManager->flush();
-          
-             return $this->redirectToRoute('app_events_system', ['systemId' => $event->getSystem()->getId()]);
-         }
-     
-         return $this->render('events/edit-events.html.twig', [
-             'form' => $form->createView(),
-             'event' => $event,
-         ]);
-     }
+        // Create and handle the form for editing the maintenance event
+        $form = $this->createForm(EventsType::class, $event);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Save the updated event to the database
+            $entityManager->flush();
+
+            // Redirect to the system display page
+            return $this->redirectToRoute("app_system_display", ["id" => $event->getSystem()->getId()]);
+        }
+
+        // Render the edit maintenance event template
+        return $this->render("events/edit-Maintenance.html.twig", [
+            "form" => $form->createView(),
+            "event" => $event,
+            "system" => $event->getSystem(),
+        ]);
+    }
 
     /**
      * Resolve an incident event.
@@ -378,5 +377,42 @@ class EventsController extends AbstractController
 
         return $this->redirectToRoute('app_system_display', ['id' => $event->getSystem()->getId()]);
     }
+
+
+
+      /**
+     * Edit an existing event record.
+     *
+     * @param Request $request The HTTP request object
+     * @param int $id The ID of the event to edit
+     * @param ManagerRegistry $managerRegistry The Doctrine manager registry
+     * @return Response
+     */
+
+     #[Route("/events/{id}/edit", name:"app_events_edit")]
+     public function edit(Request $request, $id, ManagerRegistry $managerRegistry): Response
+     {
+         $entityManager = $managerRegistry->getManager();
+         $event = $entityManager->getRepository(Events::class)->find($id);
+         if (!$event) {
+             throw $this->createNotFoundException('Event not found');
+         }
+     
+         // Create the form using the EventsType form type and pre-populate it with the event data
+         $form = $this->createForm(EventsType::class, $event);
+     
+         $form->handleRequest($request);
+         if ($form->isSubmitted() && $form->isValid()) {
+             // Save the changes to the event
+             $entityManager->flush();
+          
+             return $this->redirectToRoute('app_events_system', ['systemId' => $event->getSystem()->getId()]);
+         }
+     
+         return $this->render('events/edit-events.html.twig', [
+             'form' => $form->createView(),
+             'event' => $event,
+         ]);
+     }
 
 }

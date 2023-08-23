@@ -18,6 +18,7 @@
                     <th scope="col">Created by</th>
                     <th scope="col">Email body</th>
                     <th scope="col">Actions</th>
+                    <th scope="col">Edit-Maintence</th>
                 </tr>
             </thead>
             <tbody>
@@ -37,14 +38,20 @@
                         <td>{{ event.creator.email }}</td>
                         <td>{{ event.email }}</td>
                         <td>
-                            {% if event.type == 'incident' and event.end|date('Y-m-d') == '9999-12-31' %}
-                                <a href="{{ path('app_events_resolve_incident', {'id': event.id}) }}" class="btn btn-success">Resolve Incident</a>
-                            {% elseif event.type == 'incident' and event.end %}
-                                <button class="btn btn-secondary" disabled>Resolved</button>
-                            {% elseif event.type == 'maintenance' %}
-                                <a href="{{ path('app_events_change_to_available', {'id': event.id}) }}" class="btn btn-warning">Change to Available</a>
-                            {% endif %}
+                                {% if event.type == 'incident' and event.end|date('Y-m-d') == '9999-12-31' %}
+                                    <a href="{{ path('app_events_resolve_incident', {'id': event.id}) }}" class="btn btn-success">Resolve Incident</a>
+                                {% elseif event.type == 'incident' and event.end %}
+                                    <button class="btn btn-secondary" disabled>Resolved</button>
+                                {% elseif event.type == 'available'%}
+                                    <button class="btn btn-success" disabled>Changed to Available</button>
+                                {% elseif event.type == 'maintenance' %}
+                                    <a href="{{ path('app_events_change_to_available', {'id': event.id}) }}" class="btn btn-warning">Change to Available</a>
+                                {% endif %}
                         </td>
+                        <td>
+                        <a href="{{ path('app_events_edit_maintenance', {'eventId': event.id}) }}" class="btn btn-primary">Edit</a>
+                        </td>
+
                     </tr>
                 {% endfor %}
             </tbody>

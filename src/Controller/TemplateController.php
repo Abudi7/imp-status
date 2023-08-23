@@ -63,6 +63,10 @@ class TemplateController extends AbstractController
     public function getTemplateContent(Template $template): JsonResponse
     {
         $templateContent = $template->getTemplate();
+        
+        // Replace newline and carriage return characters with spaces
+        $templateContent = str_replace(["\r\n", "\r", "\n"], '', $templateContent);
+        
         return new JsonResponse($templateContent);
     }
 }
