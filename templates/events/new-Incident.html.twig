@@ -27,10 +27,10 @@
             fetch(`http://localhost:8080/public/template/${selectedTemplateId}/get-template-content/`)
                 .then(response => response.text())
                 .then(content => {
-                    console.log(content)
+                     const filledContent = fillTemplatePlaceholders(content); // Replace placeholders
                     console.log(emailField)
                     console.log(`http://localhost:8080/public/template/${selectedTemplateId}/get-template-content/`)
-                    emailField.value = content; // Populate email textarea
+                    emailField.value = filledContent; // Populate email textarea
                 })
                 .catch(error => {
                     console.error('Error fetching template content:', error);
@@ -42,5 +42,19 @@
                 emailField.classList.add('readonly');
         }
     });
+    function fillTemplatePlaceholders(templateContent) {
+    const placeholders = {
+        system_name: '{{ form.vars.value.system.name }}', // Use the actual system name from the JavaScript variable
+        incident_date: '{{ form.vars.value.start|date('H:i d-M-Y') }}', // Replace with actual value
+        start_time: '{{ form.vars.value.start|date('H:i d-M-Y') }}', // Replace with actual value
+        responsible_person: 'Responsible Person', // Replace with actual value
+    };
+
+    for (const placeholder in placeholders) {
+        templateContent = templateContent.replace(`{${placeholder}}`, placeholders[placeholder]);
+    }
+
+    return templateContent;
+}
 </script>
 {% endblock %}

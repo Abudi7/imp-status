@@ -102,7 +102,13 @@ class EventsController extends AbstractController
         ->add('emailtemplate', EntityType::class, [
             'class' => Template::class,
             'choice_label' => 'subject',
-            'label' => 'Select Template', // Adjust label as needed
+            'label' => 'Select Maintenance subject',
+            'query_builder' => function (TemplateRepository $repository) {
+                return $repository->createQueryBuilder('t')
+                    ->where('t.title = :maintenanceType')
+                    ->setParameter('maintenanceType', 'Maintenance Events Notification')
+                    ->orderBy('t.title', 'ASC');
+            },
         ])
         ->add('email', TextareaType::class, [
             'mapped' => true,
@@ -200,7 +206,13 @@ class EventsController extends AbstractController
             ->add('emailtemplate', EntityType::class, [
                 'class' => Template::class,
                 'choice_label' => 'subject',
-                'label' => 'Select Template', // Customize the label as needed
+                'label' => 'Select Incident subject',
+                'query_builder' => function (TemplateRepository $repository) {
+                    return $repository->createQueryBuilder('t')
+                        ->where('t.title = :incidentType')
+                        ->setParameter('incidentType', 'Incident Events Notification')
+                        ->orderBy('t.title', 'ASC');
+                },
             ])
             ->add('send_email', CheckboxType::class, [
                 'label' => 'Send Email',
