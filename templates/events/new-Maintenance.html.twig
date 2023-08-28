@@ -31,8 +31,8 @@
             fetch(`http://localhost:8080/public/template/${selectedTemplateId}/get-template-content/`)
                 .then(response => response.text())
                 .then(content => {
-                    const filledContent = fillTemplatePlaceholders(content); // Replace placeholders
-                    console.log(emailField)
+                    const filledContent = fillTemplatePlaceholders(JSON.parse(content)); // Replace placeholders
+                    console.log(JSON.parse(content))
                     console.log(`http://localhost:8080/public/template/${selectedTemplateId}/get-template-content/`)
                     emailField.value = filledContent; // Populate email textarea
                 })

@@ -344,28 +344,40 @@ class EventsController extends AbstractController
         return $this->redirectToRoute('app_events_system', ['systemId' => $event->getSystem()->getId()]);
     }
 
-    /**
-     * Get the system status based on the events associated with it.
-     *
-     * @param int $id The ID of the system to retrieve the status for
-     * @param ManagerRegistry $managerRegistry The Doctrine manager registry
-     * @return JsonResponse
-     */
-    #[Route("/events/get-system-status/{id}", name:"get_system_status")]
-    public function getSystemStatus($id, ManagerRegistry $managerRegistry): JsonResponse
-    {
-        $entityManager = $managerRegistry->getManager();
-        $events = $entityManager->getRepository(Events::class)->find($id);
+   /**
+ * Get the system status based on the events associated with it.
+ *
+ * @param int $id The ID of the system to retrieve the status for
+ * @param ManagerRegistry $managerRegistry The Doctrine manager registry
+ * @return JsonResponse
+ */
+#[Route("/events/get-system-status/{id}", name:"get_system_status")]
+public function getSystemStatus($id, ManagerRegistry $managerRegistry): JsonResponse
+{
+    $entityManager = $managerRegistry->getManager();
+    $system = $entityManager->getRepository(System::class)->find($id); // Assuming you have a System entity
 
-        if (!$events) {
-            return new JsonResponse(['status' => 'System not found'], 404);
-        }
-
-        // Implement logic to determine the system status (maintenance, incident, available)
-        $status = $events->getType(); 
-
-        return new JsonResponse(['status' => $status]);
+    if (!$system) {
+        return new JsonResponse(['status' => 'System not found'], 404);
     }
+
+    // Retrieve the events associated with the system and order them by date in descending order
+    $events = $system->getEvents();
+    $latestEvent = null;
+
+    if ($events->count() > 0) {
+        $latestEvent = $events->last(); // Get the latest event
+    }
+
+    if ($latestEvent) {
+        $status = $latestEvent->getType();
+    } else {
+        $status = 'available'; // Default status when no events are found
+    }
+
+    return new JsonResponse(['status' => $status]);
+}
+
 
     #[Route("/events/{id}/change-to-available", name:"app_events_change_to_available")]
     public function changeToAvailable($id, ManagerRegistry $managerRegistry): Response

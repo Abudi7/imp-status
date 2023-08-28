@@ -39,7 +39,7 @@
             <div class="status-circle bg-danger slide-in-animation">
                {# <span>&#9888;</span> #}
             </div>
-            <div class="status-text">Down</div>
+            <div class="status-text">Incident</div>
          </div>
       </div>
    </div>
@@ -85,93 +85,95 @@
                   </tr>
                </thead>
                <tbody>
-                {% for systemSub in system %}
+                  {% for systemSub in system %}
                   {% if systemSub.active == 0 %}
                   <tr class="d-none">
                      <td><a class="link-offset-2 link-underline link-underline-opacity-0"
-                              href="{{ path('app_system') }}">{{ systemSub.name }}</a>
-                        </td>
-                        <td>
-                        <div class="status-text"><p>available</p></div>
-                        </td>
-                        <td>
-                           <form action="{{ path('app_home_subscribe', {'id': systemSub.id}) }}" method="post">
-                              <div class="form-check form-switch">
-                                 {% set isSubscribed = false %}
-                                 {% for subscription in systemSub.subscriptions %}
-                                       {% if subscription.user == app.user and subscription.isSubscribed %}
-                                          {% set isSubscribed = true %}
-                                       {% endif %}
-                                 {% endfor %}
-                                 <input class="form-check-input" type="checkbox" name="subscribe"
-                                          id="subscribe{{ systemSub.id }}" {% if isSubscribed %}checked{% endif %}
-                                          onchange="this.form.submit()">
-                                 <label class="form-check-label" for="subscribe{{ systemSub.id }}">
-                                       {% if systemSub.subscription is defined and systemSub.subscription.isSubscribed %}
-                                          Unsubscribe
-                                       {% else %}
-                                          Subscribe
-                                       {% endif %}
-                                 </label>
-                              </div>
-                           </form>
+                           href="{{ path('app_system') }}">{{ systemSub.name }}</a>
+                     </td>
+                     <td>
+                        <div class="status-text">
+                           <p>available</p>
+                        </div>
+                     </td>
+                     <td>
+                        <form action="{{ path('app_home_subscribe', {'id': systemSub.id}) }}" method="post">
+                           <div class="form-check form-switch">
+                              {% set isSubscribed = false %}
+                              {% for subscription in systemSub.subscriptions %}
+                              {% if subscription.user == app.user and subscription.isSubscribed %}
+                              {% set isSubscribed = true %}
+                              {% endif %}
+                              {% endfor %}
+                              <input class="form-check-input" type="checkbox" name="subscribe"
+                                 id="subscribe{{ systemSub.id }}" {% if isSubscribed %}checked{% endif %}
+                                 onchange="this.form.submit()">
+                              <label class="form-check-label" for="subscribe{{ systemSub.id }}">
+                                 {% if systemSub.subscription is defined and systemSub.subscription.isSubscribed %}
+                                 Unsubscribe
+                                 {% else %}
+                                 Subscribe
+                                 {% endif %}
+                              </label>
+                           </div>
+                        </form>
                      </td>
                   </tr>
                   {% else %}
                   <tr>
                      <td>{% if is_granted('ROLE_ADMIN') %}
-                            <a class="link-offset-2 link-underline link-underline-opacity-0" href="{{ path('app_system') }}">{{ systemSub.name }}</a>
+                        <a class="link-offset-2 link-underline link-underline-opacity-0"
+                           href="{{ path('app_system') }}">{{ systemSub.name }}</a>
                         {% else %}
-                            <a class="link-offset-2 link-underline link-underline-opacity-0" href="{{ path('app_system_display', {'id': systemSub.id}) }}">{{ systemSub.name }}</a>
+                        <a class="link-offset-2 link-underline link-underline-opacity-0"
+                           href="{{ path('app_system_display', {'id': systemSub.id}) }}">{{ systemSub.name }}</a>
                         {% endif %}
                      </td>
                      <td>
-                          <div id="status{{ systemSub.id }}" class="status-container">
-                <script>
-                    // Get the current date and time
-                    var currentDate = new Date();
+                        <div id="status{{ systemSub.id }}" class="status-container">
+                           <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                           <script>
+                              $(document).ready(function () {
+                                 // Loop through each system's status container
+                                 $('.status-container').each(function () {
+                                    const systemId = $(this).attr('id').replace('status', ''); // Extract the system ID
+                                    const statusContainer = $(this);
 
-                    // Check if the system is in maintenance or incident
-                    var isInMaintenance = false;
-                    var isInIncident = false;
+                                    // Make an AJAX request to fetch the system status
+                                    $.ajax({
+                                       url: `http://localhost:8080/public/events/get-system-status/${systemId}`,
+                                       method: 'GET',
+                                       dataType: 'json',
+                                       success: function (response) {
+                                          const status = response.status; // Extract the status from the response
 
-                    {% for event in systemSub.events %}
-                        var start = new Date('{{ event.start|date('Y-m-d H:i:s') }}');
-                        var end = new Date('{{ event.end|date('Y-m-d H:i:s') }}');
-                        
-                        if (currentDate >= start && currentDate <= end) {
-                            if ('{{ event.type }}' === 'maintenance') {
-                                isInMaintenance = true;
-                                break;
-                            } else if ('{{ event.type }}' === 'incident') {
-                                isInIncident = true;
-                                break;
-                            }
-                        }
-                    {% endfor %}
-                    
-                    if (isInMaintenance) {
-                        document.getElementById("status{{ systemSub.id }}").innerHTML = `
-                            <div class="status-circle bg-danger slide-in-animation"></div>
-                            <div class="status-text">Maintenance</div>`;
-                    } else if (isInIncident) {
-                        document.getElementById("status{{ systemSub.id }}").innerHTML = `
-                            <div class="status-circle bg-warning slide-in-animation"></div>
-                            <div class="status-text">Incident</div>`;
-                    } else {
-                        document.getElementById("status{{ systemSub.id }}").innerHTML = `
-                            <div class="status-circle bg-success slide-in-animation"></div>
-                            <div class="status-text">Active</div>`;
-                    }
-                </script>
-            </div>
-                                 
-                        {# <div id="status{{ systemSub.id }}" class="status-container"></div>
-                        <div class="status-circle bg-success slide-in-animation">
-                              {# <span class="mb-3">&#10004;</span> #}
-                          {# </div>
-                           <div class="status-text">Available</div>
-                        </div> #} 
+                                          // Determine the background color based on the status
+                                          let bgColorClass = '';
+                                          if (status == 'available') {
+                                             bgColorClass = 'bg-success';
+                                          } else if (status == 'maintenance') {
+                                             bgColorClass = 'bg-warning';
+                                          } else if (status == 'incident') {
+                                             bgColorClass = 'bg-danger';
+                                          }
+
+                                          // Construct the HTML with status circle and status text on the same line
+                                          //const statusHtml = `<div class="status-circle ${bgColorClass}"></div><p>${status}</p>`;
+
+                                          // Construct the HTML with status circle and status text on the same line without breaks
+                                          const statusHtml = `<div class="status-circle ${bgColorClass}"></div><div style="display: inline">${status}</div>`;
+
+                                          // Update the status container's HTML
+                                          statusContainer.html(statusHtml);
+                                       },
+                                       error: function () {
+                                          statusContainer.html('<p>Error fetching status</p>');
+                                       }
+                                    });
+                                 });
+                              });
+                           </script>
+                        </div>
 
                      </td>
                      <td>

@@ -65,7 +65,7 @@ class TemplateController extends AbstractController
         $templateContent = $template->getTemplate();
         
         // Replace newline and carriage return characters with spaces
-        $templateContent = str_replace(["\r\n", "\r", "\n"], ' ', $templateContent);
+        //$templateContent = str_replace(["\r\n", "\r", "\n"], ' ', $templateContent);
         return new JsonResponse($templateContent);
     }
 }

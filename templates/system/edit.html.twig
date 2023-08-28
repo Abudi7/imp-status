@@ -1,0 +1,10 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+  <h2>Edit System</h2>
+  {{ form_start(form) }}
+    {{ form_row(form.name) }}
+    {{ form_row(form.info) }}
+    {{ form_row(form.active) }}
+  {{ form_end(form) }}
+{% endblock %}

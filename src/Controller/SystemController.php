@@ -114,6 +114,31 @@ class SystemController extends AbstractController
              "form" => $form->createView(),
          ]);
      }
+     /**
+     * Edit or Update System 
+     */
+    #[Route("/system/{id}/edit", name: "app_system_edit")]
+    public function edit(Request $request, System $system, ManagerRegistry $managerRegistry)
+    {
+        // Create the form for editing the system
+        $form = $this->createForm(SystemType::class, $system);
+
+        // Handle the form submission
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Save the updated system to the database
+            $em = $managerRegistry->getManager();
+            $em->flush();
+
+            // Redirect to the system status page or other appropriate page
+            return $this->redirectToRoute("app_system");
+        }
+
+        // Render the edit system form view
+        return $this->render("system/edit.html.twig", [
+            "form" => $form->createView(),
+        ]);
+    }
 
     /**
      * Disply {id} System 

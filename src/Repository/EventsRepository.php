@@ -45,4 +45,22 @@ class EventsRepository extends ServiceEntityRepository
 //            ->getOneOrNullResult()
 //        ;
 //    }
+
+public function getSystemStatus($systemId)
+{
+    $qb = $this->createQueryBuilder('e')
+        ->select('e.type')
+        ->andWhere('e.system = :systemId')
+        ->andWhere('e.start <= :now')
+        ->andWhere('e.end >= :now')
+        ->orderBy('e.start', 'DESC')
+        ->setMaxResults(1)
+        ->setParameter('systemId', $systemId)
+        ->setParameter('now', new \DateTime());
+
+    $query = $qb->getQuery();
+    $result = $query->getOneOrNullResult();
+
+    return $result ? $result['type'] : 'Unknown';
+}
 }
