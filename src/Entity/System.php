@@ -40,7 +40,8 @@ class System
 
     #[ORM\OneToMany(mappedBy: 'system', targetEntity: Events::class)]
     private Collection $events;
-
+    
+    private  $status;
 
 
     public function __construct()
@@ -51,6 +52,12 @@ class System
 
     }
 
+    public function setStatus($status)  {
+        $this->status = $status;
+    }
+    public function getStatus()  {
+       return  $this->status;
+    }
     public function getId(): ?int
     {
         return $this->id;

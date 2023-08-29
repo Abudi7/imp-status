@@ -12,6 +12,7 @@
     {{ form_row(form.start) }}
     {{ form_row(form.end) }}
     {{ form_row(form.emailtemplate, {'attr': {'class': 'template-select'}}) }}
+    {{ form_row(form.subject, {'attr': {'class': 'subject-field subject-text readonly'}}) }}
     {{ form_row(form.email, {'attr': {'class': 'email-field'}}) }}
     {{ form_row(form.send_email) }}
     <button type="submit" class="btn btn-primary">Create Event</button>
@@ -19,11 +20,9 @@
 </div>
 
 <script>
-    // Add event listener to emailtemplate dropdown
+    // Add event listener to emailtemplate dropdown for content
     const templateSelect = document.querySelector('.template-select');
     const emailField = document.querySelector('.email-field');
-    const systemName = '{{ form.vars.value.system.name }}'; // Store the value in a variable
-
     
     templateSelect.addEventListener('change', () => {
         const selectedTemplateId = templateSelect.value;
@@ -31,7 +30,7 @@
             fetch(`http://localhost:8080/public/template/${selectedTemplateId}/get-template-content/`)
                 .then(response => response.text())
                 .then(content => {
-                    const filledContent = fillTemplatePlaceholders(JSON.parse(content)); // Replace placeholders
+                     const filledContent = fillSubjectContentPlaceholders(JSON.parse(content)); // Replace placeholders
                     console.log(JSON.parse(content))
                     console.log(`http://localhost:8080/public/template/${selectedTemplateId}/get-template-content/`)
                     emailField.value = filledContent; // Populate email textarea
@@ -40,23 +39,51 @@
                     console.error('Error fetching template content:', error);
                 });
         } else {
-            emailField.value = ''; // Clear email textarea if no template selected
+            emailField.value = '';
+            emailField.disabled = true;
+            emailField.classList.add('readonly');
         }
     });
-    function fillTemplatePlaceholders(templateContent) {
-    const placeholders = {
-        system_name: systemName, // Replace with actual value
-        maintenance_date: '{{ form.start.vars.value|date('d-M-Y') }}', // Replace with actual value
-        start_time: '{{ form.start.vars.value|date('H:i d-M-Y') }}', // Replace with actual value
-        end_time: '{{ form.vars.value.end|date('H:i d-M-Y') }}', // Replace with actual value
-        responsible_person: '{{ form.vars.value.creator.email }}', // Replace with actual value
-    };
 
-    for (const placeholder in placeholders) {
-        templateContent = templateContent.replace(`{${placeholder}}`, placeholders[placeholder]);
+    // Add event listener to emailtemplate dropdown for subject
+    const subjectField = document.querySelector('.subject-field');
+    
+    templateSelect.addEventListener('change', () => {
+        const selectedTemplateId = templateSelect.value;
+        if (selectedTemplateId) {
+            fetch(`http://localhost:8080/public/template/${selectedTemplateId}/get-template-subject/`)
+                .then(response => response.text())
+                .then(subject => {
+                    const filledSubject = fillSubjectContentPlaceholders(JSON.parse(subject)); // Replace subject placeholders
+                    subjectField.value = filledSubject;
+                })
+                .catch(error => {
+                    console.error('Error fetching template subject:', error);
+                });
+        } else {
+            subjectField.value = '';
+            subjectField.disabled = true;
+            subjectField.classList.add('readonly');
+        }
+    });
+
+    // Function to replace subjectContent placeholders
+    function fillSubjectContentPlaceholders(templateSubject) {
+        const placeholders = {
+            // Define your subject placeholders here
+            system_name: '{{ form.vars.value.system.name }}',
+            system_name: '{{ form.vars.value.system.name }}', // Use the actual system name from the JavaScript variable
+            maintenance_date: '{{ form.vars.value.start|date('H:i d-M-Y') }}', // Replace with actual value
+            start_time: '{{ form.vars.value.start|date('H:i d-M-Y') }}', // Replace with actual value
+            end_time: '{{ form.vars.value.end|date('H:i d-M-Y') }}',
+            responsible_person: '{{ form.vars.value.creator.email }}', // Replace with actual value
+        };
+
+        for (const placeholder in placeholders) {
+            templateSubject = templateSubject.replace(`{${placeholder}}`, placeholders[placeholder]);
+        }
+
+        return templateSubject;
     }
-
-    return templateContent;
-}
 </script>
 {% endblock %}

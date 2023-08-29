@@ -9,6 +9,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -29,6 +30,11 @@ class TemplateController extends AbstractController
     {
         $template = new Template();
         $form = $this->createFormBuilder($template)
+            ->add('type', ChoiceType::class, [
+                'choices' => [
+                    'Maintenance' => 'maintenance',
+                    'Incident' => 'incident',
+                ]])
             ->add('title', TextType::class)
             ->add('subject', TextType::class)
             ->add("template", TextareaType::class, [
@@ -63,9 +69,21 @@ class TemplateController extends AbstractController
     public function getTemplateContent(Template $template): JsonResponse
     {
         $templateContent = $template->getTemplate();
+        // $templateSubject = $template->getSubject();
         
         // Replace newline and carriage return characters with spaces
         //$templateContent = str_replace(["\r\n", "\r", "\n"], ' ', $templateContent);
         return new JsonResponse($templateContent);
+    }
+    
+    #[Route("/template/{id}/get-template-subject", name:"get_template_subject")]
+    public function getTemplateSubject(Template $template): JsonResponse
+    {
+        // $templateContent = $template->getTemplate();
+        $templateSubject = $template->getSubject();
+        
+        // Replace newline and carriage return characters with spaces
+        //$templateContent = str_replace(["\r\n", "\r", "\n"], ' ', $templateContent);
+        return new JsonResponse($templateSubject);
     }
 }

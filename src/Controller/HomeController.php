@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Controller\EventsController;
 use App\Entity\Events;
 use App\Entity\Subscription;
 use App\Entity\System;
@@ -121,20 +122,27 @@ class HomeController extends AbstractController
     // }
 
     #[Route("/allSubscription", name: "app_allSubscription")]
-    public function allSubscription(ManagerRegistry $managerRegistry): Response
+    public function allSubscription(ManagerRegistry $managerRegistry,EventsController $eventsController): Response
     {
         // get the currently authenticated user
         $user = $this->getUser();
-
         // get the entity manager
         $em = $managerRegistry->getManager();
-
+        //add status by system class instzancehof 
+        $systems = $em->getRepository(System::class)->findAll();
+       
+        foreach ($systems as $system ) {
+           
+         $status =  $eventsController->getSystemStatus($system->getId(), $managerRegistry);
+         $system->setStatus($status);
+        }
+        
         // get the list of SystemStatus entities that the user has subscribed to
         //$statuses = $em->getRepository(SystemStatus::class)->findSubscribedByUser($user);
 
         // render the template with the list of SystemStatus entities in allSubscription.html.twig
         return $this->render("home/allSubscription.html.twig", [
-            "system" => $em->getRepository(System::class)->findAll(),
+            "system" => $systems,
             "events"=> $em->getRepository(Events::class)->findAll(),
         ]);
     }

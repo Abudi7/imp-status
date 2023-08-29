@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Controller\EventsController;
 use App\Entity\System;
 use App\Form\SystemType;
 use App\Repository\SystemRepository;
@@ -53,7 +54,7 @@ class SystemController extends AbstractController
     }
 
     #[Route("/system", name: "app_system")]
-    public function index(SystemRepository $systemRepository, Request $request, ManagerRegistry $managerRegistry): Response
+    public function index(SystemRepository $systemRepository, Request $request, ManagerRegistry $managerRegistry, EventsController $eventsController): Response
     {
         // Retrieve all systems from the database
         $systems = $systemRepository->findAll();
@@ -72,6 +73,11 @@ class SystemController extends AbstractController
                 $this->addFlash('error', $updateResult['message']);
             }
         }
+        foreach ($systems as $system ) {
+           
+            $status =  $eventsController->getSystemStatus($system->getId(), $managerRegistry);
+            $system->setStatus($status);
+           }
         // Render the systems index view and pass the systems data
         return $this->render("system/index.html.twig", [
             "systems" => $systems,

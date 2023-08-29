@@ -130,50 +130,16 @@
                         {% endif %}
                      </td>
                      <td>
-                        <div id="status{{ systemSub.id }}" class="status-container">
-                           <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-                           <script>
-                              $(document).ready(function () {
-                                 // Loop through each system's status container
-                                 $('.status-container').each(function () {
-                                    const systemId = $(this).attr('id').replace('status', ''); // Extract the system ID
-                                    const statusContainer = $(this);
-
-                                    // Make an AJAX request to fetch the system status
-                                    $.ajax({
-                                       url: `http://localhost:8080/public/events/get-system-status/${systemId}`,
-                                       method: 'GET',
-                                       dataType: 'json',
-                                       success: function (response) {
-                                          const status = response.status; // Extract the status from the response
-
-                                          // Determine the background color based on the status
-                                          let bgColorClass = '';
-                                          if (status == 'available') {
-                                             bgColorClass = 'bg-success';
-                                          } else if (status == 'maintenance') {
-                                             bgColorClass = 'bg-warning';
-                                          } else if (status == 'incident') {
-                                             bgColorClass = 'bg-danger';
-                                          }
-
-                                          // Construct the HTML with status circle and status text on the same line
-                                          //const statusHtml = `<div class="status-circle ${bgColorClass}"></div><p>${status}</p>`;
-
-                                          // Construct the HTML with status circle and status text on the same line without breaks
-                                          const statusHtml = `<div class="status-circle ${bgColorClass}"></div><div style="display: inline">${status}</div>`;
-
-                                          // Update the status container's HTML
-                                          statusContainer.html(statusHtml);
-                                       },
-                                       error: function () {
-                                          statusContainer.html('<p>Error fetching status</p>');
-                                       }
-                                    });
-                                 });
-                              });
-                           </script>
-                        </div>
+      
+                       <div class="status-circle 
+                       {% if systemSub.status == 'available'  %}
+                       bg-success
+                       {% elseif systemSub.status == 'maintenance' %}
+                       bg-warning
+                       {% else %}
+                       bg-danger
+                       {% endif %}
+                       "></div> {{systemSub.status}}
 
                      </td>
                      <td>

@@ -23,7 +23,15 @@
                     <tr>
                         <td>{{ system.id }}</td>
                         <td><a href="{{ path('app_system_display', {'id': system.id}) }}"class="btn btn-sm btn-link disabled">{{ system.name }}</a></td>
-                        <td class="status-cell" data-system-id="{{ system.id }}"></td> 
+                        <td> <div class="status-circle 
+                       {% if system.status == 'available'  %}
+                       bg-success
+                       {% elseif system.status == 'maintenance' %}
+                       bg-warning
+                       {% else %}
+                       bg-danger
+                       {% endif %}
+                       "></div> {{system.status}}</td> 
                         <td><p class=" disabled">{{ system.createdAt|date('Y-m-d H:i:s') }}</p></td>
                         <td><p class=" disabled">{{ system.info }}</td>
                         <td class=" disabled">{{ system.creator.username }}</td>
@@ -38,7 +46,15 @@
                     <tr>
                         <td>{{ system.id }}</td>
                         <td><a href="{{ path('app_system_display', {'id': system.id}) }}">{{ system.name }}</a></td>
-                        <td class="status-cell" data-system-id="{{ system.id }}"></td> 
+                         <td> <div class="status-circle 
+                       {% if system.status == 'available'  %}
+                       bg-success
+                       {% elseif system.status == 'maintenance' %}
+                       bg-warning
+                       {% else %}
+                       bg-danger
+                       {% endif %}
+                       "></div> {{system.status}}</td> 
                         <td>{{ system.createdAt|date('Y-m-d H:i:s') }}</td>
                         <td>{{ system.info }}</td>
                         <td class=" disabled">{{ system.creator.username }}</td>
@@ -53,7 +69,7 @@
              {% endfor %}
             </tbody>
          </table>
-         <!-- Add status script -->
+         {# <!-- Add status script -->
          <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
             <script>
             document.addEventListener('DOMContentLoaded', function() {
@@ -84,7 +100,7 @@
                     });
                 });
             });
-            </script>
+            </script> #}
       </main>
    </div>
 </div>

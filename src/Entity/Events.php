@@ -50,13 +50,17 @@ class Events
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $created_at = null;
+
+    #[ORM\Column(length: 500)]
+    private ?string $subject = null;
+    
     public function setEmailTemplate($emailTemplate) {
          $this->emailTemplate = $emailTemplate; 
     }
+   
     public function getEmailTemplate() {
         return $this->emailTemplate;
-    }
-    
+    }   
     public function getId(): ?int
     {
         return $this->id;
@@ -166,6 +170,18 @@ class Events
     public function setCreatedAt(\DateTimeInterface $created_at): static
     {
         $this->created_at = $created_at;
+
+        return $this;
+    }
+
+    public function getSubject(): ?string
+    {
+        return $this->subject;
+    }
+
+    public function setSubject(string $subject): static
+    {
+        $this->subject = $subject;
 
         return $this;
     }

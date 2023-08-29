@@ -23,6 +23,9 @@ class Template
     #[ORM\Column(length: 255)]
     private ?string $subject = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $type = null;
+
 
 
 
@@ -63,6 +66,18 @@ class Template
     public function setSubject(string $subject): static
     {
         $this->subject = $subject;
+
+        return $this;
+    }
+
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    public function setType(string $type): static
+    {
+        $this->type = $type;
 
         return $this;
     }

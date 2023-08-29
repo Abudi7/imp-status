@@ -51,11 +51,20 @@
             {% for sub in subs %}
             <tr>
                <td>{{ sub.system.name }}</td>
-               <td class="status-cell" data-system-id="{{ sub.system.id }}"></td>
+               <td> <div class="status-circle 
+                       {% if sub.system.status == 'available'  %}
+                       bg-success
+                       {% elseif sub.system.status == 'maintenance' %}
+                       bg-warning
+                       {% else %}
+                       bg-danger
+                       {% endif %}
+                       "></div> {{sub.system.status}}</td>
                <td>{{ sub.system.createdAt|date('Y-m-d H:i:s') }}</td>
                <td>{{ sub.system.creator.username }}</td>
                <td>{{ sub.system.info }}</td>
             </tr>
+            {# script to call status from the method in events controller getSystemStatus()
             <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
             <script>
                document.addEventListener('DOMContentLoaded', function () {
@@ -86,7 +95,7 @@
                         });
                   });
                });
-            </script>
+            </script> #}
 
             {% endfor %}
             {% endif %}

@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Controller\EventsController;
 use App\Entity\Subscription;
 use App\Entity\System;
 use App\Repository\SubscriptionRepository;
@@ -36,9 +37,19 @@ class SubscriptionController extends AbstractController
 * It renders the subscription page and passes in system statuses, subscriptions, and the subscription form.
 */
     #[Route('/subscription', name: 'app_subscription')]
-public function index(Request $request, ManagerRegistry $managerRegistry, TokenStorageInterface $tokenStorageInterface, SubscriptionRepository $subscriptionRepository): Response
+public function index(Request $request, ManagerRegistry $managerRegistry, TokenStorageInterface $tokenStorageInterface, SubscriptionRepository $subscriptionRepository, EventsController $eventsController): Response
 {
     $user = $tokenStorageInterface->getToken()->getUser();
+    // set Status in subscription index site 
+    $em = $managerRegistry->getManager();
+    //get all systems 
+    $systems = $em->getRepository(System::class)->findAll();
+    foreach ($systems as $system ) {
+           
+        $status =  $eventsController->getSystemStatus($system->getId(), $managerRegistry);
+        $system->setStatus($status);
+       }
+
     $sub = $subscriptionRepository->findBy(['user' => $user]);
     return $this->render('subscription/index.html.twig', [
         'subs'=> $sub,

@@ -25,6 +25,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\Constraints\GreaterThan;
+use Symfony\Component\Validator\Constraints\DateTime;
 
 class EventsController extends AbstractController
 {
@@ -89,9 +91,17 @@ class EventsController extends AbstractController
         ])       
         ->add('start', DateTimeType::class, [
             'widget' => 'single_text',
+            'html5' => true, // Enable HTML5 input type
+            'attr' => [
+                'min' => (new \DateTime())->format('Y-m-d\TH:i'), // Set min attribute to current date and time
+            ],
         ])
         ->add('end', DateTimeType::class, [
             'widget' => 'single_text',
+            'html5' => true, // Enable HTML5 input type
+            'attr' => [
+                'min' => (new \DateTime())->format('Y-m-d\TH:i'), // Set min attribute to current date and time
+            ],
         ])
         ->add('info', TextType::class, [
             'attr' => [
@@ -99,16 +109,23 @@ class EventsController extends AbstractController
                 'placeholder' => 'Enter information...',
             ],
         ])
+        
         ->add('emailtemplate', EntityType::class, [
             'class' => Template::class,
-            'choice_label' => 'subject',
-            'label' => 'Select Maintenance subject',
+            'choice_label' => 'title',
+            'label' => 'Select Template Title',
             'query_builder' => function (TemplateRepository $repository) {
                 return $repository->createQueryBuilder('t')
-                    ->where('t.title = :maintenanceType')
-                    ->setParameter('maintenanceType', 'Maintenance Events Notification')
-                    ->orderBy('t.title', 'ASC');
+                    ->where('t.type = :maintenanceType')
+                    ->setParameter('maintenanceType', 'maintenance')
+                    ->orderBy('t.type', 'ASC');
             },
+        ])
+        ->add('subject', TextType::class,[
+            'attr' => [
+                'class' => 'custom-css-class',
+                'placeholder' => 'Enter E-mail subject...',
+            ],
         ])
         ->add('email', TextareaType::class, [
             'mapped' => true,
@@ -205,14 +222,20 @@ class EventsController extends AbstractController
             ])
             ->add('emailtemplate', EntityType::class, [
                 'class' => Template::class,
-                'choice_label' => 'subject',
-                'label' => 'Select Incident subject',
+                'choice_label' => 'title',
+                'label' => 'Select Incident title',
                 'query_builder' => function (TemplateRepository $repository) {
                     return $repository->createQueryBuilder('t')
-                        ->where('t.title = :incidentType')
-                        ->setParameter('incidentType', 'Incident Events Notification')
-                        ->orderBy('t.title', 'ASC');
+                        ->where('t.type = :incidentType')
+                        ->setParameter('incidentType', 'incident')
+                        ->orderBy('t.type', 'ASC');
                 },
+            ])
+            ->add('subject', TextType::class,[
+                'attr' => [
+                    'class' => 'custom-css-class',
+                    'placeholder' => 'Enter E-mail subject...',
+                ],
             ])
             ->add('send_email', CheckboxType::class, [
                 'label' => 'Send Email',
@@ -333,7 +356,7 @@ class EventsController extends AbstractController
         if (!$event) {
             return new JsonResponse(['success' => false, 'message' => 'Event not found'], 404);
         }
-
+        
         // Mark the incident as resolved
         $event->setEnd(new \DateTime());
         // Update the event type to "Available"
@@ -344,39 +367,93 @@ class EventsController extends AbstractController
         return $this->redirectToRoute('app_events_system', ['systemId' => $event->getSystem()->getId()]);
     }
 
-   /**
- * Get the system status based on the events associated with it.
- *
- * @param int $id The ID of the system to retrieve the status for
- * @param ManagerRegistry $managerRegistry The Doctrine manager registry
- * @return JsonResponse
- */
-#[Route("/events/get-system-status/{id}", name:"get_system_status")]
-public function getSystemStatus($id, ManagerRegistry $managerRegistry): JsonResponse
-{
-    $entityManager = $managerRegistry->getManager();
-    $system = $entityManager->getRepository(System::class)->find($id); // Assuming you have a System entity
+//  /**
+//  * Get the system status based on the events associated with it.
+//  *
+//  * @param int $id The ID of the system to retrieve the status for
+//  * @param ManagerRegistry $managerRegistry The Doctrine manager registry
+//  * 
+//  */
+// #[Route("/events/get-system-status/{id}", name:"get_system_status")]
+// public function getSystemStatus($id, ManagerRegistry $managerRegistry): string
+// {
+//     $entityManager = $managerRegistry->getManager();
+//     $system = $entityManager->getRepository(System::class)->find($id); // Assuming you have a System entity
 
-    if (!$system) {
-        return new JsonResponse(['status' => 'System not found'], 404);
+//     if (!$system) {
+//         return new Response(['status' => 'System not found'], 404);
+//     }
+
+//     // Retrieve the events associated with the system and order them by date in descending order
+//     $events = $system->getEvents();
+//     $latestEvent = null;
+
+//     if ($events->count() > 0) {
+//         $latestEvent = $events->last(); // Get the latest event
+//     }
+
+//     if ($latestEvent) {
+//         // Check if the latest event is a maintenance event and if its start date is today or in the future
+//         $currentDateTime = new \DateTime();
+//         if ($latestEvent->getType() === 'maintenance' && $latestEvent->getStart() > $currentDateTime) {
+//             $status = 'available'; // Set status to 'available' if maintenance event starts in the future
+//         } else {
+//             $status = $latestEvent->getType();
+//         }
+//     } else {
+//         $status = 'available'; // Default status when no events are found
+//     }
+
+//     return $status;
+// }
+
+    /**
+     * Get the system status based on the events associated with it.
+     *
+     * @param int $id The ID of the system to retrieve the status for
+     * @param ManagerRegistry $managerRegistry The Doctrine manager registry
+     * 
+     */
+    #[Route("/events/get-system-status/{id}", name:"get_system_status")]
+    public function getSystemStatus($id, ManagerRegistry $managerRegistry): string
+    {
+        $entityManager = $managerRegistry->getManager();
+        $system = $entityManager->getRepository(System::class)->find($id); // Assuming you have a System entity
+
+        if (!$system) {
+            return new JsonResponse(['status' => 'System not found'], 404);
+        }
+
+        // Retrieve the events associated with the system
+        $events = $system->getEvents();
+
+        $maintenanceActive = false;
+        $incidentActive = false;
+
+        foreach ($events as $event) {
+            $now = new \DateTime();
+            if ($event->getStart() <= $now && $event->getEnd() >= $now) {
+                if($event->getType() === 'maintenance') {
+
+                
+                $maintenanceActive = true;
+                } else {
+                $incidentActive = true;
+                }
+            }
+        }
+        if ($maintenanceActive) {
+            $status = 'maintenance';
+        } elseif ($incidentActive) {
+            $status = 'incident';
+        } else {
+            $status = 'available';
+        }
+
+        return  $status;
     }
 
-    // Retrieve the events associated with the system and order them by date in descending order
-    $events = $system->getEvents();
-    $latestEvent = null;
 
-    if ($events->count() > 0) {
-        $latestEvent = $events->last(); // Get the latest event
-    }
-
-    if ($latestEvent) {
-        $status = $latestEvent->getType();
-    } else {
-        $status = 'available'; // Default status when no events are found
-    }
-
-    return new JsonResponse(['status' => $status]);
-}
 
 
     #[Route("/events/{id}/change-to-available", name:"app_events_change_to_available")]
@@ -395,7 +472,7 @@ public function getSystemStatus($id, ManagerRegistry $managerRegistry): JsonResp
 
         // Change the event type to 'available'
         $event->setType('available');
-        
+        $event->setEnd(new \DateTime());
         // Persist the updated event
         $entityManager->flush();
 
