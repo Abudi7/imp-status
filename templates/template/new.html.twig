@@ -5,14 +5,16 @@
 {% block body %}
     <div class="container mt-5">
         <h2 class="mb-4">Create a New Email Template</h2>
-                {{ form_start(form) }}
-                    {{ form_row(form.type,{'attr': {'class': 'form-control mb-3', 'placeholder': 'Title'}}) }}
-                    {{ form_row(form.title,{'attr': {'class': 'form-control mb-3', 'placeholder': 'Title'}}) }}
-                    {{ form_row(form.subject,{'attr': {'class': 'form-control mb-3', 'placeholder': 'Subject'}}) }}
-                    {{ form_row(form.template,{'attr': {'class': 'form-control mb-3', 'rows': 6, 'placeholder': 'Body'}}) }}
-                    {{ form_widget(form.save) }}
-
-                {{ form_end(form) }}
+     
+        {{ form_start(form) }}
+            {{ form_row(form.type,{'attr': {'class': 'form-control mb-3', 'placeholder': 'Title'}}) }}
+            <small class="form-text text-muted mb-4">Please choose a type from the dropdown.</small> <!-- Notice added -->
+            {{ form_row(form.title,{'attr': {'class': 'form-control mb-3', 'placeholder': 'Title'}}) }}
+            {{ form_row(form.subject,{'attr': {'class': 'form-control mb-3', 'placeholder': 'Subject'}}) }}
+            {{ form_row(form.template,{'attr': {'class': 'form-control mb-3', 'rows': 6, 'placeholder': 'Body'}}) }}
+            {{ form_widget(form.save) }}
+        {{ form_end(form) }}
+  
          {# <form method="post" action="{{ path('app_template_new') }}" class="needs-validation" novalidate>
             {{ form_row(form.title, {'attr': {'class': 'form-control mb-3', 'placeholder': 'Title'}}) }}
             {{ form_row(form.subject, {'attr': {'class': 'form-control mb-3', 'placeholder': 'Subject'}}) }}
@@ -20,5 +22,14 @@
             {{ form_widget(form.save) }}
         </form>  #}
         
-    </div>
+       <div class="mt-2 alert alert-info">
+            <p>Use the following variables in your email template:</p>
+            <ul>
+                <li>{system_name} - System name</li>
+                <li>{start_time} - Start time</li>
+                <li>{end_time} - Expected end time (only applicable for maintenance)</li>
+                <li>{responsible_person} - Responsible person</li>
+            </ul>
+        </div>
+    </div>    
 {% endblock %}

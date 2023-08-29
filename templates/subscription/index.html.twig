@@ -35,34 +35,69 @@
    {% else %}
 
    <div class="table-responsive">
-      <table class="table border table-md table-striped" id="table" style="font-size: 13px">
-         <thead class="bg-primary text-white">
+   <table class="table border table-md table-striped" id="table" style="font-size: 13px">
+      <thead class="bg-primary text-white">
+         <tr>
+            <th scope="col">System</th>
+            <th scope="col">Status</th>
+            <th scope="col">Last Updated</th>
+            {% if is_granted('ROLE_ADMIN') %}
+            <th scope="col">Responsible Person</th>
+            {% endif %}
+            <th scope="col">Info</th>
+         </tr>
+      </thead>
+      <tbody>
+         {% set availableSystems = [] %}
+         {% set maintenanceSystems = [] %}
+         {% set downSystems = [] %}
+
+         {% for sub in subs %}
+            {% if sub.system.status == 'available' %}
+               {% set availableSystems = availableSystems|merge([sub]) %}
+            {% elseif sub.system.status == 'maintenance' %}
+               {% set maintenanceSystems = maintenanceSystems|merge([sub]) %}
+            {% else %}
+               {% set downSystems = downSystems|merge([sub]) %}
+            {% endif %}
+         {% endfor %}
+
+         {% for system in availableSystems %}
             <tr>
-               <th scope="col">System</th>
-               <th scope="col">Status</th>
-               <th scope="col">Last Updated</th>
-               {% if is_granted('ROLE_ADMIN') %}
-               <th scope="col">Responsible Person</th>
-               {% endif %}
-               <th scope="col">Info</th>
+               <td>{{ system.system.name }}</td>
+               <td>
+                  <div class="status-circle bg-success"></div>
+                  {{ system.system.status }}
+               </td>
+               <td>{{ system.system.createdAt|date('Y-m-d H:i:s') }}</td>
+               <td>{{ system.system.creator.username }}</td>
+               <td>{{ system.system.info }}</td>
             </tr>
-         </thead>
-         <tbody>
-            {% for sub in subs %}
+         {% endfor %}
+
+         {% for system in maintenanceSystems %}
             <tr>
-               <td>{{ sub.system.name }}</td>
-               <td> <div class="status-circle 
-                       {% if sub.system.status == 'available'  %}
-                       bg-success
-                       {% elseif sub.system.status == 'maintenance' %}
-                       bg-warning
-                       {% else %}
-                       bg-danger
-                       {% endif %}
-                       "></div> {{sub.system.status}}</td>
-               <td>{{ sub.system.createdAt|date('Y-m-d H:i:s') }}</td>
-               <td>{{ sub.system.creator.username }}</td>
-               <td>{{ sub.system.info }}</td>
+               <td>{{ system.system.name }}</td>
+               <td>
+                  <div class="status-circle bg-warning"></div>
+                  {{ system.system.status }}
+               </td>
+               <td>{{ system.system.createdAt|date('Y-m-d H:i:s') }}</td>
+               <td>{{ system.system.creator.username }}</td>
+               <td>{{ system.system.info }}</td>
+            </tr>
+         {% endfor %}
+
+         {% for system in downSystems %}
+            <tr>
+               <td>{{ system.system.name }}</td>
+               <td>
+                  <div class="status-circle bg-danger"></div>
+                  {{ system.system.status }}
+               </td>
+               <td>{{ system.system.createdAt|date('Y-m-d H:i:s') }}</td>
+               <td>{{ system.system.creator.username }}</td>
+               <td>{{ system.system.info }}</td>
             </tr>
             {# script to call status from the method in events controller getSystemStatus()
             <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

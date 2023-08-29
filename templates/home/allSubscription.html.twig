@@ -74,104 +74,89 @@
       </div>
    </div>
    <div class="row">
-      <div class="col-12">
-         <div class="table-responsive">
+    <div class="col-12">
+        <div class="table-responsive">
             <table class="table border table-md table-striped" id="table" style="font-size: 13px">
-               <thead class="bg-primary text-white">
-                  <tr>
-                     <th>System</th>
-                     <th>Status</th>
-                     <th>Subscription</th>
-                  </tr>
-               </thead>
-               <tbody>
-                  {% for systemSub in system %}
-                  {% if systemSub.active == 0 %}
-                  <tr class="d-none">
-                     <td><a class="link-offset-2 link-underline link-underline-opacity-0"
-                           href="{{ path('app_system') }}">{{ systemSub.name }}</a>
-                     </td>
-                     <td>
-                        <div class="status-text">
-                           <p>available</p>
-                        </div>
-                     </td>
-                     <td>
-                        <form action="{{ path('app_home_subscribe', {'id': systemSub.id}) }}" method="post">
-                           <div class="form-check form-switch">
-                              {% set isSubscribed = false %}
-                              {% for subscription in systemSub.subscriptions %}
-                              {% if subscription.user == app.user and subscription.isSubscribed %}
-                              {% set isSubscribed = true %}
-                              {% endif %}
-                              {% endfor %}
-                              <input class="form-check-input" type="checkbox" name="subscribe"
-                                 id="subscribe{{ systemSub.id }}" {% if isSubscribed %}checked{% endif %}
-                                 onchange="this.form.submit()">
-                              <label class="form-check-label" for="subscribe{{ systemSub.id }}">
-                                 {% if systemSub.subscription is defined and systemSub.subscription.isSubscribed %}
-                                 Unsubscribe
-                                 {% else %}
-                                 Subscribe
-                                 {% endif %}
-                              </label>
-                           </div>
-                        </form>
-                     </td>
-                  </tr>
-                  {% else %}
-                  <tr>
-                     <td>{% if is_granted('ROLE_ADMIN') %}
-                        <a class="link-offset-2 link-underline link-underline-opacity-0"
-                           href="{{ path('app_system') }}">{{ systemSub.name }}</a>
+                <thead class="bg-primary text-white">
+                    <tr>
+                        <th>System</th>
+                        <th>Status</th>
+                        <th>Subscription</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% set availableSystems = [] %}
+                    {% set maintenanceSystems = [] %}
+                    {% set incidentSystems = [] %}
+                    
+                    {% for systemSub in system %}
+                        {% if systemSub.active == 0 %}
+                            {% set systemStatus = 'available' %}
                         {% else %}
-                        <a class="link-offset-2 link-underline link-underline-opacity-0"
-                           href="{{ path('app_system_display', {'id': systemSub.id}) }}">{{ systemSub.name }}</a>
+                            {% set systemStatus = systemSub.status %}
                         {% endif %}
-                     </td>
-                     <td>
-      
-                       <div class="status-circle 
-                       {% if systemSub.status == 'available'  %}
-                       bg-success
-                       {% elseif systemSub.status == 'maintenance' %}
-                       bg-warning
-                       {% else %}
-                       bg-danger
-                       {% endif %}
-                       "></div> {{systemSub.status}}
-
-                     </td>
-                     <td>
-                        <form action="{{ path('app_home_subscribe', {'id': systemSub.id}) }}" method="post">
-                           <div class="form-check form-switch">
-                              {% set isSubscribed = false %}
-                              {% for subscription in systemSub.subscriptions %}
-                              {% if subscription.user == app.user and subscription.isSubscribed %}
-                              {% set isSubscribed = true %}
-                              {% endif %}
-                              {% endfor %}
-                              <input class="form-check-input" type="checkbox" name="subscribe"
-                                 id="subscribe{{ systemSub.id }}" {% if isSubscribed %}checked{% endif %}
-                                 onchange="this.form.submit()">
-                              <label class="form-check-label" for="subscribe{{ systemSub.id }}">
-                                 {% if systemSub.subscription is defined and systemSub.subscription.isSubscribed %}
-                                 Unsubscribe
-                                 {% else %}
-                                 Subscribe
-                                 {% endif %}
-                              </label>
-                           </div>
-                        </form>
-                     </td>
-                  </tr>
-                  {% endif %}
-                  {% endfor %}
-               </tbody>
+                        
+                        {% if systemStatus == 'available' %}
+                            {% set availableSystems = availableSystems|merge([systemSub]) %}
+                        {% elseif systemStatus == 'maintenance' %}
+                            {% set maintenanceSystems = maintenanceSystems|merge([systemSub]) %}
+                        {% elseif systemStatus == 'incident' %}
+                            {% set incidentSystems = incidentSystems|merge([systemSub]) %}
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% set sortedSystems = availableSystems|merge(maintenanceSystems)|merge(incidentSystems) %}
+                    
+                    {% for systemSub in sortedSystems %}
+                        <tr>
+                            <td>
+                                {% if is_granted('ROLE_ADMIN') %}
+                                    <a class="link-offset-2 link-underline link-underline-opacity-0"
+                                       href="{{ path('app_system') }}">{{ systemSub.name }}</a>
+                                {% else %}
+                                    <a class="link-offset-2 link-underline link-underline-opacity-0"
+                                       href="{{ path('app_system_display', {'id': systemSub.id}) }}">{{ systemSub.name }}</a>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="status-circle 
+                                     {% if systemSub.status == 'available'  %}
+                                         bg-success
+                                     {% elseif systemSub.status == 'maintenance' %}
+                                         bg-warning
+                                     {% else %}
+                                         bg-danger
+                                     {% endif %}
+                                 "></div> {{systemSub.status}}
+                            </td>
+                            <td>
+                                <form action="{{ path('app_home_subscribe', {'id': systemSub.id}) }}" method="post">
+                                    <div class="form-check form-switch">
+                                        {% set isSubscribed = false %}
+                                        {% for subscription in systemSub.subscriptions %}
+                                            {% if subscription.user == app.user and subscription.isSubscribed %}
+                                                {% set isSubscribed = true %}
+                                            {% endif %}
+                                        {% endfor %}
+                                        <input class="form-check-input" type="checkbox" name="subscribe"
+                                               id="subscribe{{ systemSub.id }}" {% if isSubscribed %}checked{% endif %}
+                                               onchange="this.form.submit()">
+                                        <label class="form-check-label" for="subscribe{{ systemSub.id }}">
+                                            {% if systemSub.subscription is defined and systemSub.subscription.isSubscribed %}
+                                                Unsubscribe
+                                            {% else %}
+                                                Subscribe
+                                            {% endif %}
+                                        </label>
+                                    </div>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
             </table>
-         </div>
-      </div>
-   </div>
+        </div>
+    </div>
 </div>
 </div>
 {# JavaScript Search file: /public/asset/js/search.js #}

@@ -3,33 +3,46 @@
 {% block title %}Maintenance & Incidents{% endblock %}
 
 {% block body %}
-    <div class="container">
-        <div class="row">
-            <div class="col-12">
-                <h1 class="my-4">Maintenance & Incidents</h1>
-                {% if is_granted('ROLE_ADMIN') %}
-                    <div class="mb-3">
-                        <a href="{{ path('app_template_new') }}" class="btn btn-primary">Add Template</a>
-                    </div>
-                {% endif %}
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th> ID </th>
-                            <th>Template</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for template in templates %}
-                            <tr>
-                                <td>{{ template.id }}</td>
-                                <td>{{ template.template }}</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="my-4">Maintenance & Incidents</h1>
+            {% if is_granted('ROLE_ADMIN') %}
+            <div class="mb-3">
+                <a href="{{ path('app_template_new') }}" class="btn btn-primary">Add Template</a>
             </div>
+            {% endif %}
+            <table class="table table-bordered table-striped">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Type</th>
+                        <th>Title</th>
+                        <th>Subject</th>
+                        <th>Template</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for template in templates %}
+                    <tr>
+                        <td>{{ template.id }}</td>
+                        <td>
+                            {% if template.type == 'maintenance' %}
+                            <span class="badge badge-warning">{{ template.type }}</span>
+                            {% elseif template.type == 'incident' %}
+                            <span class="badge badge-danger">{{ template.type }}</span>
+                            {% else %}
+                            <span class="badge badge-primary">{{ template.type }}</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ template.title }}</td>
+                        <td>{{ template.subject }}</td>
+                        <td>{{ template.template }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
+</div>
 {% endblock %}
-
