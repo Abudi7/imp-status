@@ -3,61 +3,89 @@
 {% block body %}
    <div class="container">
     <div class="mb-3">
-        <a href="{{ path('app_system_display', {'id': system.id}) }}" class="btn btn-secondary">Back to Display System</a>
+        <a href="{% if is_granted('ROLE_ADMIN') %}
+                {{ path('app_system_display', {'id': system.id}) }}
+            {% else %}
+                {{ path('app_subscription') }}
+            {% endif %}"
+       class="btn btn-secondary">Back to Display System</a>
     </div>
     <h2 class="bg-info text-center text-white rounded-pill">Events for {{ system.name }}</h2>
     <div class="table-responsive">
-        <table class="table table-bordered table-md" id="table" style="font-size: 13px">
-            <thead class="bg-primary text-white">
-                <tr>
-                    <th scope="col">Type</th>
-                    <th scope="col">Start Date</th>
-                    <th scope="col">End Date</th>
-                    <th scope="col">Info</th>
-                    <th scope="col">Created at</th>
-                    <th scope="col">Created by</th>
-                    <th scope="col">Email body</th>
-                    <th scope="col">Actions</th>
-                    <th scope="col">Edit-Maintence</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for event in events %}
-                    <tr>
-                        <td>{{ event.type }}</td>
-                        <td>{{ event.start|date('Y-m-d H:i:s') }}</td>
-                        <td>
-                            {% if event.end %}
-                                {{ event.end|date('Y-m-d H:i:s') }}
-                            {% else %}
-                                Not resolved yet
-                            {% endif %}
-                        </td>
-                        <td>{{ event.info }}</td>
-                        <td>{{ event.createdAt|date('Y-m-d H:i:s') }}</td>
-                        <td>{{ event.creator.email }}</td>
-                        <td>{{ event.email }}</td>
-                        <td>
-                                {% if event.type == 'incident' and event.end|date('Y-m-d') == '9999-12-31' %}
-                                    <a href="{{ path('app_events_resolve_incident', {'id': event.id}) }}" class="btn btn-danger">Revoke Incident</a>
-                                {% elseif event.type == 'incident' and event.end %}
-                                    <button class="btn btn-secondary" disabled>Resolved</button>
-                                {% elseif event.type == 'available'%}
-                                    <button class="btn btn-success" disabled>Changed to Available</button>
-                                {% elseif event.type == 'maintenance' %}
-                                    <a href="{{ path('app_events_change_to_available', {'id': event.id}) }}" class="btn btn-warning">Change to Available</a>
-                                {% endif %}
-                        </td>
-                        <td>
-                        <a href="{{ path('app_events_edit_maintenance', {'eventId': event.id}) }}" class="btn btn-primary">Edit</a>
-                        </td>
+    <table class="table table-bordered table-md" id="table" style="font-size: 13px">
+    <thead class="bg-primary text-white">
+        <tr>
+            <th scope="col">Type</th>
+            <th scope="col">Start Date</th>
+            <th scope="col">End Date</th>
+            <th scope="col">Info</th>
+            <th scope="col">Created at</th>
+            <th scope="col">Created by</th>
+            {% if is_granted('ROLE_ADMIN') %}
+                <th scope="col">Email body</th>
+                <th scope="col">Actions</th>
+                <th scope="col">Edit-Maintenance</th>
+            {% endif %}
+        </tr>
+    </thead>
+    <tbody>
+      {% for event in events %}
+        {% set isOldEvent = event.start < "now"|date %}
+        <tr {% if isOldEvent %}class="table-secondary" disabled{% endif %}>
+            <td>
+                <span class="type-badge
+                    {% if event.type == 'available' %}
+                        bg-success text-white
+                    {% elseif event.type == 'maintenance' %}
+                        bg-warning
+                    {% elseif event.type == 'incident' %}
+                        bg-danger text-white
+                    {% endif %}
+                ">
+                    {{ event.type }}
+                </span>
+            </td>
+            <td>{{ event.start|date('Y-m-d H:i:s') }}</td>
+            <td>
+                {% if event.end %}
+                    {{ event.end|date('Y-m-d H:i:s') }}
+                {% else %}
+                    Not resolved yet
+                {% endif %}
+            </td>
+            <td>{{ event.info }}</td>
+            <td>{{ event.createdAt|date('Y-m-d H:i:s') }}</td>
+            <td>{{ event.creator.email }}</td>
+            {% if is_granted('ROLE_ADMIN') %}
+                <td>{{ event.email }}</td>
+                <td>
+                    {% if event.type == 'incident' and event.end|date('Y-m-d') == '9999-12-31' %}
+                        <a href="{{ path('app_events_resolve_incident', {'id': event.id}) }}" class="btn btn-danger">Revoke Incident</a>
+                    {% elseif event.type == 'incident' and event.end %}
+                        <button class="btn btn-secondary" disabled>Resolved</button>
+                    {% elseif event.type == 'available' %}
+                        <button class="btn btn-success" disabled>Conclude</button>
+                    {% elseif event.type == 'maintenance' %}
+                        {% if event.start and event.end %}
+                            <button class="btn btn-success" disabled>Concluded</button>
+                        {% else %}
+                            <a href="{{ path('app_events_change_to_available', {'id': event.id}) }}" class="btn btn-warning">Conclude</a>
+                        {% endif %}
+                    {% endif %}
+                </td>
 
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+                <td>
+                    <a href="{{ path('app_events_edit_maintenance', {'eventId': event.id}) }}" class="btn btn-primary">Edit</a>
+                </td>
+            {% endif %}
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
 </div>
+</div>
+
+
 
     
     <script>

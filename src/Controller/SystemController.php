@@ -188,4 +188,5 @@ class SystemController extends AbstractController
         // Redirect to the system list page
         return $this->redirectToRoute("app_system");
     }
+    
 }

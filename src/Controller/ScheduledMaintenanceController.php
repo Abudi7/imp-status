@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Repository\SystemStatusRepository;
+use App\Repository\EventsRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,7 +14,7 @@ class ScheduledMaintenanceController extends AbstractController
 {
    
     #[Route('/scheduled/maintenance', name: 'app_scheduled_maintenance')]
-    public function scheduledMaintenance(Request $request, SystemStatusRepository $systemStatusRepository): Response
+    public function scheduledMaintenance(Request $request, SystemStatusRepository $systemStatusRepository,EventsRepository $eventsRepository): Response
     {
         // Create a DateTime object for today
         //$today = new \DateTime('now', new \DateTimeZone('Europe/Vienna'));
@@ -50,8 +51,10 @@ class ScheduledMaintenanceController extends AbstractController
             $currentDate->modify('+1 day');
         }
 
-        // Retrieve maintenance events from the system status repository with the status 'Maintenance'
-        $maintenanceEvents = $systemStatusRepository->findByStatus('Maintenance');
+        // // Retrieve maintenance events from the system status repository with the status 'Maintenance'
+        // $maintenanceEvents = $systemStatusRepository->findByStatus('Maintenance');
+        // Retrieve maintenance events from the events repository with the type 'maintenance' and in the future
+        $maintenanceEvents = $eventsRepository->findFutureAndOngoingMaintenanceEvents();
 
         // Render the 'scheduled_maintenance/index.html.twig' template, passing the maintenance events, start date, and number of weeks
         return $this->render('scheduled_maintenance/index.html.twig', [

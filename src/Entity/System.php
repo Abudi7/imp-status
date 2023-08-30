@@ -224,7 +224,19 @@ class System
 
        
 
-       
+       /**
+     * Get upcoming maintenance events associated with this system.
+     *
+     * @return Collection|Events[]
+     */
+    public function getFutureMaintenance(): Collection
+    {
+        $now = new \DateTime();
+        
+        return $this->events->filter(function (Events $event) use ($now) {
+            return $event->getType() === 'maintenance' && $event->getStart() > $now;
+        });
+    }
     
 
 }

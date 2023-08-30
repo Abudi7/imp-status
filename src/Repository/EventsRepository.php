@@ -46,21 +46,83 @@ class EventsRepository extends ServiceEntityRepository
 //        ;
 //    }
 
-public function getSystemStatus($systemId)
-{
-    $qb = $this->createQueryBuilder('e')
-        ->select('e.type')
-        ->andWhere('e.system = :systemId')
-        ->andWhere('e.start <= :now')
-        ->andWhere('e.end >= :now')
-        ->orderBy('e.start', 'DESC')
-        ->setMaxResults(1)
-        ->setParameter('systemId', $systemId)
-        ->setParameter('now', new \DateTime());
+    public function getSystemStatus($systemId)
+    {
+        $qb = $this->createQueryBuilder('e')
+            ->select('e.type')
+            ->andWhere('e.system = :systemId')
+            ->andWhere('e.start <= :now')
+            ->andWhere('e.end >= :now')
+            ->orderBy('e.start', 'DESC')
+            ->setMaxResults(1)
+            ->setParameter('systemId', $systemId)
+            ->setParameter('now', new \DateTime());
 
-    $query = $qb->getQuery();
-    $result = $query->getOneOrNullResult();
+        $query = $qb->getQuery();
+        $result = $query->getOneOrNullResult();
 
-    return $result ? $result['type'] : 'Unknown';
-}
+        return $result ? $result['type'] : 'Unknown';
+    }
+
+    /**
+     * Find future maintenance events for a specific system.
+     *
+     * @param System $system The system entity
+     * @param \DateTime $currentDateTime The current date and time
+     * @return Events[]
+     */
+    public function findFutureMaintenanceEvents(System $system): array
+    {
+        $now = new \DateTime();
+        
+        return $this->createQueryBuilder('e')
+            ->andWhere('e.system = :system')
+            ->andWhere('e.type = :type')
+            ->andWhere('e.start > :now')
+            ->setParameter('system', $system)
+            ->setParameter('type', 'maintenance')
+            ->setParameter('now', $now)
+            ->orderBy('e.start', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Find all maintenance events, whether past, present, or future.
+     *
+     * @return Events[]
+     */
+    public function  findFutureMaintenanceEvent(): array
+    {
+        return $this->createQueryBuilder('e')
+            ->andWhere('e.type = :type')
+            ->setParameter('type', 'maintenance')
+            ->orderBy('e.start', 'ASC')
+            ->getQuery()
+            ->getResult();
+
+    }
+
+
+
+    /**
+     * Find future and ongoing maintenance events.
+     *
+     * @return Events[]
+     */
+    public function findFutureAndOngoingMaintenanceEvents(): array
+    {
+        $now = new \DateTime();
+
+        return $this->createQueryBuilder('e')
+        ->andWhere('e.type = :type')
+        ->andWhere('(e.start > :now OR (e.start <= :now AND e.end >= :now))')
+        ->setParameter('type', 'maintenance')
+        ->setParameter('now', $now)
+        ->orderBy('e.start', 'ASC')
+        ->getQuery()
+        ->getResult();
+    }
+
+
 }

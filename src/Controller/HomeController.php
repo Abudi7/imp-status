@@ -61,7 +61,6 @@ class HomeController extends AbstractController
                     "You have cancelled your subscription to " .
                         $system->getName()
                 );
-
                 return $this->redirectToRoute("app_allSubscription");
             }
 
@@ -82,6 +81,7 @@ class HomeController extends AbstractController
                 "success",
                 "You have subscribed to " . $system->getName()
             );
+            return $this->redirectToRoute("app_allSubscription");
         }
         $message =
             "You have subscribed to " .

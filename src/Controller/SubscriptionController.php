@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Controller\EventsController;
+use App\Controller\EventsController; // Make sure to import the EventsController
 use App\Entity\Subscription;
 use App\Entity\System;
 use App\Repository\SubscriptionRepository;
@@ -20,42 +20,86 @@ class SubscriptionController extends AbstractController
 {
     private $logger;
 
-    public function __construct(LoggerInterface $logger)
+    private $eventsController;
+
+    public function __construct(LoggerInterface $logger, EventsController $eventsController)
     {
         $this->logger = $logger;
+        $this->eventsController = $eventsController;
     }
-/*
-* It defines the route for the subscription page.
-* It injects three services via the method signature: Request, ManagerRegistry, and TokenStorageInterface.
-* It retrieves the currently logged-in user from the token storage interface.
-* It fetches all subscriptions for the current user from the database using the ManagerRegistry service.
-* It creates a subscription form using Symfony's form builder and sets up the form fields.
-* It handles form submissions and checks if the form is submitted and valid.
-* If the form is submitted and valid, it creates a new Subscription object, sets its properties, and saves it to the database.
-* It redirects the user to the subscription page and displays a success message.
-* It fetches all system statuses from the database using the ManagerRegistry service.
-* It renders the subscription page and passes in system statuses, subscriptions, and the subscription form.
-*/
+    /*
+    * It defines the route for the subscription page.
+    * It injects three services via the method signature: Request, ManagerRegistry, and TokenStorageInterface.
+    * It retrieves the currently logged-in user from the token storage interface.
+    * It fetches all subscriptions for the current user from the database using the ManagerRegistry service.
+    * It creates a subscription form using Symfony's form builder and sets up the form fields.
+    * It handles form submissions and checks if the form is submitted and valid.
+    * If the form is submitted and valid, it creates a new Subscription object, sets its properties, and saves it to the database.
+    * It redirects the user to the subscription page and displays a success message.
+    * It fetches all system statuses from the database using the ManagerRegistry service.
+    * It renders the subscription page and passes in system statuses, subscriptions, and the subscription form.
+    */
     #[Route('/subscription', name: 'app_subscription')]
 public function index(Request $request, ManagerRegistry $managerRegistry, TokenStorageInterface $tokenStorageInterface, SubscriptionRepository $subscriptionRepository, EventsController $eventsController): Response
 {
     $user = $tokenStorageInterface->getToken()->getUser();
-    // set Status in subscription index site 
+    
+    // Fetch all systems
     $em = $managerRegistry->getManager();
-    //get all systems 
     $systems = $em->getRepository(System::class)->findAll();
-    foreach ($systems as $system ) {
-           
-        $status =  $eventsController->getSystemStatus($system->getId(), $managerRegistry);
+    
+    // Set the status for each system using the EventsController method
+    foreach ($systems as $system) {
+        $status = $eventsController->getSystemStatus($system->getId(), $managerRegistry);
         $system->setStatus($status);
-       }
-
+    }
+    
+    // Fetch subscriptions for the current user
     $sub = $subscriptionRepository->findBy(['user' => $user]);
+    
+    // Make the findFutureMaintenanceEvents method available in the template
+    $twig = $this->container->get('twig');
+    $twig->addGlobal('findFutureMaintenanceEvents', [$eventsController, 'findFutureMaintenanceEvents']);
+
     return $this->render('subscription/index.html.twig', [
         'subs'=> $sub,
+        'systems' => $systems,
+        'findFutureMaintenanceEvents' => [$eventsController, 'findFutureMaintenanceEvents'], // Add this line
+
     ]);
 }
-//     // Get the logged-in user
+
+
+
+    /* The unsubscribe method is responsible for removing a subscription from the database. */
+    #[Route('/subscription/{id}/unsbuscribe', name: 'app_subscription_unsbuscribe')]
+    public function unsubscribe($id , ManagerRegistry $entityManager, SubscriptionRepository $subscriptionRepository)
+    {
+        // Find the subscription to unsubscribe from
+        $unsubscribe = $subscriptionRepository->find($id);
+
+        // Get the entity manager
+        $entityManager = $entityManager->getManager();
+
+        // Remove the subscription from the database
+        $entityManager->remove($unsubscribe);
+        $entityManager->flush();
+
+        // Display a success flash message
+        $this->addFlash('success', 'You have successfully unsubscribed from the subscription.');
+
+        // Redirect the user back to the subscription page
+        return $this->redirectToRoute('app_subscription');
+    }
+
+
+
+
+
+
+
+
+    //     // Get the logged-in user
 //     $user = $tokenStorageInterface->getToken()->getUser();
     
 //     // Fetch the user's subscriptions
@@ -114,28 +158,5 @@ public function index(Request $request, ManagerRegistry $managerRegistry, TokenS
 //         'form' => $form->createView(),
 //     ]);
 // }
-
-/* The unsubscribe method is responsible for removing a subscription from the database. */
-#[Route('/subscription/{id}/unsbuscribe', name: 'app_subscription_unsbuscribe')]
-public function unsubscribe($id , ManagerRegistry $entityManager, SubscriptionRepository $subscriptionRepository)
-{
-    // Find the subscription to unsubscribe from
-    $unsubscribe = $subscriptionRepository->find($id);
-
-    // Get the entity manager
-    $entityManager = $entityManager->getManager();
-
-    // Remove the subscription from the database
-    $entityManager->remove($unsubscribe);
-    $entityManager->flush();
-
-    // Display a success flash message
-    $this->addFlash('success', 'You have successfully unsubscribed from the subscription.');
-
-    // Redirect the user back to the subscription page
-    return $this->redirectToRoute('app_subscription');
-}
-
-
 }
 

@@ -274,7 +274,7 @@ class EventsController extends AbstractController
     }
 
 
-    /**
+   /**
      * Display the list of events associated with a system.
      *
      * @param int $systemId The ID of the system for which to retrieve events
@@ -295,15 +295,51 @@ class EventsController extends AbstractController
             throw $this->createNotFoundException('System not found');
         }
 
-        // Retrieve events associated with the system
-        $events = $entityManager->getRepository(Events::class)->findBy(['system' => $system]);
+        // Retrieve upcoming and previous maintenance events associated with the system
+        $events = $entityManager->getRepository(Events::class)->findBySystem($system);
 
-        // Render the events list view with the associated system and events
+        // Separate upcoming and previous maintenance events
+        $upcomingMaintenanceEvents = [];
+        $previousMaintenanceEvents = [];
+
+        $now = new \DateTime();
+        foreach ($events as $event) {
+            if ($event->getType() === 'maintenance') {
+                if ($event->getStart() > $now) {
+                    $upcomingMaintenanceEvents[] = $event;
+                } else {
+                    $previousMaintenanceEvents[] = $event;
+                }
+            }
+        }
+
+        // Render the events list view with the associated system, events, and maintenance events
         return $this->render('events/events-system.html.twig', [
             'system' => $system,
             'events' => $events,
+            'upcomingMaintenanceEvents' => $upcomingMaintenanceEvents,
+            'previousMaintenanceEvents' => $previousMaintenanceEvents,
         ]);
     }
+
+   /**
+     * Get a list of upcoming maintenance events for a given system.
+     *
+     * @param System $system The system entity
+     * @param ManagerRegistry $managerRegistry The Doctrine manager registry
+     * @return array An array of upcoming maintenance events
+     */
+    private function findFutureMaintenanceEvents(System $system, ManagerRegistry $managerRegistry): array
+    {
+        $entityManager = $managerRegistry->getManager();
+
+        // Retrieve upcoming maintenance events associated with the system
+        $events = $entityManager->getRepository(Events::class)->findFutureMaintenanceEvents($system);
+
+        return $events;
+    }
+
+
 
    // Edit an existing maintenance event
     #[Route("/events/{eventId}/edit-Maintenance", name:"app_events_edit_maintenance")]
@@ -360,7 +396,7 @@ class EventsController extends AbstractController
         // Mark the incident as resolved
         $event->setEnd(new \DateTime());
         // Update the event type to "Available"
-        $event->setType('available');
+        //$event->setType('available');
 
         $entityManager->flush();
 
@@ -470,9 +506,18 @@ class EventsController extends AbstractController
             throw $this->createNotFoundException('Event not found');
         }
 
-        // Change the event type to 'available'
-        $event->setType('available');
-        $event->setEnd(new \DateTime());
+        
+        // Check if the event is a maintenance event and has not started yet
+        if ($event->getType() === 'maintenance' && !$event->getStart()) {
+            $event->setStart(new \DateTime());
+            $event->setEnd(new \DateTime());
+        } else {
+            // Only update the end date for maintenance events that have started
+            if ($event->getType() === 'maintenance') {
+                $event->setEnd(new \DateTime());
+            }
+        }
+        
         // Persist the updated event
         $entityManager->flush();
 
@@ -515,5 +560,29 @@ class EventsController extends AbstractController
              'event' => $event,
          ]);
      }
+     /**
+     * Get future maintenance events for a system.
+     *
+     * @param int $systemId The ID of the system
+     * @param ManagerRegistry $managerRegistry The Doctrine manager registry
+     * @return array
+     */
+    #[Route("/system/{systemId}/future-maintenance", name: "app_system_future_maintenance")]
+    public function futureMaintenance($systemId, ManagerRegistry $managerRegistry): Response
+    {
+        $entityManager = $managerRegistry->getManager();
+        $system = $entityManager->getRepository(System::class)->find($systemId);
+
+        if (!$system) {
+            return new JsonResponse(['message' => 'System not found'], 404);
+        }
+
+        // Retrieve future maintenance events associated with the system
+        $currentDateTime = new \DateTime();
+        $futureMaintenanceEvents = $entityManager->getRepository(Events::class)->findFutureMaintenanceEvents($system, $currentDateTime);
+
+        // Return the future maintenance events as a JSON response
+        return $this->json($futureMaintenanceEvents);
+    }
 
 }
