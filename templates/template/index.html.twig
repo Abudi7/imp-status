@@ -7,6 +7,15 @@
     <div class="row">
         <div class="col-12">
             <h1 class="my-4">Maintenance & Incidents</h1>
+            <div class="alert alert-info">
+                <p><strong>Admin Guide:</strong> This page displays a list of maintenance and incident templates.</p>
+                <ul>
+                    <li><span class="badge badge-warning">Maintenance</span> - Use this type for maintenance-related templates.</li>
+                    <li><span class="badge badge-danger">Incident</span> - Use this type for incident-related templates.</li>
+                    {# <li><span class="badge badge-primary">Other</span> - Use this type for other types of templates.</li> #}
+                </ul>
+                <p>You can click on a template's title to view its details. If you have admin privileges, you can add new templates using the "Add Template" button.</p>
+            </div>
             {% if is_granted('ROLE_ADMIN') %}
             <div class="mb-3">
                 <a href="{{ path('app_template_new') }}" class="btn btn-primary">Add Template</a>
@@ -35,7 +44,7 @@
                             <span class="badge badge-primary">{{ template.type }}</span>
                             {% endif %}
                         </td>
-                        <td>{{ template.title }}</td>
+                        <td><a href="{{ path('app_template_show', {'id': template.id}) }}">{{ template.title }}</a></td>
                         <td>{{ template.subject }}</td>
                         <td>{{ template.template }}</td>
                     </tr>

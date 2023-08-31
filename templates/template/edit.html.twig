@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Template{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="my-4">Edit Template</h1>
+            <div class="alert">
+                <p><strong>Admin Guide:</strong> This page edits the maintenance and incident templates.</p>
+                <ul>
+                    <li><span class="badge badge-warning">Maintenance</span> - Use this type for maintenance-related templates.</li>
+                    <li><span class="badge badge-danger">Incident</span> - Use this type for incident-related templates.</li>
+                </ul>
+            </div>
+            {{ form_start(form) }}
+            {{ form_widget(form) }}
+            {{ form_end(form) }}
+        </div>
+    </div>
+    <div class="mt-2 alert alert-info">
+            <p>Use the following variables in your email template:</p>
+            <ul>
+                <li>{system_name} - System name</li>
+                <li>{start_time} - Start time</li>
+                <li>{end_time} - Expected end time (only applicable for maintenance)</li>
+                <li>{responsible_person} - Responsible person</li>
+            </ul>
+    </div>
+</div>
+{% endblock %}
