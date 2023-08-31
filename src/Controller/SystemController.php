@@ -53,17 +53,32 @@ class SystemController extends AbstractController
         }
     }
 
+   /**
+     * Display a list of systems and their statuses.
+     *
+     * This method retrieves all systems from the database and checks for any update
+     * requests regarding the active status of a system. If a system ID and active status
+     * are provided in the request, it calls the updateIsActive() method to update the
+     * active status of the system. It also fetches the current status for each system using
+     * the EventsController's getSystemStatus() method and updates the system's status.
+     *
+     * @param SystemRepository $systemRepository The system repository to retrieve systems
+     * @param Request $request The request object containing system ID and active status
+     * @param ManagerRegistry $managerRegistry The manager registry to access the entity manager
+     * @param EventsController $eventsController An instance of the EventsController for status retrieval
+     * @return Response The rendered view displaying systems and their statuses
+     */
     #[Route("/system", name: "app_system")]
     public function index(SystemRepository $systemRepository, Request $request, ManagerRegistry $managerRegistry, EventsController $eventsController): Response
     {
         // Retrieve all systems from the database
         $systems = $systemRepository->findAll();
-        // Check if the request contains the 'status_id' and 'isdeactive' parameters
+        // Check if the request contains the 'system_id' and 'active' parameters
         $systemId = $request->get('system_id');
         $active = $request->get('active');
         
         if ($systemId !== null && $active !== null) {
-            // Call the updateIsDeactive() method with the provided parameters
+            // Call the updateIsActive() method with the provided parameters
             $updateResult = $this->updateIsActive($systemId, $managerRegistry, $active);
             
             // Handle the update result, e.g., show a flash message
@@ -73,16 +88,17 @@ class SystemController extends AbstractController
                 $this->addFlash('error', $updateResult['message']);
             }
         }
-        foreach ($systems as $system ) {
-           
+        foreach ($systems as $system) {
+        
             $status =  $eventsController->getSystemStatus($system->getId(), $managerRegistry);
             $system->setStatus($status);
-           }
+        }
         // Render the systems index view and pass the systems data
         return $this->render("system/index.html.twig", [
             "systems" => $systems,
         ]);
     }
+
 
     /**
      * Add new System 
@@ -146,16 +162,33 @@ class SystemController extends AbstractController
         ]);
     }
 
-    /**
-     * Disply {id} System 
+   /**
+     * Display details of a specific system.
+     *
+     * @Route("/system/{id}/display", name="app_system_display")
+     * @param SystemRepository $systemRepository The System repository
+     * @param System $system The system entity
+     * @param ManagerRegistry $managerRegistry The ManagerRegistry instance
+     * @param EventsController $eventsController The EventsController instance
+     * @return Response
      */
-    #[Route("/system/{id}/display" ,name: "app_system_display" )]
-    public function display(System $system): Response {
+    public function display(SystemRepository $systemRepository, System $system, ManagerRegistry $managerRegistry, EventsController $eventsController): Response
+    {
+        // Retrieve all systems from the database
+        $systems = $systemRepository->findAll();
+        
+        // Update status for each system using EventsController method
+        foreach ($systems as $systemItem) {
+            $status = $eventsController->getSystemStatus($systemItem->getId(), $managerRegistry);
+            $systemItem->setStatus($status);
+        }
+        
         // Render the "display.html.twig" template and pass the system data to it
         return $this->render("system/display.html.twig", [
             "displays" => $system
         ]);
     }
+
 
     /**
      * Delete {id} System 

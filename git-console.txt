@@ -1,0 +1,75 @@
+Setting Up
+Initialize a Repository: Create a new Git repository in a directory or initialize an existing project folder with git init.
+
+Clone a Repository: Clone an existing repository from a remote source (e.g., GitHub) using git clone <repository_url>.
+
+***********************************
+
+Basic Workflow
+Add Files: Start tracking changes to files by adding them to the staging area using git add <file>.
+
+Commit Changes: Create a snapshot of the changes in the staging area using git commit -m "Commit message".
+
+***********************************
+
+Checking Status
+Check Status: View the status of your repository, showing changes and current branch status with git status.
+
+View Differences: See the differences between the working directory and staging area using git diff.
+
+***********************************
+
+Branching
+Create Branch: Create a new branch using git branch <branch_name>.
+
+Switch Branch: Switch to a different branch with git checkout <branch_name>.
+
+Create & Switch Branch: Combine branch creation and switching with git checkout -b <new_branch_name>.
+
+List Branches: List all branches in the repository with git branch.
+
+Delete Branch: Delete a branch with git branch -d <branch_name>.
+
+***********************************
+
+Merging
+Merge Branch: Merge changes from another branch into the current branch with git merge <other_branch>.
+Remote Repositories
+Add Remote: Connect your repository to a remote source using git remote add <remote_name> <repository_url>.
+
+Fetch Changes: Fetch remote changes to your local repository using git fetch <remote_name>.
+
+Pull Changes: Pull remote changes and integrate them into your local branch with git pull <remote_name> <branch_name>.
+
+Push Changes: Push your local changes to a remote repository using git push <remote_name> <branch_name>.
+
+***********************************
+
+History
+View History: View commit history with git log.
+
+View History (Graph): View commit history as a graph with git log --graph.
+
+View History (Brief): View a brief summary of commit history with git log --oneline.
+
+***********************************
+
+Undoing Changes
+Discard Changes: Discard changes in the working directory using git restore <file> or git checkout -- <file>.
+
+Unstage Changes: Unstage changes from the staging area using git restore --staged <file>.
+
+Amend Last Commit: Modify the last commit message or content using git commit --amend.
+
+Revert Commit: Create a new commit that undoes changes from a previous commit using git revert <commit>.
+
+***********************************
+
+Miscellaneous
+Ignore Files: Create a .gitignore file to specify which files or directories should be ignored by Git.
+
+Tagging: Create a tag for a specific commit to mark milestones or releases with git tag <tag_name>.
+
+Stash Changes: Temporarily save changes that you're not ready to commit using git stash.
+
+Apply Stash: Apply stashed changes back to the working directory using git stash apply.

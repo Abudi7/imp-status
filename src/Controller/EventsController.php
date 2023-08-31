@@ -492,7 +492,14 @@ class EventsController extends AbstractController
 
 
 
-    #[Route("/events/{id}/change-to-available", name:"app_events_change_to_available")]
+   /**
+     * Change an event to the 'available' status.
+     *
+     * @Route("/events/{id}/change-to-available", name="app_events_change_to_available")
+     * @param int $id The ID of the event
+     * @param ManagerRegistry $managerRegistry The ManagerRegistry instance
+     * @return Response
+     */
     public function changeToAvailable($id, ManagerRegistry $managerRegistry): Response
     {
         // Get the authenticated user (admin)
@@ -506,9 +513,9 @@ class EventsController extends AbstractController
             throw $this->createNotFoundException('Event not found');
         }
 
-        
         // Check if the event is a maintenance event and has not started yet
         if ($event->getType() === 'maintenance' && !$event->getStart()) {
+            // For maintenance events that haven't started yet, set both start and end to now
             $event->setStart(new \DateTime());
             $event->setEnd(new \DateTime());
         } else {
@@ -521,6 +528,7 @@ class EventsController extends AbstractController
         // Persist the updated event
         $entityManager->flush();
 
+        // Redirect to the system display page
         return $this->redirectToRoute('app_system_display', ['id' => $event->getSystem()->getId()]);
     }
 

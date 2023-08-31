@@ -17,18 +17,42 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class TemplateController extends AbstractController
 {
-    #[Route("/template", name: "app_template")]
-    public function index(TemplateRepository $templateRepository): Response
-    {
-        return $this->render("template/index.html.twig", [
-            "templates" => $templateRepository->findAll(),
-        ]);
-    }
+    /**
+ * Display the list of templates.
+ *
+ * This method renders the index page that displays the list of available templates.
+ *
+ * @Route("/template", name="app_template")
+ * @param TemplateRepository $templateRepository The repository to fetch templates
+ * @return Response The rendered template list page
+ */
+public function index(TemplateRepository $templateRepository): Response
+{
+    return $this->render("template/index.html.twig", [
+        "templates" => $templateRepository->findAll(),
+    ]);
+}
 
-    #[Route("/template/new", name: "app_template_new")]
-    public function new(Request $request, ManagerRegistry $managerRegistry)
+
+    /**
+     * Creates a new template.
+     *
+     * This method handles the creation of a new template by rendering a form for the user to fill in details,
+     * including the type (Maintenance or Incident), title, subject, and content of the template. Upon form submission,
+     * the template data is validated, persisted to the database, and the user is redirected back to the list of templates.
+     *
+     * @param Request $request The HTTP request object
+     * @param ManagerRegistry $managerRegistry The manager registry to access the entity manager
+     * @return Response
+     *
+     * @Route("/template/new", name="app_template_new")
+     */
+    public function new(Request $request, ManagerRegistry $managerRegistry): Response
     {
+        // Create a new instance of the Template entity
         $template = new Template();
+        
+        // Create a form to collect template data
         $form = $this->createFormBuilder($template)
             ->add('type', ChoiceType::class, [
                 'choices' => [
@@ -48,22 +72,36 @@ class TemplateController extends AbstractController
             ])
             ->getForm();
 
+        // Handle form submission
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Get the entity manager and persist the template data
             $entityManager = $managerRegistry->getManager();
             $entityManager->persist($template);
             $entityManager->flush();
 
+            // Redirect back to the list of templates
             return $this->redirectToRoute("app_template");
         }
 
+        // Render the form template
         return $this->render("template/new.html.twig", [
             "form" => $form->createView(),
         ]);
     }
 
-    #[Route("/template/{id}", name: "app_template_show")]
+
+    /**
+     * Show details of a specific template.
+     *
+     * This method retrieves a specific template from the database and renders
+     * the "show" template to display its details to the user.
+     *
+     * @Route("/template/{id}", name="app_template_show")
+     * @param Template $template The template entity
+     * @return Response
+     */
     public function showTemplate(Template $template): Response
     {
         return $this->render("template/show.html.twig", [
