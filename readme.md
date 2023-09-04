@@ -33,7 +33,7 @@ To install the project, follow the steps below:
 To use the application, follow the steps below:
 
 1. Start the web server using the symfony server:start command.
-2. Open a web browser and navigate to http://localhost:8000/.
+2. Open a web browser and navigate to http://localhost:8080/.
 3. Register an account or login with an existing account.
 4. Add, edit, or delete system statuses as needed.
 5. Subscribe or unsubscribe to system statuses.

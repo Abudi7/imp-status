@@ -30,7 +30,7 @@
             fetch(`http://localhost:8080/public/template/${selectedTemplateId}/get-template-content/`)
                 .then(response => response.text())
                 .then(content => {
-                     const filledContent = fillSubjectContentPlaceholders(JSON.parse(content)); // Replace placeholders
+                     const filledContent = JSON.parse(content); // Replace placeholders
                     console.log(JSON.parse(content))
                     console.log(`http://localhost:8080/public/template/${selectedTemplateId}/get-template-content/`)
                     emailField.value = filledContent; // Populate email textarea
@@ -54,7 +54,7 @@
             fetch(`http://localhost:8080/public/template/${selectedTemplateId}/get-template-subject/`)
                 .then(response => response.text())
                 .then(subject => {
-                    const filledSubject = fillSubjectContentPlaceholders(JSON.parse(subject)); // Replace subject placeholders
+                    const filledSubject = JSON.parse(subject); // Replace subject placeholders
                     subjectField.value = filledSubject;
                 })
                 .catch(error => {
@@ -71,7 +71,6 @@
     function fillSubjectContentPlaceholders(templateSubject) {
         const placeholders = {
             // Define your subject placeholders here
-            system_name: '{{ form.vars.value.system.name }}',
             system_name: '{{ form.vars.value.system.name }}', // Use the actual system name from the JavaScript variable
             maintenance_date: '{{ form.vars.value.start|date('H:i d-M-Y') }}', // Replace with actual value
             start_time: '{{ form.vars.value.start|date('H:i d-M-Y') }}', // Replace with actual value
@@ -80,7 +79,9 @@
         };
 
         for (const placeholder in placeholders) {
-            templateSubject = templateSubject.replace(`{${placeholder}}`, placeholders[placeholder]);
+            
+            templateSubject = templateSubject.replaceAll(`{${placeholder}}`, placeholders[placeholder]);
+            
         }
 
         return templateSubject;

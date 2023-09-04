@@ -137,30 +137,50 @@ class EventsController extends AbstractController
         // Handle form submission
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            // Set the 'email' property based on the form data
-            $event->setEmail($form->get('email')->getData());
-            
-             // Send email to subscribed users if send_email is checked
-            if ($event->isSendEmail()) {
-                $subscribedUsers = $system->getSubscriptions(); // Implement this method in your System entity
-
-                
-            foreach ($subscribedUsers as $subscription) {
-                $user = $subscription->getUser(); // Assuming Subscription entity has a user relation
-                $emailAddress = $user->getEmail();
-
-                $email = (new Email())
-                    ->from('your@example.com')
-                    ->to($emailAddress)
-                    ->subject('Maintenance Event Notification')
-                    ->text($form->get('email')->getData());
-
-                $mailer->send($email);
-            }
-            }
-            // Persist the new event
+            // Persist the new event to the database
             $entityManager->persist($event);
             $entityManager->flush();
+        
+            // Now, the event has an identifier (ID) assigned by the database
+        
+            // Set the 'email' property based on the form data
+            $event->setEmail($form->get('email')->getData());
+        
+            // Fetch the saved event from the database using its ID
+            $savedEvent = $entityManager->getRepository(Events::class)->find($event->getId());
+        
+            // Replace placeholders in the email content with actual data
+            $emailContent = $form->get('email')->getData();
+            $emailContent = str_replace('{system_name}', $savedEvent->getSystem()->getName(), $emailContent);
+            $emailContent = str_replace('{start_time}', $savedEvent->getStart()->format('H:i d-M-Y'), $emailContent);
+            $emailContent = str_replace('{end_time}', $savedEvent->getEnd()->format('H:i d-M-Y'), $emailContent);
+            $emailContent = str_replace('{responsible_person}', $savedEvent->getCreator()->getEmail(), $emailContent);
+        
+            // Update the 'email' property with the modified content
+            $event->setEmail($emailContent);
+        
+            // Send email to subscribed users if send_email is checked
+            if ($event->isSendEmail()) {
+                $subscribedUsers = $system->getSubscriptions(); // This method is in System entity
+        
+                foreach ($subscribedUsers as $subscription) {
+                    $user = $subscription->getUser(); // Assuming Subscription entity has a user relation
+                    $emailAddress = $user->getEmail();
+        
+                    $email = (new Email())
+                        ->from('your@example.com')
+                        ->to($emailAddress)
+                        ->subject('Maintenance Event Notification')
+                        ->text($form->get('email')->getData());
+        
+                    $mailer->send($email);
+                }
+            }
+        
+            // Persist the modified event (with updated 'email') to the database
+            $entityManager->persist($event);
+            $entityManager->flush();
+        
             // Redirect to the system page or a confirmation page
             return $this->redirectToRoute("app_system_display", ["id" => $id]);
         }
@@ -493,47 +513,48 @@ class EventsController extends AbstractController
 
 
    /**
-     * Change an event to the 'available' status.
-     *
-     * @Route("/events/{id}/change-to-available", name="app_events_change_to_available")
-     * @param int $id The ID of the event
-     * @param ManagerRegistry $managerRegistry The ManagerRegistry instance
-     * @return Response
-     */
-    public function changeToAvailable($id, ManagerRegistry $managerRegistry): Response
-    {
-        // Get the authenticated user (admin)
-        $admin = $this->getUser();
-        
-        // Load the Event entity
-        $entityManager = $managerRegistry->getManager();
-        $event = $entityManager->getRepository(Events::class)->find($id);
+ * Change an event to the 'available' status.
+ *
+ * @Route("/events/{id}/concluding", name="app_events_concluding")
+ * @param int $id The ID of the event
+ * @param ManagerRegistry $managerRegistry The ManagerRegistry instance
+ * @return Response
+ */
+#[Route("/events/{id}/concluding", name: "app_events_concluding")]
+public function concluding($id, ManagerRegistry $managerRegistry): Response
+{
+    // Get the authenticated user (admin)
+    $admin = $this->getUser();
 
-        if (!$event) {
-            throw $this->createNotFoundException('Event not found');
-        }
+    // Load the Event entity
+    $entityManager = $managerRegistry->getManager();
+    $event = $entityManager->getRepository(Events::class)->find($id);
 
-        // Check if the event is a maintenance event and has not started yet
-        if ($event->getType() === 'maintenance' && !$event->getStart()) {
-            // For maintenance events that haven't started yet, set both start and end to now
-            $event->setStart(new \DateTime());
-            $event->setEnd(new \DateTime());
-        } else {
-            // Only update the end date for maintenance events that have started
-            if ($event->getType() === 'maintenance') {
-                $event->setEnd(new \DateTime());
-            }
-        }
-        
-        // Persist the updated event
-        $entityManager->flush();
-
-        // Redirect to the system display page
-        return $this->redirectToRoute('app_system_display', ['id' => $event->getSystem()->getId()]);
+    if (!$event) {
+        throw $this->createNotFoundException('Event not found');
     }
 
+    // Check if the event is a maintenance event and has not started yet
+    if ($event->getType() === 'maintenance' && !$event->getStart()) {
+        // For maintenance events that haven't started yet, set both start and end to now
+        $event->setStart(new \DateTime());
+        $event->setEnd(new \DateTime());
+    } else {
+        // Only update the end date for maintenance events that have started
+        if ($event->getType() === 'maintenance' && $event->getStart()) {
+            $event->setEnd(new \DateTime());
+        }
+    }
+
+    // Persist the updated event
+    $entityManager->flush();
+
+    // Redirect to the system display page
+    return $this->redirectToRoute('app_system_display', ['id' => $event->getSystem()->getId()]);
+}
 
 
+    
       /**
      * Edit an existing event record.
      *
@@ -568,6 +589,7 @@ class EventsController extends AbstractController
              'event' => $event,
          ]);
      }
+
      /**
      * Get future maintenance events for a system.
      *

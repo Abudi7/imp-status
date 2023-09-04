@@ -23,23 +23,30 @@
     const emailField = document.querySelector('.email-field');
     
     templateSelect.addEventListener('change', () => {
-        const selectedTemplateId = templateSelect.value;
+        // When the dropdown selection changes:
+        const selectedTemplateId = templateSelect.value;// Get the selected template ID from the dropdown
+    if (selectedTemplateId) {
+        // If a template is selected:
         if (selectedTemplateId) {
+            // Fetch the template content from the server based on the selected template ID
             fetch(`http://localhost:8080/public/template/${selectedTemplateId}/get-template-content/`)
-                .then(response => response.text())
+                .then(response => response.text())// Convert the response to text
                 .then(content => {
-                     const filledContent = fillSubjectContentPlaceholders(JSON.parse(content)); // Replace placeholders
-                    console.log(JSON.parse(content))
+                    // When content is fetched successfully:
+                     const filledContent = JSON.parse(content); // Replace placeholders
+                    console.log(JSON.parse(content))// Log the fetched content (for debugging)
                     console.log(`http://localhost:8080/public/template/${selectedTemplateId}/get-template-content/`)
                     emailField.value = filledContent; // Populate email textarea
                 })
                 .catch(error => {
+                    // Handle errors if the fetch operation fails
                     console.error('Error fetching template content:', error);
                 });
         } else {
-            emailField.value = '';
-            emailField.disabled = true;
-            emailField.classList.add('readonly');
+            // If no template is selected:
+            emailField.value = ''; // Clear the email content textarea
+            emailField.disabled = true; // Disable the textarea
+            emailField.classList.add('readonly'); // Add a CSS class for a readonly appearance
         }
     });
 
@@ -52,7 +59,7 @@
             fetch(`http://localhost:8080/public/template/${selectedTemplateId}/get-template-subject/`)
                 .then(response => response.text())
                 .then(subject => {
-                    const filledSubject = fillSubjectContentPlaceholders(JSON.parse(subject)); // Replace subject placeholders
+                    const filledSubject = JSON.parse(subject); // Replace subject placeholders
                     subjectField.value = filledSubject;
                 })
                 .catch(error => {
@@ -77,7 +84,7 @@
         };
 
         for (const placeholder in placeholders) {
-            templateSubject = templateSubject.replace(`{${placeholder}}`, placeholders[placeholder]);
+            templateSubject = templateSubject.replaceAll(`{${placeholder}}`, placeholders[placeholder]);
         }
 
         return templateSubject;

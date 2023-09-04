@@ -10,6 +10,28 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class CalenderController extends AbstractController
 {
+    /**
+     * This method handles the 'app_calendar' route, displaying a calendar with maintenance events.
+     *
+     * It performs the following steps:
+     *
+     * 1. Create a DateTime object representing today.
+     * 2. Get the date from the request query parameters, if provided.
+     * 3. Set the start_date to the provided date or the first day of the current month.
+     * 4. Set the end_date to the last day of the current month.
+     * 5. Calculate the number of days in the previous month.
+     * 6. Calculate the number of days in the current month.
+     * 7. Calculate the offset to display the previous month's dates.
+     * 8. Generate an array of dates for each day of the month, including the previous month's dates.
+     * 9. Retrieve maintenance events from the system status repository with the status 'Maintenance'.
+     * 10. Pass the start_date, dates, and other necessary variables to the template.
+     * 11. Render the 'calendar/index.html.twig' template with the provided data.
+     *
+     * @param Request                $request                The HTTP request object.
+     * @param SystemStatusRepository $systemStatusRepository The repository for system status data.
+     *
+     * @return Response The response containing the rendered calendar view.
+     */
     #[Route('/calender', name: 'app_calender')]
     public function calender(Request $request , SystemStatusRepository $systemStatusRepository): Response
     {

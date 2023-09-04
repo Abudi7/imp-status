@@ -178,10 +178,21 @@ class SystemController extends AbstractController
         $systems = $systemRepository->findAll();
         
         // Update status for each system using EventsController method
+        // Loop through each item in the $systems array
         foreach ($systems as $systemItem) {
+            // Inside the loop:
+            
+            // 1. Get the status for the current $systemItem using the `getSystemStatus` method
+            //    from the $eventsController. This method likely retrieves and calculates the status
+            //    of the system based on its ID.
             $status = $eventsController->getSystemStatus($systemItem->getId(), $managerRegistry);
+            
+            // 2. Update the status of the current $systemItem with the calculated status.
             $systemItem->setStatus($status);
+            
+            // The loop continues to the next $systemItem in the $systems array until all items are processed.
         }
+
         
         // Render the "display.html.twig" template and pass the system data to it
         return $this->render("system/display.html.twig", [

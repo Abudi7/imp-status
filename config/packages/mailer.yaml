@@ -1,4 +1,8 @@
 framework:
     mailer:
-        #dsn: '%env(MAILER_DSN)%'
-        dsn: 'smtp://localhost' 
+        envelope:
+            sender: 'svc.smtp.imp@anton-paar.com'
+        headers:
+            From: 'imp Plattform <svc.smtp.imp@anton-paar.com>'
+        dsn: '%env(MAILER_DSN)%'
+        #dsn: 'smtp://localhost' 
