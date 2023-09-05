@@ -27,6 +27,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Constraints\GreaterThan;
 use Symfony\Component\Validator\Constraints\DateTime;
+use Symfony\Component\Mailer\Transport;
+use Symfony\Component\Mailer\Mailer;
 
 class EventsController extends AbstractController
 {
@@ -38,6 +40,7 @@ class EventsController extends AbstractController
             'controller_name' => 'EventsController',
         ]);
     }
+    
     // Create a new maintenance event
     #[Route("/events/{id}/new-Maintenance", name:"app_events_new_maintenance")]
     public function maintenance(Request $request, $id , ManagerRegistry $managerRegistry,MailerInterface $mailer): Response
@@ -141,8 +144,6 @@ class EventsController extends AbstractController
             $entityManager->persist($event);
             $entityManager->flush();
         
-            // Now, the event has an identifier (ID) assigned by the database
-        
             // Set the 'email' property based on the form data
             $event->setEmail($form->get('email')->getData());
         
@@ -155,32 +156,45 @@ class EventsController extends AbstractController
             $emailContent = str_replace('{start_time}', $savedEvent->getStart()->format('H:i d-M-Y'), $emailContent);
             $emailContent = str_replace('{end_time}', $savedEvent->getEnd()->format('H:i d-M-Y'), $emailContent);
             $emailContent = str_replace('{responsible_person}', $savedEvent->getCreator()->getEmail(), $emailContent);
-        
             // Update the 'email' property with the modified content
             $event->setEmail($emailContent);
-        
-            // Send email to subscribed users if send_email is checked
-            if ($event->isSendEmail()) {
-                $subscribedUsers = $system->getSubscriptions(); // This method is in System entity
-        
-                foreach ($subscribedUsers as $subscription) {
-                    $user = $subscription->getUser(); // Assuming Subscription entity has a user relation
-                    $emailAddress = $user->getEmail();
-        
-                    $email = (new Email())
-                        ->from('your@example.com')
-                        ->to($emailAddress)
-                        ->subject('Maintenance Event Notification')
-                        ->text($form->get('email')->getData());
-        
-                    $mailer->send($email);
-                }
-            }
-        
+            // Replace placeholders in the email subject with actual data
+            $emailSubject = $form->get('subject')->getData();
+            $emailSubject = str_replace('{system_name}', $savedEvent->getSystem()->getName(), $emailSubject);
+            $emailSubject = str_replace('{start_time}', $savedEvent->getStart()->format('H:i d-M-Y'), $emailSubject);
+            $emailSubject = str_replace('{end_time}', $savedEvent->getEnd()->format('H:i d-M-Y'), $emailSubject);
+            $emailSubject = str_replace('{responsible_person}', $savedEvent->getCreator()->getEmail(), $emailSubject);
+
+            // Update the 'email' property with the modified content
+            $event->setSubject($emailSubject);
+
+            
             // Persist the modified event (with updated 'email') to the database
             $entityManager->persist($event);
             $entityManager->flush();
-        
+
+            // Send email to subscribed users if send_email is checked
+            if ($event->isSendEmail()) {
+                $subscribedUsers = $system->getSubscriptions(); // This method is in System entity
+
+                foreach ($subscribedUsers as $subscription) {
+                    $user = $subscription->getUser(); // Assuming Subscription entity has a user relation
+                    $emailAddress = $user->getEmail();
+                    
+                    $transport = Transport::fromDsn($_ENV['MAILER_DSN']);
+                    $mailer = new Mailer($transport);
+
+                    // Create and send the email
+                    $email = (new Email())
+                        ->from($_ENV['MAILER_FROM'])
+                        ->to($emailAddress)
+                        //->subject($form->get('subject')->getData())// Get subject from the form
+                        ->subject($event->getSubject())
+                        ->text($event->getEmail()); // Use the modified email content
+
+                    $mailer->send($email);
+                }
+            }
             // Redirect to the system page or a confirmation page
             return $this->redirectToRoute("app_system_display", ["id" => $id]);
         }
@@ -275,15 +289,65 @@ class EventsController extends AbstractController
         // Handle form submission
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+            // Persist the new event to the database
+            $entityManager->persist($event);
+            $entityManager->flush();
+        
             // Set the 'email' property based on the form data
             $event->setEmail($form->get('email')->getData());
+        
+            // Fetch the saved event from the database using its ID
+            $savedEvent = $entityManager->getRepository(Events::class)->find($event->getId());
+        
+            // Replace placeholders in the email content with actual data
+            $emailContent = $form->get('email')->getData();
+            $emailContent = str_replace('{system_name}', $savedEvent->getSystem()->getName(), $emailContent);
+            $emailContent = str_replace('{start_time}', $savedEvent->getStart()->format('H:i d-M-Y'), $emailContent);
+            $emailContent = str_replace('{end_time}', $savedEvent->getEnd()->format('H:i d-M-Y'), $emailContent);
+            $emailContent = str_replace('{responsible_person}', $savedEvent->getCreator()->getEmail(), $emailContent);
+            // Update the 'email' property with the modified content
+            $event->setEmail($emailContent);
+
+            // Replace placeholders in the email subject with actual data
+            $emailSubject = $form->get('subject')->getData();
+            $emailSubject = str_replace('{system_name}', $savedEvent->getSystem()->getName(), $emailSubject);
+            $emailSubject = str_replace('{start_time}', $savedEvent->getStart()->format('H:i d-M-Y'), $emailSubject);
+            $emailSubject = str_replace('{end_time}', $savedEvent->getEnd()->format('H:i d-M-Y'), $emailSubject);
+            $emailSubject = str_replace('{responsible_person}', $savedEvent->getCreator()->getEmail(), $emailSubject);
+
+            // Update the 'email' property with the modified content
+            $event->setSubject($emailSubject);
+
             
-            // Persist the new incident event to the database
+            // Persist the modified event (with updated 'email') to the database
             $entityManager->persist($event);
             $entityManager->flush();
 
-            // Redirect to the system page or a confirmation page
-            return $this->redirectToRoute("app_system_display", ["id" => $id]);
+            // Send email to subscribed users if send_email is checked
+            if ($event->isSendEmail()) {
+                $subscribedUsers = $system->getSubscriptions(); // This method is in System entity
+
+                foreach ($subscribedUsers as $subscription) {
+                    $user = $subscription->getUser(); // Assuming Subscription entity has a user relation
+                    $emailAddress = $user->getEmail();
+                    
+                    $transport = Transport::fromDsn($_ENV['MAILER_DSN']);
+                    $mailer = new Mailer($transport);
+
+                    // Create and send the email
+                    $email = (new Email())
+                        ->from($_ENV['MAILER_FROM'])
+                        ->to($emailAddress)
+                        //->subject($form->get('subject')->getData())// Get subject from the form
+                        ->subject($event->getSubject())
+                        ->text($event->getEmail()); // Use the modified email content
+
+                    $mailer->send($email);
+                }
+            }
+
+        // Redirect to the system page or a confirmation page
+        return $this->redirectToRoute("app_system_display", ["id" => $id]);
         }
 
         // Render the incident event creation form
@@ -300,7 +364,7 @@ class EventsController extends AbstractController
      * @param int $systemId The ID of the system for which to retrieve events
      * @param ManagerRegistry $managerRegistry The Doctrine manager registry
      * @return Response
-     */
+    */
     #[Route("/system/{systemId}/events", name:"app_events_system")]
     public function systemEvents($systemId, ManagerRegistry $managerRegistry): Response
     {
@@ -348,7 +412,7 @@ class EventsController extends AbstractController
      * @param System $system The system entity
      * @param ManagerRegistry $managerRegistry The Doctrine manager registry
      * @return array An array of upcoming maintenance events
-     */
+    */
     private function findFutureMaintenanceEvents(System $system, ManagerRegistry $managerRegistry): array
     {
         $entityManager = $managerRegistry->getManager();
@@ -361,12 +425,20 @@ class EventsController extends AbstractController
 
 
 
-   // Edit an existing maintenance event
-    #[Route("/events/{eventId}/edit-Maintenance", name:"app_events_edit_maintenance")]
+    /**
+     * Edit a maintenance event.
+     *
+     * @Route("/events/{eventId}/edit-Maintenance", name="app_events_edit_maintenance")
+     * @param Request $request The HTTP request object
+     * @param int $eventId The ID of the maintenance event to edit
+     * @param ManagerRegistry $managerRegistry The ManagerRegistry instance
+     * @return Response A Response object representing the HTML content or a redirect
+    */
     public function editMaintenance(Request $request, $eventId, ManagerRegistry $managerRegistry): Response
     {
+        // Get the entity manager
         $entityManager = $managerRegistry->getManager();
-        
+
         // Find the maintenance event by ID
         $event = $entityManager->getRepository(Events::class)->find($eventId);
 
@@ -395,14 +467,18 @@ class EventsController extends AbstractController
         ]);
     }
 
+
     /**
+     * =====================================================================
      * Resolve an incident event.
      *
      * @param int $id The ID of the incident event to resolve
      * @param ManagerRegistry $managerRegistry The Doctrine manager registry
      * @return Response
+     * ======================================================================
      */
-     #[Route("/events/{id}/resolve-incident", name:"app_events_resolve_incident")]
+
+    #[Route("/events/{id}/resolve-incident", name:"app_events_resolve_incident")]
     public function resolveIncident($id, ManagerRegistry $managerRegistry): Response
     {
         // Load the Event entity
@@ -415,61 +491,21 @@ class EventsController extends AbstractController
         
         // Mark the incident as resolved
         $event->setEnd(new \DateTime());
-        // Update the event type to "Available"
-        //$event->setType('available');
-
         $entityManager->flush();
 
         return $this->redirectToRoute('app_events_system', ['systemId' => $event->getSystem()->getId()]);
     }
 
-//  /**
-//  * Get the system status based on the events associated with it.
-//  *
-//  * @param int $id The ID of the system to retrieve the status for
-//  * @param ManagerRegistry $managerRegistry The Doctrine manager registry
-//  * 
-//  */
-// #[Route("/events/get-system-status/{id}", name:"get_system_status")]
-// public function getSystemStatus($id, ManagerRegistry $managerRegistry): string
-// {
-//     $entityManager = $managerRegistry->getManager();
-//     $system = $entityManager->getRepository(System::class)->find($id); // Assuming you have a System entity
-
-//     if (!$system) {
-//         return new Response(['status' => 'System not found'], 404);
-//     }
-
-//     // Retrieve the events associated with the system and order them by date in descending order
-//     $events = $system->getEvents();
-//     $latestEvent = null;
-
-//     if ($events->count() > 0) {
-//         $latestEvent = $events->last(); // Get the latest event
-//     }
-
-//     if ($latestEvent) {
-//         // Check if the latest event is a maintenance event and if its start date is today or in the future
-//         $currentDateTime = new \DateTime();
-//         if ($latestEvent->getType() === 'maintenance' && $latestEvent->getStart() > $currentDateTime) {
-//             $status = 'available'; // Set status to 'available' if maintenance event starts in the future
-//         } else {
-//             $status = $latestEvent->getType();
-//         }
-//     } else {
-//         $status = 'available'; // Default status when no events are found
-//     }
-
-//     return $status;
-// }
 
     /**
+     * ======================================================================
      * Get the system status based on the events associated with it.
      *
      * @param int $id The ID of the system to retrieve the status for
      * @param ManagerRegistry $managerRegistry The Doctrine manager registry
-     * 
+     * =======================================================================
      */
+
     #[Route("/events/get-system-status/{id}", name:"get_system_status")]
     public function getSystemStatus($id, ManagerRegistry $managerRegistry): string
     {
@@ -512,91 +548,96 @@ class EventsController extends AbstractController
 
 
 
-   /**
- * Change an event to the 'available' status.
- *
- * @Route("/events/{id}/concluding", name="app_events_concluding")
- * @param int $id The ID of the event
- * @param ManagerRegistry $managerRegistry The ManagerRegistry instance
- * @return Response
- */
-#[Route("/events/{id}/concluding", name: "app_events_concluding")]
-public function concluding($id, ManagerRegistry $managerRegistry): Response
-{
-    // Get the authenticated user (admin)
-    $admin = $this->getUser();
+    /**
+     * =============================================================== 
+     * Event Action:
+     *
+     * @Route("/events/{id}/concluding", name="app_events_concluding")
+     * @param int $id The ID of the event
+     * @param ManagerRegistry $managerRegistry The ManagerRegistry instance
+     * @return Response
+     * =============================================================== 
+     */
+    
+    #[Route("/events/{id}/concluding", name: "app_events_concluding")]
+    public function concluding($id, ManagerRegistry $managerRegistry): Response
+    {
+        // Load the Event entity
+        $entityManager = $managerRegistry->getManager();
+        $event = $entityManager->getRepository(Events::class)->find($id);
 
-    // Load the Event entity
-    $entityManager = $managerRegistry->getManager();
-    $event = $entityManager->getRepository(Events::class)->find($id);
-
-    if (!$event) {
-        throw $this->createNotFoundException('Event not found');
-    }
-
-    // Check if the event is a maintenance event and has not started yet
-    if ($event->getType() === 'maintenance' && !$event->getStart()) {
-        // For maintenance events that haven't started yet, set both start and end to now
-        $event->setStart(new \DateTime());
-        $event->setEnd(new \DateTime());
-    } else {
-        // Only update the end date for maintenance events that have started
-        if ($event->getType() === 'maintenance' && $event->getStart()) {
-            $event->setEnd(new \DateTime());
+        if (!$event) {
+            throw $this->createNotFoundException('Event not found');
         }
+
+        // Check if the event is a maintenance event and has not started yet
+        if ($event->getType() === 'maintenance' && !!$event->getStart()) {
+            // For maintenance events that haven't started yet, set both start and end to now
+            $event->setStart(new \DateTime());
+            $event->setEnd(new \DateTime());
+        } else {
+            // Only update the end date for maintenance events that have started
+            if ($event->getType() === 'maintenance' && $event->getStart()) {
+                $event->setEnd(new \DateTime());
+            }
+        }
+
+        // Persist the updated event
+        $entityManager->flush();
+
+        // Redirect to the system display page
+        return $this->redirectToRoute('app_system_display', ['id' => $event->getSystem()->getId()]);
     }
 
-    // Persist the updated event
-    $entityManager->flush();
-
-    // Redirect to the system display page
-    return $this->redirectToRoute('app_system_display', ['id' => $event->getSystem()->getId()]);
-}
 
 
     
-      /**
-     * Edit an existing event record.
-     *
-     * @param Request $request The HTTP request object
-     * @param int $id The ID of the event to edit
-     * @param ManagerRegistry $managerRegistry The Doctrine manager registry
-     * @return Response
-     */
+    /**
+    * =============================================================== 
+    * Edit an existing maintenance event record.
+    *
+    * @param Request $request The HTTP request object
+    * @param int $id The ID of the event to edit
+    * @param ManagerRegistry $managerRegistry The Doctrine manager registry
+    * @return Response
+    * ===============================================================
+    */
 
-     #[Route("/events/{id}/edit", name:"app_events_edit")]
-     public function edit(Request $request, $id, ManagerRegistry $managerRegistry): Response
-     {
-         $entityManager = $managerRegistry->getManager();
-         $event = $entityManager->getRepository(Events::class)->find($id);
-         if (!$event) {
-             throw $this->createNotFoundException('Event not found');
-         }
+    #[Route("/events/{id}/edit", name:"app_events_edit")]
+    public function edit(Request $request, $id, ManagerRegistry $managerRegistry): Response
+    {
+        $entityManager = $managerRegistry->getManager();
+        $event = $entityManager->getRepository(Events::class)->find($id);
+        if (!$event) {
+            throw $this->createNotFoundException('Event not found');
+        }
      
-         // Create the form using the EventsType form type and pre-populate it with the event data
-         $form = $this->createForm(EventsType::class, $event);
+        // Create the form using the EventsType form type and pre-populate it with the event data
+        $form = $this->createForm(EventsType::class, $event);
      
-         $form->handleRequest($request);
-         if ($form->isSubmitted() && $form->isValid()) {
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
              // Save the changes to the event
              $entityManager->flush();
           
              return $this->redirectToRoute('app_events_system', ['systemId' => $event->getSystem()->getId()]);
-         }
+        }
      
-         return $this->render('events/edit-events.html.twig', [
+        return $this->render('events/edit-events.html.twig', [
              'form' => $form->createView(),
              'event' => $event,
-         ]);
-     }
+        ]);
+    }
 
-     /**
-     * Get future maintenance events for a system.
-     *
-     * @param int $systemId The ID of the system
-     * @param ManagerRegistry $managerRegistry The Doctrine manager registry
-     * @return array
-     */
+    /**
+    * =============================================================== 
+    * Get future maintenance events for a system.
+    *
+    * @param int $systemId The ID of the system
+    * @param ManagerRegistry $managerRegistry The Doctrine manager registry
+    * @return array
+    * =============================================================== 
+    */
     #[Route("/system/{systemId}/future-maintenance", name: "app_system_future_maintenance")]
     public function futureMaintenance($systemId, ManagerRegistry $managerRegistry): Response
     {
@@ -614,5 +655,47 @@ public function concluding($id, ManagerRegistry $managerRegistry): Response
         // Return the future maintenance events as a JSON response
         return $this->json($futureMaintenanceEvents);
     }
+
+
+    
+    /**
+    * Get the system status based on the events associated with it.
+    *
+    * @param int $id The ID of the system to retrieve the status for
+    * @param ManagerRegistry $managerRegistry The Doctrine manager registry
+    * 
+    */
+   /* #[Route("/events/get-system-status/{id}", name:"get_system_status")]
+    public function getSystemStatus($id, ManagerRegistry $managerRegistry): string
+    {
+        $entityManager = $managerRegistry->getManager();
+        $system = $entityManager->getRepository(System::class)->find($id); // Assuming you have a System entity
+
+        if (!$system) {
+            return new Response(['status' => 'System not found'], 404);
+        }
+
+        // Retrieve the events associated with the system and order them by date in descending order
+        $events = $system->getEvents();
+        $latestEvent = null;
+
+        if ($events->count() > 0) {
+            $latestEvent = $events->last(); // Get the latest event
+        }
+
+        if ($latestEvent) {
+            // Check if the latest event is a maintenance event and if its start date is today or in the future
+            $currentDateTime = new \DateTime();
+            if ($latestEvent->getType() === 'maintenance' && $latestEvent->getStart() > $currentDateTime) {
+                $status = 'available'; // Set status to 'available' if maintenance event starts in the future
+            } else {
+                $status = $latestEvent->getType();
+            }
+        } else {
+            $status = 'available'; // Default status when no events are found
+        }
+
+        return $status;
+    }*/
 
 }

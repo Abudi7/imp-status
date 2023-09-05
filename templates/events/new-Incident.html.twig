@@ -23,30 +23,23 @@
     const emailField = document.querySelector('.email-field');
     
     templateSelect.addEventListener('change', () => {
-        // When the dropdown selection changes:
-        const selectedTemplateId = templateSelect.value;// Get the selected template ID from the dropdown
-    if (selectedTemplateId) {
-        // If a template is selected:
+        const selectedTemplateId = templateSelect.value;
         if (selectedTemplateId) {
-            // Fetch the template content from the server based on the selected template ID
             fetch(`http://localhost:8080/public/template/${selectedTemplateId}/get-template-content/`)
-                .then(response => response.text())// Convert the response to text
+                .then(response => response.text())
                 .then(content => {
-                    // When content is fetched successfully:
                      const filledContent = JSON.parse(content); // Replace placeholders
-                    console.log(JSON.parse(content))// Log the fetched content (for debugging)
+                    console.log(JSON.parse(content))
                     console.log(`http://localhost:8080/public/template/${selectedTemplateId}/get-template-content/`)
                     emailField.value = filledContent; // Populate email textarea
                 })
                 .catch(error => {
-                    // Handle errors if the fetch operation fails
                     console.error('Error fetching template content:', error);
                 });
         } else {
-            // If no template is selected:
-            emailField.value = ''; // Clear the email content textarea
-            emailField.disabled = true; // Disable the textarea
-            emailField.classList.add('readonly'); // Add a CSS class for a readonly appearance
+            emailField.value = '';
+            emailField.disabled = true;
+            emailField.classList.add('readonly');
         }
     });
 
@@ -76,60 +69,20 @@
     function fillSubjectContentPlaceholders(templateSubject) {
         const placeholders = {
             // Define your subject placeholders here
-            system_name: '{{ form.vars.value.system.name }}',
             system_name: '{{ form.vars.value.system.name }}', // Use the actual system name from the JavaScript variable
-            incident_date: '{{ form.vars.value.start|date('H:i d-M-Y') }}', // Replace with actual value
+            maintenance_date: '{{ form.vars.value.start|date('H:i d-M-Y') }}', // Replace with actual value
             start_time: '{{ form.vars.value.start|date('H:i d-M-Y') }}', // Replace with actual value
+            end_time: '{{ form.vars.value.end|date('H:i d-M-Y') }}',
             responsible_person: '{{ form.vars.value.creator.email }}', // Replace with actual value
         };
 
         for (const placeholder in placeholders) {
+            
             templateSubject = templateSubject.replaceAll(`{${placeholder}}`, placeholders[placeholder]);
+            
         }
 
         return templateSubject;
     }
 </script>
-
-{# <script>
-    // Add event listener to emailtemplate dropdown
-    const templateSelect = document.querySelector('.template-select');
-    const emailField = document.querySelector('.email-field');
-    
-    templateSelect.addEventListener('change', () => {
-        const selectedTemplateId = templateSelect.value;
-        if (selectedTemplateId) {
-            fetch(`http://localhost:8080/public/template/${selectedTemplateId}/get-template-content/`)
-                .then(response => response.text())
-                .then(content => {
-                     const filledContent = fillTemplatePlaceholders(JSON.parse(content)); // Replace placeholders
-                    console.log(JSON.parse(content))
-                    console.log(`http://localhost:8080/public/template/${selectedTemplateId}/get-template-content/`)
-                    emailField.value = filledContent; // Populate email textarea
-                })
-                .catch(error => {
-                    console.error('Error fetching template content:', error);
-                });
-        } else {
-            emailField.value = ''; // Clear email textarea if no template selected
-             // Disable emailField and add readonly class
-                emailField.disabled = true;
-                emailField.classList.add('readonly');
-        }
-    });
-    function fillTemplatePlaceholders(templateContent) {
-    const placeholders = {
-        system_name: '{{ form.vars.value.system.name }}',
-        system_name: '{{ form.vars.value.system.name }}', // Use the actual system name from the JavaScript variable
-        incident_date: '{{ form.vars.value.start|date('H:i d-M-Y') }}', // Replace with actual value
-        start_time: '{{ form.vars.value.start|date('H:i d-M-Y') }}', // Replace with actual value
-        responsible_person: 'Responsible Person', // Replace with actual value
-    };
-
-    for (const placeholder in placeholders) {
-        templateContent = templateContent.replace(`{${placeholder}}`, placeholders[placeholder]);
-    }
-
-    return templateContent;
-}#}
 {% endblock %}
