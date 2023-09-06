@@ -26,7 +26,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Constraints\GreaterThan;
-use Symfony\Component\Validator\Constraints\DateTime;
+use DateTime;
+use DateTimeZone;
 use Symfony\Component\Mailer\Transport;
 use Symfony\Component\Mailer\Mailer;
 
@@ -193,6 +194,8 @@ class EventsController extends AbstractController
                         ->text($event->getEmail()); // Use the modified email content
 
                     $mailer->send($email);
+                    //log Email for the Admin 
+                    $this->logEmail( $emailAddress, 'Maintenance', $event->getSubject(),$_ENV['MAILER_FROM']);
                 }
             }
             // Redirect to the system page or a confirmation page
@@ -343,6 +346,7 @@ class EventsController extends AbstractController
                         ->text($event->getEmail()); // Use the modified email content
 
                     $mailer->send($email);
+                    $this->logEmail( $emailAddress, 'Incident', $event->getSubject(),$_ENV['MAILER_FROM']);
                 }
             }
 
@@ -655,7 +659,36 @@ class EventsController extends AbstractController
         // Return the future maintenance events as a JSON response
         return $this->json($futureMaintenanceEvents);
     }
+    /**
+     * Logs the sent email to a file.
+     *
+     * @param string $to      The recipient of the email
+     * @param string $type    The type of email
+     * @param string $subject The subject of the email
+     * @param string $headers The headers of the email
+     */
+    private function logEmail($to, $type, $subject, $headers)
+    {
+        // Get the log file path
+        $logFilePath = '../mailoutput' . DIRECTORY_SEPARATOR . 'email_log.txt';
 
+        // Create a DateTime object with the specified timezone (e.g., 'Europe/Vienna')
+        $timezone = new DateTimeZone('Europe/Vienna');
+        $timestamp = new DateTime('now', $timezone);
+
+        // Format the log entry
+        $logEntry = sprintf(
+            "%s %s To: %s Subject: %s Headers: %s \n",
+            $timestamp->format('Y-m-d H:i:s'),
+            strtoupper($type),
+            $to,
+            $subject,
+            $headers
+        );
+
+        // Append the log entry to the log file
+        file_put_contents($logFilePath, $logEntry, FILE_APPEND);
+    }
 
     
     /**
