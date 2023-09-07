@@ -100,9 +100,9 @@
                     <i class="fa fa-angle-left"></i>
                 </a>
                 <!-- Month and Calendar Icon -->
-                <h2 class="text-center">
+                <h3 class="text-center rounded-pill bg-info text-white">
                     <strong>{{ startDate|date('F-Y') }}</strong> <i class="fa fa-calendar"></i> Scheduled Maintenance Calendar
-                </h2>
+                </h3>
                 <a href="{{ path('app_scheduled_maintenance', {'date': startDate|date_modify('+1 month')|date('Y-m-d')}) }}" class="btn btn-primary">
                     <i class="fa fa-angle-right"></i>
                 </a>
@@ -207,7 +207,7 @@
 <div class="row">
     <div class="col-md-12">
         {% if maintenanceEvents|filter(m => m.start|date('m') == startDate|date('m'))|length > 0 %}
-            <h3>Maintenance Schedule:</h3>
+            <h4>Maintenance Schedule:</h4>
             <ul>
                 {% for maintenanceEvent in maintenanceEvents %}
                     {% if maintenanceEvent.start|date('m') == startDate|date('m') %}

@@ -75,11 +75,11 @@ class EventsController extends AbstractController
             "disabled" => true, // Set the field as disabled
 
         ])
-        ->add('created_at', DateTimeType::class, [
-            'widget' => 'single_text',
-            "required" => false, // Mark the field as not required
-            "disabled" => true,
-        ])
+        // ->add('created_at', DateTimeType::class, [
+        //     'widget' => 'single_text',
+        //     "required" => false, // Mark the field as not required
+        //     "disabled" => true,
+        // ])
         ->add('type', ChoiceType::class, [
             'choices' => [
                 'Maintenance' => 'maintenance',
@@ -142,6 +142,7 @@ class EventsController extends AbstractController
         // Handle form submission
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+            $event->setCreatedAt(new DateTime());
             // Persist the new event to the database
             $entityManager->persist($event);
             $entityManager->flush();

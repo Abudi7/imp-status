@@ -133,3 +133,9 @@ font-family: 'Tajawal', sans-serif !important;
 .inactive {
   background-color: #ccc;
 }
+h3{
+  text-align: center;
+  font-size: 12px;
+  border-radius: 20px;
+  background-color: #990000;
+}

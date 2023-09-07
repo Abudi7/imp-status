@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\SystemRepository;
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -49,6 +50,7 @@ class System
 
         $this->subscriptions = new ArrayCollection();
         $this->events = new ArrayCollection();
+        $this->createdAt = new DateTime();
 
     }
 

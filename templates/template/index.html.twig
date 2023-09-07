@@ -6,7 +6,7 @@
 <div class="container">
     <div class="row">
         <div class="col-12">
-            <h1 class="my-4">Maintenance & Incidents</h1>
+            <h3 class="text-center rounded-pill bg-info text-white">Maintenance & Incidents</h3>
             <div class="alert alert-info">
                 <p><strong>Admin Guide:</strong> This page displays a list of maintenance and incident templates.</p>
                 <ul>
@@ -16,13 +16,8 @@
                 </ul>
                 <p>You can click on a template's title to view its details. If you have admin privileges, you can add new templates using the "Add Template" button.</p>
             </div>
-            {% if is_granted('ROLE_ADMIN') %}
-            <div class="mb-3">
-                <a href="{{ path('app_template_new') }}" class="btn btn-primary">Add Template</a>
-            </div>
-            {% endif %}
-            <table class="table table-bordered table-striped">
-                <thead class="thead-dark">
+            <table class="table table-bordered table-md table-striped" id="table" style="font-size: 13px">
+                    <thead class="bg-primary text-white">
                     <tr>
                         <th>ID</th>
                         <th>Type</th>
@@ -51,6 +46,11 @@
                     {% endfor %}
                 </tbody>
             </table>
+            {% if is_granted('ROLE_ADMIN') %}
+            <div class="mb-3">
+                <a href="{{ path('app_template_new') }}" class="btn btn-primary">Add Template</a>
+            </div>
+            {% endif %}
         </div>
     </div>
 </div>
