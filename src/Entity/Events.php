@@ -11,7 +11,9 @@ class Events
 {
     public function __construct()
     {
-        $this->start = new \DateTime();// Set the start time to the current date and time when creating an event
+        
+        $start = new \DateTime();// Set the start time to the current date and time when creating an event
+        $start->setTime($start->format('H'), $start->format('i'), 0);
         $this->created_at = new \DateTime(); 
        //$this->end = new \DateTime('9999-99-99'); // Set the end time 99999
     }

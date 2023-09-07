@@ -25,20 +25,32 @@ class SystemController extends AbstractController
      */
     private function updateIsActive($id, ManagerRegistry $managerRegistry, $active): array
     {
+        // Get the entity manager from the ManagerRegistry
         $em = $managerRegistry->getManager();
+
+        // Find the System entity by its ID
         $system = $em->getRepository(System::class)->find($id);
 
+        // Check if the System entity was not found
         if (!$system) {
+            // Return an error message if the system status was not found
             return ['success' => false, 'message' => 'System status not found.'];
         }
 
+        // Get the previous active status of the System entity
         $previousIsDeactive = $system->isActive();
-        
-        if ($previousIsDeactive !== $active) {
-            $system->setActive($active);
-            $em->persist($system);
-            $em->flush();
 
+        // Check if the new active status is different from the previous one
+        if ($previousIsDeactive !== $active) {
+            // Set the new active status for the System entity
+            $system->setActive($active);
+
+            // Persist the changes to the database
+            $em->persist($system);
+
+            // Commit the changes to the database
+            $em->flush();
+        
             $message = $active
                 ? 'System status has been deactivated.'
                 : 'System status has been reactivated.';

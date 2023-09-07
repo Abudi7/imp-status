@@ -144,11 +144,19 @@
                                     {% else %}
                                         {{ date|date('d') }}
                                     {% endif %}
-                                    {% for maintenanceEvent in maintenanceEvents %}
+                                   {% for maintenanceEvent in maintenanceEvents %}
                                         {% set eventStartDate = maintenanceEvent.start|date('Y-m-d') %}
                                         {% set eventEndDate = maintenanceEvent.end|date('Y-m-d') %}
                                         {% if date|date('Y-m-d') >= eventStartDate and date|date('Y-m-d') <= eventEndDate %}
-                                            {% if date|date('Y-m-d') == eventStartDate %}
+                                            {% if date|date('Y-m-d') == eventStartDate and date|date('Y-m-d') == eventEndDate %}
+                                                <!-- Single-day Maintenance Event -->
+                                                <div class="bg-warning m-2 pl-1" style="border-radius: 20px;">
+                                                    <a href="{{ path('app_system_display', {'id': maintenanceEvent.id}) }}" class="link-underline-light text-dark" style="font-size: 12px;">
+                                                        {{ maintenanceEvent.system }}
+                                                        {{ maintenanceEvent.start|date('d.m.Y h:i') }} - {{ maintenanceEvent.end|date('h:i') }}
+                                                    </a>
+                                                </div>
+                                            {% elseif date|date('Y-m-d') == eventStartDate %}
                                                 <!-- Start of Multi-day Maintenance Event -->
                                                 <div class="bg-warning m-2 pl-1" style="border-radius: 20px;">
                                                     <a href="{{ path('app_system_display', {'id': maintenanceEvent.id}) }}" class="link-underline-light text-dark" style="font-size: 12px;">
@@ -187,7 +195,6 @@
                                         {% endif %}
                                     {% endfor %}
                                 </td>
-
                                 {% endfor %}
                             </tr>
                         {% endfor %}

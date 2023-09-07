@@ -96,6 +96,7 @@ class EventsController extends AbstractController
         ->add('start', DateTimeType::class, [
             'widget' => 'single_text',
             'html5' => true, // Enable HTML5 input type
+            'input' => 'datetime', // Set the input type to 'datetime'
             'attr' => [
                 'min' => (new \DateTime())->format('Y-m-d\TH:i'), // Set min attribute to current date and time
             ],
@@ -191,7 +192,7 @@ class EventsController extends AbstractController
                         ->to($emailAddress)
                         //->subject($form->get('subject')->getData())// Get subject from the form
                         ->subject($event->getSubject())
-                        ->text($event->getEmail()); // Use the modified email content
+                        ->html($event->getEmail()); // Use the modified email content
 
                     $mailer->send($email);
                     //log Email for the Admin 
