@@ -135,7 +135,7 @@ class EventsController extends AbstractController
         ->add('email', TextareaType::class, [
             'mapped' => true,
             'required' => false,
-            'label' => 'Email Template',
+            'label' => 'Email',
             'attr' => ['rows' => 5, 'class' => 'template-textarea'], // Add a class for selecting the textarea with JS
         ]);
         $form = $form->getForm();
@@ -243,11 +243,11 @@ class EventsController extends AbstractController
                 "disabled" => true, // Set the field as disabled
     
             ])
-            ->add('created_at', DateTimeType::class, [
-                'widget' => 'single_text',
-                "required" => false, // Mark the field as not required
-                "disabled" => true,
-            ])
+            // ->add('created_at', DateTimeType::class, [
+            //     'widget' => 'single_text',
+            //     "required" => false, // Mark the field as not required
+            //     "disabled" => true,
+            // ])
             ->add('info', TextType::class, [
                 'attr' => [
                     'class' => 'custom-css-class',
@@ -286,7 +286,7 @@ class EventsController extends AbstractController
             ->add('email', TextareaType::class, [
                 'mapped' => true,
                 'required' => false,
-                'label' => 'Email Template',
+                'label' => 'Email',
                 'attr' => ['rows' => 5, 'class' => 'template-textarea'], // Customize the textarea appearance
             ]);
         $form = $form->getForm();

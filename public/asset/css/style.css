@@ -1,10 +1,6 @@
 /* body styles */
 body {
- /* font-family: 'Montserrat', sans-serif !important;*/
- /*font-family: 'PT Sans', sans-serif !important;*/
- /* font-family: 'Montserrat', sans-serif;
-font-family: 'PT Sans', sans-serif; */
-font-family: 'Tajawal', sans-serif !important;
+  font-family: 'Roboto', sans-serif !important;
 }
 
 
@@ -137,5 +133,5 @@ h3{
   text-align: center;
   font-size: 12px;
   border-radius: 20px;
-  background-color: #990000;
+  
 }

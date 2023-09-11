@@ -96,19 +96,19 @@
         <div class="col-md-12">
             <!-- Navigation Buttons -->
             <div class="d-flex justify-content-between align-items-center">
-                <a href="{{ path('app_scheduled_maintenance', {'date': startDate|date_modify('-1 month')|date('Y-m-d')}) }}" class="btn btn-primary mr-2">
+                <a href="{{ path('app_scheduled_maintenance', {'date': startDate|date_modify('-1 month')|date('Y-m-d')}) }}" class="btn btn-info mr-2">
                     <i class="fa fa-angle-left"></i>
                 </a>
                 <!-- Month and Calendar Icon -->
                 <h3 class="text-center rounded-pill bg-info text-white">
                     <strong>{{ startDate|date('F-Y') }}</strong> <i class="fa fa-calendar"></i> Scheduled Maintenance Calendar
                 </h3>
-                <a href="{{ path('app_scheduled_maintenance', {'date': startDate|date_modify('+1 month')|date('Y-m-d')}) }}" class="btn btn-primary">
+                <a href="{{ path('app_scheduled_maintenance', {'date': startDate|date_modify('+1 month')|date('Y-m-d')}) }}" class="btn btn-info">
                     <i class="fa fa-angle-right"></i>
                 </a>
             </div>
             <!-- Current Date and Time in Client's Time Zone -->
-            <h4 class="text-center text-primary text-opacity-75" id="client-time"></h4>
+            <h4 class="text-center text-info text-opacity-75" id="client-time"></h4>
         </div>
     </div>
    <!-- Calendar Table -->
@@ -137,7 +137,7 @@
                                     {% set isToday = date|date('Y-m-d') == 'now'|date('Y-m-d') %}
                                     {% set isCurrentMonth = date|date('m') == startDate|date('m') %}
                                     {% set isMaintenanceDay = date|date('Y-m-d') in maintenanceEvents %}
-                                    <td class="{% if isToday %}bg-primary opacity-50 text-white{% elseif not isCurrentMonth %}bg-light{% endif %} {% if isMaintenanceDay %}maintenance-info{% endif %}">
+                                    <td class="{% if isToday %}bg-info opacity-50 text-white{% elseif not isCurrentMonth %}bg-light{% endif %} {% if isMaintenanceDay %}maintenance-info{% endif %}">
                                     {% if isToday %}
                                         <!-- Bold Date for Today -->
                                         <strong>{{ date|date('d F') }}</strong>
