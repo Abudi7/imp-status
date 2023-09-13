@@ -17,7 +17,7 @@
           </div>
         {% endif %}
 
-        <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
+        <h3 class="mb-3 fw-bold">Please sign in</h3>
         <label for="inputEmail">Email</label>
         <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control mb-3" autocomplete="email" required autofocus>
         <label for="inputPassword">Password</label>
@@ -35,8 +35,8 @@
             </label>
           </div>
         #}
-        <a href="{{ path('app_register') }}">Register a new user</a>
-        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+        <a href="{{ path('app_register') }}" class="text-info fw-medium lh-base p-2">Register a new user</a>
+        <button class="btn btn-lg btn-info btn-block" type="submit">Sign in</button>
       </form>
     </div>
   </div>

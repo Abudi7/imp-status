@@ -1,4 +1,4 @@
-# System Status Project
+# IMP Project
 In this project, we have developed a web application using the Symfony framework and MySQL database to manage system statuses. The application allows Admin to create, edit, and delete system statuses,and regular users can subscribe and unsubscribe to them. Additionally, it provides a list of system statuses and their current status.
 
 ## Features
@@ -32,7 +32,7 @@ To install the project, follow the steps below:
 This step is required if you're using Windows.
 7. Install Apache2 web server. You can typically do this using a package manager like apt if you're on a Linux distribution. 
 8. Install MariaDB (or any other database server of your choice) for your database needs. Use the package manager or MariaDB's official website for installation.
-9. Configure the Apache2 server to serve your Symfony application. This includes setting up virtual hosts, configuring document roots, and enabling necessary modules. 
+9. Configure the Apache2 server to serve your Symfony application. This includes setting up virtual hosts, configuring document roots, and enabling necessary modules.
 10.Access the application in your web browser by navigating to http://localhost:Port. Replace Port with the port number you've configured in your Apache2 virtual host configuration.
 
 ## Usage
