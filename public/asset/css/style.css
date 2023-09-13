@@ -129,9 +129,9 @@ body {
 .inactive {
   background-color: #ccc;
 }
-h3{
-  text-align: center;
-  font-size: 12px;
-  border-radius: 20px;
-  
+/* Common styles for all heading levels */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Roboto', sans-serif !important;
+  font-weight: bold;
+  margin-bottom: 10px;
 }

@@ -2,106 +2,73 @@
 {% block title %}Subscribe{% endblock %}
 {% block body %}
 <div class="container">
-    <!-- Search Form -->
-    <div class="row">
-        <div class="col-12 col-md-12 mb-4">
-            <form id="searchForm">
-                <!-- Search Input -->
-                <div class="input-group">
-                    <input type="text" id="searchInput" class="form-control" placeholder="Search...">
-                    <div class="input-group-append">
-                        <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i></button>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-    <!-- Not Found Message -->
-    <div class="row">
-        <div class="col-12 mb-3">
-            <div id="notFoundMessage" class="alert alert-danger" style="display: none;"></div>
-        </div>
-    </div>
+   <!-- Search Form -->
+   <div class="row">
+      <div class="col-12 col-md-12 mb-4">
+         <form id="searchForm">
+            <!-- Search Input -->
+            <div class="input-group">
+               <input type="text" id="searchInput" class="form-control" placeholder="Search...">
+               <div class="input-group-append">
+                  <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i></button>
+               </div>
+            </div>
+         </form>
+      </div>
+   </div>
+   <!-- Not Found Message -->
+   <div class="row">
+      <div class="col-12 mb-3">
+         <div id="notFoundMessage" class="alert alert-danger" style="display: none;"></div>
+      </div>
+   </div>
 </div>
 <div class="container mt-4">
-    <!-- Display Subscriptions -->
-    <h3 class="text-center rounded-pill bg-info text-white">My Subscriptions</h3>
-    <div class="alert alert-info" role="alert">
-        Click on a system name to view its associated events.
-    </div>
-    {% if subs is empty %}
-    <div class="alert alert-warning">You are not subscribed to any systems.</div>
-    {% else %}
-    <div class="table-responsive">
-        <table class="table table-bordered table-md table-striped" id="table" style="font-size: 13px">
-                    <thead class="bg-primary text-white">
-                <!-- Table Header -->
-                <tr>
-                    <th scope="col">System</th>
-                    <th scope="col">Status</th>
-                    <th scope="col">Last Updated</th>
-                    {% if is_granted('ROLE_ADMIN') %}
-                    <th scope="col">Responsible Person</th>
-                    {% endif %}
-                    <th scope="col">Info</th>
-                </tr>
-            </thead>
-            {% set availableSystems = [] %}
-            {% set maintenanceSystems = [] %}
-            {% set downSystems = [] %}
-            {% for sub in subs %}
-            <!-- Categorize systems -->
-            {% if sub.system.status == 'available' %}
-            {% set availableSystems = availableSystems|merge([sub]) %}
-            {% elseif sub.system.status == 'maintenance' %}
-            {% set maintenanceSystems = maintenanceSystems|merge([sub]) %}
-            {% else %}
-            {% set downSystems = downSystems|merge([sub]) %}
-            {% endif %}
-            {% endfor %}
-            {% for system in availableSystems %}
-            <!-- Display available systems -->
+   <!-- Display Subscriptions -->
+   <h3 class="text-center rounded-pill bg-info text-white">My Subscriptions</h3>
+   <div class="alert alert-info" role="alert">
+      <h5 class="alert-heading">Note:</h5>
+      <ul>
+         <li>Click on a system name to view its associated events.</li>
+         <li>The times are displayed in your local time zone.</li>
+      </ul>
+   </div>
+
+   {% if subs is empty %}
+   <div class="alert alert-warning">You are not subscribed to any systems.</div>
+   {% else %}
+   <div class="table-responsive">
+      <table class="table table-bordered table-md table-striped" id="table" style="font-size: 13px">
+         <thead class="bg-primary text-white">
+            <!-- Table Header -->
             <tr>
-                <td>
-                    <!-- Dropdown for upcoming maintenance -->
-                    <div class="dropdown">
-                        <a href="#" class="dropdown-toggle" id="upcomingMaintenanceDropdown{{ system.system.id }}"
-                            role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            {{ system.system.name }}
-                        </a>
-                        <!-- Dropdown menu for upcoming maintenance -->
-                        <div class="dropdown-menu" aria-labelledby="upcomingMaintenanceDropdown{{ system.system.id }}">
-                            {% set upcomingMaintenance = system.system.getFutureMaintenance() %}
-                            {% if upcomingMaintenance is not empty %}
-                            <h6 class="dropdown-header">Upcoming Maintenance</h6>
-                            <ul class="m-4">
-                                {% for event in upcomingMaintenance %}
-                                <li>{{ event.info }}</li>
-                                <li>Maintenance start from: {{ event.start|date('Y-m-d H:i:s') }}</li>
-                                <li>to end planning {{ event.end|date('Y-m-d H:i:s') }}</li>
-                                {% endfor %}
-                            </ul>
-                            {% else %}
-                            <p class="dropdown-text m-4">No upcoming maintenance.</p>
-                            {% endif %}
-                        </div>
-                    </div>
-                </td>
-                <!-- Other columns -->
-                <td>
-                    <div class="status-circle bg-success"></div>
-                    {{ system.system.status }}
-                </td>
-                <td>{{ system.system.createdAt|date('Y-m-d H:i:s') }}</td>
-                <td>{{ system.system.creator.username }}</td>
-                <td>{{ system.system.info }}</td>
+               <th scope="col">System</th>
+               <th scope="col">Status</th>
+               {% if is_granted('ROLE_ADMIN') %}
+               <th scope="col">Last Updated</th>
+               <th scope="col">Responsible Person</th>
+               {% endif %}
+               <th scope="col">Info</th>
             </tr>
-            {% endfor %}
-         <!-- Display maintenance systems -->
-         {% for system in maintenanceSystems %}
+         </thead>
+         {% set availableSystems = [] %}
+         {% set maintenanceSystems = [] %}
+         {% set downSystems = [] %}
+         {% for sub in subs %}
+         <!-- Categorize systems -->
+         {% if sub.system.status == 'available' %}
+         {% set availableSystems = availableSystems|merge([sub]) %}
+         {% elseif sub.system.status == 'maintenance' %}
+         {% set maintenanceSystems = maintenanceSystems|merge([sub]) %}
+         {% else %}
+         {% set downSystems = downSystems|merge([sub]) %}
+         {% endif %}
+         {% endfor %}
+         {% for system in availableSystems %}
+         <!-- Display available systems -->
          <tr>
             <td>
-            <!-- Dropdown for upcoming maintenance -->
+               <!-- Dropdown for upcoming maintenance -->
                <div class="dropdown">
                   <a href="#" class="dropdown-toggle" id="upcomingMaintenanceDropdown{{ system.system.id }}"
                      role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -115,8 +82,52 @@
                      <ul class="m-4">
                         {% for event in upcomingMaintenance %}
                         <li>{{ event.info }}</li>
-                        <li>Maintenance start from : ({{ event.start|date('Y-m-d H:i:s') }} </li>
-                        <li> to end planing {{ event.end|date('Y-m-d H:i:s') }})</li>
+                        <li><strong>Starts:</strong> <span class="date-convert">{{ event.start|date('Y-m-d H:i:s')
+                              }}</span></li>
+                        <li><strong>Ends:</strong> <span class="date-convert">{{ event.end|date('Y-m-d H:i:s') }}</span>
+                        </li>
+                        {% endfor %}
+                     </ul>
+                     {% else %}
+                     <p class="dropdown-text m-4">No upcoming maintenance.</p>
+                     {% endif %}
+                  </div>
+               </div>
+            </td>
+            <!-- Other columns -->
+            <td>
+               <div class="status-circle bg-success"></div>
+               {{ system.system.status }}
+            </td>
+            {% if is_granted('ROLE_ADMIN') %}
+            <td class="date-convert">{{ system.system.createdAt|date('Y-m-d H:i:s') }}</td>
+            <td>{{ system.system.creator.username }}</td>
+            {% endif %}
+            <td>{{ system.system.info }}</td>
+         </tr>
+         {% endfor %}
+         <!-- Display maintenance systems -->
+         {% for system in maintenanceSystems %}
+         <tr>
+            <td>
+               <!-- Dropdown for upcoming maintenance -->
+               <div class="dropdown">
+                  <a href="#" class="dropdown-toggle" id="upcomingMaintenanceDropdown{{ system.system.id }}"
+                     role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                     {{ system.system.name }}
+                  </a>
+                  <!-- Dropdown menu for upcoming maintenance -->
+                  <div class="dropdown-menu" aria-labelledby="upcomingMaintenanceDropdown{{ system.system.id }}">
+                     {% set upcomingMaintenance = system.system.getFutureMaintenance() %}
+                     {% if upcomingMaintenance is not empty %}
+                     <h6 class="dropdown-header">Upcoming Maintenance</h6>
+                     <ul class="m-4">
+                        {% for event in upcomingMaintenance %}
+                        <li>{{ event.info }}</li>
+                        <li><strong>Starts:</strong> <span class="date-convert">{{ event.start|date('Y-m-d H:i:s')
+                              }}</span></li>
+                        <li><strong>Ends:</strong> <span class="date-convert">{{ event.end|date('Y-m-d H:i:s') }}</span>
+                        </li>
                         {% endfor %}
                      </ul>
                      {% else %}
@@ -130,8 +141,10 @@
                <div class="status-circle bg-warning"></div>
                {{ system.system.status }}
             </td>
-            <td>{{ system.system.createdAt|date('Y-m-d H:i:s') }}</td>
+            {% if is_granted('ROLE_ADMIN') %}
+            <td class="date-convert">{{ system.system.createdAt|date('Y-m-d H:i:s') }}</td>
             <td>{{ system.system.creator.username }}</td>
+            {% endif %}
             <td>{{ system.system.info }}</td>
          </tr>
          {% endfor %}
@@ -139,13 +152,13 @@
          {% for system in downSystems %}
          <tr>
             <td>
-            <!-- Dropdown for upcoming maintenance -->
+               <!-- Dropdown for upcoming maintenance -->
                <div class="dropdown">
                   <a href="#" class="dropdown-toggle" id="upcomingMaintenanceDropdown{{ system.system.id }}"
                      role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                      {{ system.system.name }}
                   </a>
-                   <!-- Dropdown menu for upcoming maintenance -->
+                  <!-- Dropdown menu for upcoming maintenance -->
                   <div class="dropdown-menu" aria-labelledby="upcomingMaintenanceDropdown{{ system.system.id }}">
                      {% set upcomingMaintenance = system.system.getFutureMaintenance() %}
                      {% if upcomingMaintenance is not empty %}
@@ -153,8 +166,10 @@
                      <ul class="m-4">
                         {% for event in upcomingMaintenance %}
                         <li>{{ event.info }}</li>
-                        <li>Maintenance start from : ({{ event.start|date('Y-m-d H:i:s') }} </li>
-                        <li> to end planing {{ event.end|date('Y-m-d H:i:s') }})</li>
+                        <li><strong>Starts:</strong> <span class="date-convert">{{ event.start|date('Y-m-d H:i:s')
+                              }}</span></li>
+                        <li><strong>Ends:</strong> <span class="date-convert">{{ event.end|date('Y-m-d H:i:s') }}</span>
+                        </li>
                         {% endfor %}
                      </ul>
                      {% else %}
@@ -168,97 +183,27 @@
                <div class="status-circle bg-danger"></div>
                {{ system.system.status }}
             </td>
-            <td>{{ system.system.createdAt|date('Y-m-d H:i:s') }}</td>
+            {% if is_granted('ROLE_ADMIN') %}
+            <td class="date-convert">{{ system.system.createdAt|date('Y-m-d H:i:s') }}</td>
             <td>{{ system.system.creator.username }}</td>
+            {% endif %}
             <td>{{ system.system.info }}</td>
          </tr>
-         {# script to call status from the method in events controller getSystemStatus()
-         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-         <script>
-            document.addEventListener('DOMContentLoaded', function () {
-               const statusCells = document.querySelectorAll('.status-cell');
-
-               statusCells.forEach(cell => {
-                  const systemId = cell.dataset.systemId;
-                  fetch(`http://localhost:8080/public/events/get-system-status/${systemId}`) // Update the URL to match your route
-                     .then(response => response.json())
-                     .then(data => {
-                        const status = data.status;
-
-                        let bgColorClass = '';
-                        if (status == 'available') {
-                           bgColorClass = 'bg-success';
-                        } else if (status == 'maintenance') {
-                           bgColorClass = 'bg-warning';
-                        } else if (status == 'incident') {
-                           bgColorClass = 'bg-danger';
-                        }
-
-                        // Construct the HTML with status circle and status text on the same line without breaks
-                        const statusHtml = `<div class="status-circle ${bgColorClass}"></div><div style="display: inline">${status}</div>`;
-                        cell.innerHTML = statusHtml; // Set the status HTML in the cell
-                     })
-                     .catch(error => {
-                        console.error('Error fetching system status:', error);
-                     });
-               });
-            });
-         </script> #}
-
          {% endfor %}
          {% endif %}
          </tbody>
       </table>
-
    </div>
 </div>
 </div>
 </div>
 {# JavaScript Search file: /public/asset/js/search.js #}
 <script src="{{ asset('../public/asset/js/Search_jquery-3.6.0.min.js')}}"></script>
+<!--script for search buttom -->
 <script src="{{ asset('../public/asset/js/search.js')}}"></script>
-
+<!--script convert time to the user's local time zone. -->
+<script src="{{ asset('../public/asset/js/convertTimeZone.js')}}"></script>
 
 <!-- Add an ID to the WebSocket connection element -->
-<script>
-   // Establish a WebSocket connection
-   const socket = new WebSocket('ws://localhost:8000'); // Replace the URL with your WebSocket server URL
-
-   socket.addEventListener('open', (event) => {
-      console.log('WebSocket connection established.');
-   });
-
-   // Listen for incoming messages from the WebSocket server
-   socket.addEventListener('message', (event) => {
-      const message = event.data;
-
-      // Display a Chrome browser notification with sound
-      if (Notification.permission === 'granted') {
-         showNotification('New Message', message);
-      } else if (Notification.permission !== 'denied') {
-         Notification.requestPermission().then((permission) => {
-            if (permission === 'granted') {
-               showNotification('IMP', message);
-            }
-         });
-      }
-
-      console.log('Received message:', message);
-   });
-
-   // Function to send a message via the WebSocket connection
-   function sendMessage(message) {
-      socket.send(message);
-   }
-
-   // Function to display a Chrome browser notification with sound
-   function showNotification(title, body) {
-      const options = {
-         body: body,
-         icon: '{{ asset('img/ favicon.png') }}', // Replace with the path to your notification icon
-            sound: '{{ asset('asset / sound / notification.mp3') }}', // Replace with the path to your notification sound
-        };
-   new Notification(title, options);
-    }
-</script>
+<script src="{{ asset('../public/asset/js/webSocket.js')}}"></script>
 {% endblock %}
