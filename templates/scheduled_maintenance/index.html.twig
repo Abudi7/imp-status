@@ -137,7 +137,7 @@
                                     {% set isToday = date|date('Y-m-d') == 'now'|date('Y-m-d') %}
                                     {% set isCurrentMonth = date|date('m') == startDate|date('m') %}
                                     {% set isMaintenanceDay = date|date('Y-m-d') in maintenanceEvents %}
-                                    <td class="{% if isToday %}bg-info opacity-50 text-white{% elseif not isCurrentMonth %}bg-light{% endif %} {% if isMaintenanceDay %}maintenance-info{% endif %}">
+                                    <td class="{% if isToday %}bg-info opacity-70 text-white{% elseif not isCurrentMonth %}bg-light{% endif %} {% if isMaintenanceDay %}maintenance-info{% endif %}">
                                     {% if isToday %}
                                         <!-- Bold Date for Today -->
                                         <strong>{{ date|date('d F') }}</strong>
@@ -152,16 +152,16 @@
                                                 <!-- Single-day Maintenance Event -->
                                                 <div class="bg-warning m-2 pl-1" style="border-radius: 20px;">
                                                     <a href="{{ path('app_system_display', {'id': maintenanceEvent.id}) }}" class="link-underline-light text-dark" style="font-size: 12px;">
-                                                        {{ maintenanceEvent.system }}
-                                                        {{ maintenanceEvent.start|date('d.m.Y h:i') }} - {{ maintenanceEvent.end|date('h:i') }}
+                                                        <strong>{{ maintenanceEvent.system }}</strong>
+                                                        <span class="date-convert">{{ maintenanceEvent.start|date('Y-m-d H:i') }}</span> - <span class"date-convert">{{ maintenanceEvent.end|date('h:i') }}</span>
                                                     </a>
                                                 </div>
                                             {% elseif date|date('Y-m-d') == eventStartDate %}
                                                 <!-- Start of Multi-day Maintenance Event -->
                                                 <div class="bg-warning m-2 pl-1" style="border-radius: 20px;">
                                                     <a href="{{ path('app_system_display', {'id': maintenanceEvent.id}) }}" class="link-underline-light text-dark" style="font-size: 12px;">
-                                                        {{ maintenanceEvent.system }}
-                                                        {{ maintenanceEvent.start|date('d.m.Y h:i') }} - 00:00 
+                                                       <strong>{{ maintenanceEvent.system }}</strong>
+                                                       <span class="date-convert" > {{ maintenanceEvent.start|date('Y-m-d H:i') }}</span> - 00:00 
                                                     </a>
                                                 </div>
                                                 <!-- Mark the following days -->
@@ -179,8 +179,8 @@
                                                 {% endif %}
                                                 <div class="bg-warning m-2 pl-1" style="border-radius: 20px;">
                                                     <a href="{{ path('app_system_display', {'id': maintenanceEvent.id}) }}" class="link-underline-light text-dark" style="font-size: 12px;">
-                                                        {{ maintenanceEvent.system }}
-                                                        00:00 - {{ maintenanceEvent.end|date('h:i') }}
+                                                        <strong>{{ maintenanceEvent.system }}</strong>
+                                                        00:00 - <span class="date-convert">{{ maintenanceEvent.end|date('Y-m-d H:i:s') }}</span>
                                                     </a>
                                                 </div>
                                             {% else %}
@@ -217,7 +217,7 @@
                                 <strong>{{ maintenanceEvent.system }}</strong>
                                 <i class="fa fa-arrow-right"></i>
                                 <i class="fa fa-frown-o" style="font-size:16px;color:red"></i>
-                                {{ maintenanceEvent.start|date('Y.m.d  h:i') }} -- {{ maintenanceEvent.end|date('Y.m.d  h:i') }}
+                                <span class="date-convert">{{ maintenanceEvent.start|date('Y-m-d H:i:s') }} </span> -- <span class="date-convert">{{ maintenanceEvent.end|date('Y-m-d H:i:s') }}</span>
                                 <i class="fa fa-smile-o" style="font-size:16px;color:green"></i>
                             </li>
                         </div>
