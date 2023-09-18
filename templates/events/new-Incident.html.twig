@@ -5,8 +5,7 @@
     <h2 class="bg-danger text-center text-white rounded-pill ">Create New Incident Event</h2>
     {{ form_start(form) }}
     {{ form_row(form.system) }}
-    {{ form_row(form.creator) }}
-    {{ form_row(form.created_at) }}
+    {# {{ form_row(form.creator) }} #}
     {{ form_row(form.info) }}
     {{ form_row(form.type) }}
     {{ form_row(form.emailtemplate, {'attr': {'class': 'template-select'}}) }}

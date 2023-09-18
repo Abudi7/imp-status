@@ -178,26 +178,46 @@ class EventsController extends AbstractController
 
             // Send email to subscribed users if send_email is checked
             if ($event->isSendEmail()) {
-                $subscribedUsers = $system->getSubscriptions(); // This method is in System entity
+                // Retrieve the list of subscribed users for the system
+                $subscribedUsers = $system->getSubscriptions(); // This method is in the System entity
+                
+                // Create an empty queue to hold emails
+                $emailQueue = [];
 
                 foreach ($subscribedUsers as $subscription) {
+                    // Retrieve the user associated with the subscription
                     $user = $subscription->getUser(); // Assuming Subscription entity has a user relation
+                    
+                    // Get the user's email address
                     $emailAddress = $user->getEmail();
                     
+                    // Create a mailer instance for sending emails
                     $transport = Transport::fromDsn($_ENV['MAILER_DSN']);
                     $mailer = new Mailer($transport);
 
-                    // Create and send the email
+                    // Create an email message
                     $email = (new Email())
                         ->from($_ENV['MAILER_FROM'])
-                        ->to($emailAddress)
-                        //->subject($form->get('subject')->getData())// Get subject from the form
+                        ->bcc($emailAddress)
                         ->subject($event->getSubject())
                         ->html($event->getEmail()); // Use the modified email content
 
-                    $mailer->send($email);
-                    //log Email for the Admin 
-                    $this->logEmail( $emailAddress, 'Maintenance', $event->getSubject(),$_ENV['MAILER_FROM']);
+                    // Add the email to the queue
+                    $emailQueue[] = $email;
+
+                    // Check if the emailQueue contains 100 emails or it's the last batch
+                    $queueSize = count($emailQueue);
+                    if ($queueSize <= 100 || ($queueSize > 0 && $subscription === end($subscribedUsers))) {
+                        // Send each email in the queue
+                        foreach ($emailQueue as $queuedEmail) {
+                            $mailer->send($queuedEmail);
+                            // Log Email for the Admin
+                            $this->logEmail($emailAddress, 'Maintenance', $event->getSubject(), $_ENV['MAILER_FROM']);
+                        }
+
+                        // Clear the queue after sending
+                        $emailQueue = [];
+                    }
                 }
             }
             // Redirect to the system page or a confirmation page
@@ -236,13 +256,13 @@ class EventsController extends AbstractController
                 "required" => false, // Mark the field as not required
                 "disabled" => true, // Set the field as disabled
             ])
-            ->add('creator', EntityType::class,[
-                "class" => User::class,
-                "choice_label" => "email",
-                "required" => false, // Mark the field as not required
-                "disabled" => true, // Set the field as disabled
+            // ->add('creator', EntityType::class,[
+            //     "class" => User::class,
+            //     "choice_label" => "email",
+            //     "required" => false, // Mark the field as not required
+            //     "disabled" => true, // Set the field as disabled
     
-            ])
+            // ])
             // ->add('created_at', DateTimeType::class, [
             //     'widget' => 'single_text',
             //     "required" => false, // Mark the field as not required
@@ -328,27 +348,26 @@ class EventsController extends AbstractController
             $entityManager->persist($event);
             $entityManager->flush();
 
-            // Send email to subscribed users if send_email is checked
+           // Send email to subscribed users if send_email is checked
             if ($event->isSendEmail()) {
                 $subscribedUsers = $system->getSubscriptions(); // This method is in System entity
+                $bccEmails = [];
 
                 foreach ($subscribedUsers as $subscription) {
                     $user = $subscription->getUser(); // Assuming Subscription entity has a user relation
                     $emailAddress = $user->getEmail();
-                    
-                    $transport = Transport::fromDsn($_ENV['MAILER_DSN']);
-                    $mailer = new Mailer($transport);
+                    $bccEmails[] = $emailAddress;
 
-                    // Create and send the email
-                    $email = (new Email())
-                        ->from($_ENV['MAILER_FROM'])
-                        ->to($emailAddress)
-                        //->subject($form->get('subject')->getData())// Get subject from the form
-                        ->subject($event->getSubject())
-                        ->text($event->getEmail()); // Use the modified email content
+                    // If you have reached 100 email addresses, send the email and reset the $bccEmails array
+                    if (count($bccEmails) === 100) {
+                        $this->sendEmailToBcc($event, $bccEmails);
+                        $bccEmails = [];
+                    }
+                }
 
-                    $mailer->send($email);
-                    $this->logEmail( $emailAddress, 'Incident', $event->getSubject(),$_ENV['MAILER_FROM']);
+                // If there are any remaining email addresses in $bccEmails, send the final email
+                if (!empty($bccEmails)) {
+                    $this->sendEmailToBcc($event, $bccEmails);
                 }
             }
 
@@ -362,7 +381,37 @@ class EventsController extends AbstractController
             "system" => $system,
         ]);
     }
+        /**
+         * Sends an email to a group of recipients in the Bcc (Blind Carbon Copy) field.
+         *
+         * @param Events $event      The event object containing email content and subject.
+         * @param array  $bccEmails  An array of email addresses to include in the Bcc field.
+         */
+        private function sendEmailToBcc($event, $bccEmails) {
+            // Create a transport for sending emails
+            $transport = Transport::fromDsn($_ENV['MAILER_DSN']);
+            $mailer = new Mailer($transport);
 
+            // Create an email message
+            $email = (new Email())
+                ->from($_ENV['MAILER_FROM'])    // Set the 'from' email address
+                ->subject($event->getSubject()) // Set the email subject
+                ->html($event->getEmail())      // Set the email content
+                ->bcc(...$bccEmails);           // Add all collected email addresses to Bcc
+
+            // Send the email
+            $mailer->send($email);
+
+            // Log Email for the Admin
+            $this->logEmail(
+                implode(', ', $bccEmails),   // Log the list of Bcc email addresses
+                'Incident',                   // Log the email type (e.g., 'Incident')
+                $event->getSubject(),        // Log the email subject
+                $_ENV['MAILER_FROM']         // Log the 'from' email address
+            );
+        }
+
+    
 
    /**
      * Display the list of events associated with a system.

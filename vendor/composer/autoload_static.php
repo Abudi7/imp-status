@@ -117,7 +117,6 @@ class ComposerStaticInit282d7f5406549670da6e072b3ac4f6ee
             'Symfony\\Bridge\\Monolog\\' => 23,
             'Symfony\\Bridge\\Doctrine\\' => 24,
             'SymfonyCasts\\Bundle\\VerifyEmail\\' => 32,
-            'StellaMaris\\Clock\\' => 18,
             'Sentry\\SentryBundle\\' => 20,
             'Sentry\\' => 7,
             'Sensio\\Bundle\\FrameworkExtraBundle\\' => 35,
@@ -143,6 +142,7 @@ class ComposerStaticInit282d7f5406549670da6e072b3ac4f6ee
             'Psr\\Container\\' => 14,
             'Psr\\Clock\\' => 10,
             'Psr\\Cache\\' => 10,
+            'Phrity\\Net\\' => 11,
             'PhpParser\\' => 10,
             'PHPStan\\PhpDocParser\\' => 21,
         ),
@@ -154,7 +154,6 @@ class ComposerStaticInit282d7f5406549670da6e072b3ac4f6ee
         'L' => 
         array (
             'Lcobucci\\JWT\\' => 13,
-            'Lcobucci\\Clock\\' => 15,
         ),
         'J' => 
         array (
@@ -176,6 +175,7 @@ class ComposerStaticInit282d7f5406549670da6e072b3ac4f6ee
         ),
         'E' => 
         array (
+            'Evenement\\' => 10,
             'Egulias\\EmailValidator\\' => 23,
         ),
         'D' => 
@@ -523,10 +523,6 @@ class ComposerStaticInit282d7f5406549670da6e072b3ac4f6ee
         array (
             0 => __DIR__ . '/..' . '/symfonycasts/verify-email-bundle/src',
         ),
-        'StellaMaris\\Clock\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/stella-maris/clock/src',
-        ),
         'Sentry\\SentryBundle\\' => 
         array (
             0 => __DIR__ . '/..' . '/sentry/sentry-symfony/src',
@@ -604,6 +600,10 @@ class ComposerStaticInit282d7f5406549670da6e072b3ac4f6ee
         array (
             0 => __DIR__ . '/..' . '/psr/cache/src',
         ),
+        'Phrity\\Net\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/phrity/net-uri/src',
+        ),
         'PhpParser\\' => 
         array (
             0 => __DIR__ . '/..' . '/nikic/php-parser/lib/PhpParser',
@@ -623,10 +623,6 @@ class ComposerStaticInit282d7f5406549670da6e072b3ac4f6ee
         'Lcobucci\\JWT\\' => 
         array (
             0 => __DIR__ . '/..' . '/lcobucci/jwt/src',
-        ),
-        'Lcobucci\\Clock\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/lcobucci/clock/src',
         ),
         'Jean85\\' => 
         array (
@@ -664,6 +660,10 @@ class ComposerStaticInit282d7f5406549670da6e072b3ac4f6ee
         'GuzzleHttp\\Promise\\' => 
         array (
             0 => __DIR__ . '/..' . '/guzzlehttp/promises/src',
+        ),
+        'Evenement\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/evenement/evenement/src',
         ),
         'Egulias\\EmailValidator\\' => 
         array (
@@ -749,18 +749,7 @@ class ComposerStaticInit282d7f5406549670da6e072b3ac4f6ee
     );
 
     public static $fallbackDirsPsr4 = array (
-        0 => __DIR__ . '/..' . '/phrity/net-uri/src',
-        1 => __DIR__ . '/..' . '/phrity/util-errorhandler/src',
-    );
-
-    public static $prefixesPsr0 = array (
-        'E' => 
-        array (
-            'Evenement' => 
-            array (
-                0 => __DIR__ . '/..' . '/evenement/evenement/src',
-            ),
-        ),
+        0 => __DIR__ . '/..' . '/phrity/util-errorhandler/src',
     );
 
     public static $classMap = array (
@@ -821,6 +810,7 @@ class ComposerStaticInit282d7f5406549670da6e072b3ac4f6ee
         'PHPUnit\\Framework\\Constraint\\LogicalXor' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/Constraint/Operator/LogicalXor.php',
         'PHPUnit\\Framework\\Constraint\\ObjectEquals' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/Constraint/Object/ObjectEquals.php',
         'PHPUnit\\Framework\\Constraint\\ObjectHasAttribute' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/Constraint/Object/ObjectHasAttribute.php',
+        'PHPUnit\\Framework\\Constraint\\ObjectHasProperty' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/Constraint/Object/ObjectHasProperty.php',
         'PHPUnit\\Framework\\Constraint\\Operator' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/Constraint/Operator/Operator.php',
         'PHPUnit\\Framework\\Constraint\\RegularExpression' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/Constraint/String/RegularExpression.php',
         'PHPUnit\\Framework\\Constraint\\SameSize' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/Constraint/Cardinality/SameSize.php',
@@ -1406,7 +1396,6 @@ class ComposerStaticInit282d7f5406549670da6e072b3ac4f6ee
             $loader->prefixLengthsPsr4 = ComposerStaticInit282d7f5406549670da6e072b3ac4f6ee::$prefixLengthsPsr4;
             $loader->prefixDirsPsr4 = ComposerStaticInit282d7f5406549670da6e072b3ac4f6ee::$prefixDirsPsr4;
             $loader->fallbackDirsPsr4 = ComposerStaticInit282d7f5406549670da6e072b3ac4f6ee::$fallbackDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInit282d7f5406549670da6e072b3ac4f6ee::$prefixesPsr0;
             $loader->classMap = ComposerStaticInit282d7f5406549670da6e072b3ac4f6ee::$classMap;
 
         }, null, ClassLoader::class);

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Sentry\SentryBundle\DependencyInjection;
 
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
-use Jean85\PrettyVersions;
 use Sentry\Options;
 use Sentry\SentryBundle\ErrorTypesParser;
 use Sentry\Transport\TransportFactoryInterface;
@@ -62,6 +61,8 @@ final class Configuration implements ConfigurationInterface
                     ->fixXmlConfig('trace_propagation_target')
                     ->fixXmlConfig('tag')
                     ->fixXmlConfig('class_serializer')
+                    ->fixXmlConfig('ignore_exception')
+                    ->fixXmlConfig('ignore_transaction')
                     ->fixXmlConfig('prefix', 'prefixes')
                     ->children()
                         ->arrayNode('integrations')
@@ -89,10 +90,7 @@ final class Configuration implements ConfigurationInterface
                             ->info('The sampling factor to apply to profiles. A value of 0 will deny sending any profiles, and a value of 1 will send all profiles. Profiles are sampled in relation to traces_sample_rate')
                         ->end()
                         ->scalarNode('traces_sampler')->end()
-                        ->arrayNode('trace_propagation_targets')
-                            ->scalarPrototype()->end()
-                            ->beforeNormalization()->castToArray()->end()
-                        ->end()
+                        ->variableNode('trace_propagation_targets')->end()
                         ->booleanNode('attach_stacktrace')->end()
                         ->integerNode('context_lines')->min(0)->end()
                         ->booleanNode('enable_compression')->end()
@@ -103,7 +101,7 @@ final class Configuration implements ConfigurationInterface
                         ->scalarNode('logger')->end()
                         ->scalarNode('release')
                             ->cannotBeEmpty()
-                            ->defaultValue(PrettyVersions::getRootPackageVersion()->getPrettyVersion())
+                            ->defaultValue('%env(default::SENTRY_RELEASE)%')
                         ->end()
                         ->scalarNode('server_name')->end()
                         ->scalarNode('before_send')->end()
@@ -156,6 +154,14 @@ final class Configuration implements ConfigurationInterface
                             ->useAttributeAsKey('class')
                             ->normalizeKeys(false)
                             ->scalarPrototype()->end()
+                        ->end()
+                        ->arrayNode('ignore_exceptions')
+                            ->scalarPrototype()->end()
+                            ->beforeNormalization()->castToArray()->end()
+                        ->end()
+                        ->arrayNode('ignore_transactions')
+                            ->scalarPrototype()->end()
+                            ->beforeNormalization()->castToArray()->end()
                         ->end()
                     ->end()
                 ->end()
