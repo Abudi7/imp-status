@@ -349,27 +349,21 @@ class EventsController extends AbstractController
             $entityManager->flush();
 
            // Send email to subscribed users if send_email is checked
-            if ($event->isSendEmail()) {
-                $subscribedUsers = $system->getSubscriptions(); // This method is in System entity
-                $bccEmails = [];
-
-                foreach ($subscribedUsers as $subscription) {
-                    $user = $subscription->getUser(); // Assuming Subscription entity has a user relation
-                    $emailAddress = $user->getEmail();
-                    $bccEmails[] = $emailAddress;
-
-                    // If you have reached 100 email addresses, send the email and reset the $bccEmails array
-                    if (count($bccEmails) === 100) {
-                        $this->sendEmailToBcc($event, $bccEmails);
-                        $bccEmails = [];
+                if ($event->isSendEmail()) {
+                    $subscribedUsers = $system->getSubscriptions(); // This method is in System entity
+                    $bccEmails = [];
+                    // for ($i=0; $i <= 1095 ; $i++) { 
+                    //     $bccEmails[] = "XYZ".$i."@anton-paar.com";
+                    // }
+                    foreach ($subscribedUsers as $subscription) {
+                        $user = $subscription->getUser(); // Assuming Subscription entity has a user relation
+                        $emailAddress = $user->getEmail();
+                        $bccEmails[] = $emailAddress;
                     }
-                }
 
-                // If there are any remaining email addresses in $bccEmails, send the final email
-                if (!empty($bccEmails)) {
-                    $this->sendEmailToBcc($event, $bccEmails);
+                   $this->sendEmailsInBatches($event,$bccEmails);
                 }
-            }
+            
 
         // Redirect to the system page or a confirmation page
         return $this->redirectToRoute("app_system_display", ["id" => $id]);
@@ -381,35 +375,48 @@ class EventsController extends AbstractController
             "system" => $system,
         ]);
     }
-        /**
-         * Sends an email to a group of recipients in the Bcc (Blind Carbon Copy) field.
-         *
-         * @param Events $event      The event object containing email content and subject.
-         * @param array  $bccEmails  An array of email addresses to include in the Bcc field.
-         */
-        private function sendEmailToBcc($event, $bccEmails) {
-            // Create a transport for sending emails
-            $transport = Transport::fromDsn($_ENV['MAILER_DSN']);
-            $mailer = new Mailer($transport);
-
-            // Create an email message
-            $email = (new Email())
-                ->from($_ENV['MAILER_FROM'])    // Set the 'from' email address
-                ->subject($event->getSubject()) // Set the email subject
-                ->html($event->getEmail())      // Set the email content
-                ->bcc(...$bccEmails);           // Add all collected email addresses to Bcc
-
-            // Send the email
-            $mailer->send($email);
-
-            // Log Email for the Admin
-            $this->logEmail(
-                implode(', ', $bccEmails),   // Log the list of Bcc email addresses
-                'Incident',                   // Log the email type (e.g., 'Incident')
-                $event->getSubject(),        // Log the email subject
-                $_ENV['MAILER_FROM']         // Log the 'from' email address
-            );
+    /**
+     * Sends emails in batches of 200 recipients.
+     *
+     * @param  $event The event to send the email for.
+     * @param array $emailAddresses The email addresses to send the email to.
+     */
+    private function sendEmailsInBatches($event ,array $emailAddresses)
+    {
+        $batches = array_chunk($emailAddresses, 200);
+        foreach ($batches as $batch) {
+            $this->sendEmailToBcc($event, $batch);
         }
+    }
+
+    /**
+     * Sends an email to a group of recipients in the Bcc (Blind Carbon Copy) field.
+     *
+     * @param Events $event      The event object containing email content and subject.
+     * @param array  $bccEmails  An array of email addresses to include in the Bcc field.
+     */
+    private function sendEmailToBcc($event, $bccEmails) {
+        // Create a transport for sending emails
+        $transport = Transport::fromDsn($_ENV['MAILER_DSN']);
+        $mailer = new Mailer($transport);
+
+        // Create an email message
+        $email = (new Email())
+            ->from($_ENV['MAILER_FROM'])    // Set the 'from' email address
+            ->subject($event->getSubject()) // Set the email subject
+            ->html($event->getEmail())      // Set the email content
+            ->bcc(...$bccEmails);           // Add all collected email addresses to Bcc
+        // Send the email
+        $mailer->send($email);
+
+        // Log Email for the Admin
+        $this->logEmail(
+            implode(', ', $bccEmails),   // Log the list of Bcc email addresses
+            'Incident',                   // Log the email type (e.g., 'Incident')
+            $event->getSubject(),        // Log the email subject
+            $_ENV['MAILER_FROM']         // Log the 'from' email address
+        );
+    }
 
     
 
