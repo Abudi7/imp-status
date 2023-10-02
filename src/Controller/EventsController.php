@@ -158,7 +158,8 @@ class EventsController extends AbstractController
             $emailContent = str_replace('{system_name}', $savedEvent->getSystem()->getName(), $emailContent);
             $emailContent = str_replace('{start_time}', $savedEvent->getStart()->format('H:i d-M-Y'), $emailContent);
             $emailContent = str_replace('{end_time}', $savedEvent->getEnd()->format('H:i d-M-Y'), $emailContent);
-            $emailContent = str_replace('{responsible_person}', $savedEvent->getCreator()->getEmail(), $emailContent);
+            $emailContent = str_replace('{responsible_person}', $savedEvent->getCreator()->getUsername(), $emailContent);
+            $emailContent = str_replace('{responsible_mail}', $savedEvent->getCreator()->getEmail(), $emailContent);
             // Update the 'email' property with the modified content
             $event->setEmail($emailContent);
             // Replace placeholders in the email subject with actual data
@@ -166,7 +167,8 @@ class EventsController extends AbstractController
             $emailSubject = str_replace('{system_name}', $savedEvent->getSystem()->getName(), $emailSubject);
             $emailSubject = str_replace('{start_time}', $savedEvent->getStart()->format('H:i d-M-Y'), $emailSubject);
             $emailSubject = str_replace('{end_time}', $savedEvent->getEnd()->format('H:i d-M-Y'), $emailSubject);
-            $emailSubject = str_replace('{responsible_person}', $savedEvent->getCreator()->getEmail(), $emailSubject);
+            $emailSubject = str_replace('{responsible_person}', $savedEvent->getCreator()->getUsername(), $emailSubject);
+            $emailSubject = str_replace('{responsible_mail}', $savedEvent->getCreator()->getEmail(), $emailSubject);
 
             // Update the 'email' property with the modified content
             $event->setSubject($emailSubject);
@@ -187,38 +189,13 @@ class EventsController extends AbstractController
                 foreach ($subscribedUsers as $subscription) {
                     // Retrieve the user associated with the subscription
                     $user = $subscription->getUser(); // Assuming Subscription entity has a user relation
-                    
                     // Get the user's email address
-                    $emailAddress = $user->getEmail();
-                    
-                    // Create a mailer instance for sending emails
-                    $transport = Transport::fromDsn($_ENV['MAILER_DSN']);
-                    $mailer = new Mailer($transport);
-
-                    // Create an email message
-                    $email = (new Email())
-                        ->from($_ENV['MAILER_FROM'])
-                        ->bcc($emailAddress)
-                        ->subject($event->getSubject())
-                        ->html($event->getEmail()); // Use the modified email content
-
-                    // Add the email to the queue
-                    $emailQueue[] = $email;
-
-                    // Check if the emailQueue contains 100 emails or it's the last batch
-                    $queueSize = count($emailQueue);
-                    if ($queueSize <= 100 || ($queueSize > 0 && $subscription === end($subscribedUsers))) {
-                        // Send each email in the queue
-                        foreach ($emailQueue as $queuedEmail) {
-                            $mailer->send($queuedEmail);
-                            // Log Email for the Admin
-                            $this->logEmail($emailAddress, 'Maintenance', $event->getSubject(), $_ENV['MAILER_FROM']);
-                        }
-
-                        // Clear the queue after sending
-                        $emailQueue = [];
-                    }
+                    $emailAddress = $user->getEmail();  
+                    $emailQueue [] = $emailAddress;
                 }
+                $this->sendEmailsInBatches($event,$emailQueue);
+                // Log Email for the Admin
+                $this->logEmail($emailAddress, 'Maintenance', $event->getSubject(), $_ENV['MAILER_FROM']);
             }
             // Redirect to the system page or a confirmation page
             return $this->redirectToRoute("app_system_display", ["id" => $id]);
@@ -362,6 +339,13 @@ class EventsController extends AbstractController
                     }
 
                    $this->sendEmailsInBatches($event,$bccEmails);
+                    // Log Email for the Admin
+                    $this->logEmail(
+                        implode(', ', $bccEmails),   // Log the list of Bcc email addresses
+                        'Incident',                   // Log the email type (e.g., 'Incident')
+                        $event->getSubject(),        // Log the email subject
+                        $_ENV['MAILER_FROM']         // Log the 'from' email address
+                    );
                 }
             
 
@@ -375,6 +359,7 @@ class EventsController extends AbstractController
             "system" => $system,
         ]);
     }
+    
     /**
      * Sends emails in batches of 200 recipients.
      *
@@ -408,14 +393,6 @@ class EventsController extends AbstractController
             ->bcc(...$bccEmails);           // Add all collected email addresses to Bcc
         // Send the email
         $mailer->send($email);
-
-        // Log Email for the Admin
-        $this->logEmail(
-            implode(', ', $bccEmails),   // Log the list of Bcc email addresses
-            'Incident',                   // Log the email type (e.g., 'Incident')
-            $event->getSubject(),        // Log the email subject
-            $_ENV['MAILER_FROM']         // Log the 'from' email address
-        );
     }
 
     
